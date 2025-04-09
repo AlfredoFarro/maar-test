@@ -1,0 +1,260 @@
+{
+  "testSchema":[
+    {
+      "id": 0,
+      "title": "Codigo",
+      "prop": "code",
+      "example": "R-001",
+      "type": "string",
+      "required": false,
+      "errors": []
+    },
+    {
+      "id": 2,
+      "title": "Codigo de Unidad",
+      "prop": "plate",
+      "example": "ASJ-121",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 3,
+      "title": "Ruta",
+      "prop": "route",
+      "example": "Lima-Cajamarca",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 4,
+      "title": "Fecha Inicio",
+      "prop": "dateInit",
+      "example": "2024-09-04",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 5,
+      "title": "Fecha Fin",
+      "prop": "dateEnd",
+      "example": "2024-09-04",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 6,
+      "title": "Tipo",
+      "prop": "type",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 7,
+      "title": "Numero de Paradas",
+      "prop": "stopQty",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 8,
+      "title": "Sede",
+      "prop": "sedeCode",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 9,
+      "title": "Piloto 1",
+      "prop": "primaryPilot",
+      "example": "Luis Nolberto",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 10,
+      "title": "Piloto 2",
+      "prop": "secondaryPilot",
+      "example": "Martin García",
+      "type": "string",
+      "required": false,
+      "errors": []
+    }
+  ],
+  "activitySchema":[
+    {
+      "id": 0,
+      "title": "Codigo",
+      "prop": "code",
+      "example": "R-001",
+      "type": "string",
+      "required": false,
+      "errors": []
+    },
+    {
+      "id": 2,
+      "title": "Codigo de Unidad",
+      "prop": "plate",
+      "example": "ASJ-121",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 3,
+      "title": "Descripcion",
+      "prop": "route",
+      "example": "Lima-Cajamarca",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 4,
+      "title": "Fecha Inicio",
+      "prop": "dateInit",
+      "example": "2024-09-04",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 5,
+      "title": "Fecha Fin",
+      "prop": "dateEnd",
+      "example": "2024-09-04",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 6,
+      "title": "Tipo",
+      "prop": "type",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 7,
+      "title": "Numero de Paradas",
+      "prop": "stopQty",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 8,
+      "title": "Sede",
+      "prop": "sedeCode",
+      "example": "",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 9,
+      "title": "Piloto 1",
+      "prop": "primaryPilot",
+      "example": "Luis Nolberto",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 10,
+      "title": "Piloto 2",
+      "prop": "secondaryPilot",
+      "example": "Martin García",
+      "type": "string",
+      "required": false,
+      "errors": []
+    }
+  ],
+  "userSchema":[
+    {
+      "id": 0,
+      "title": "Tipo de Documento",
+      "prop": "docType",
+      "example": "DNI",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 2,
+      "title": "Documento",
+      "prop": "document",
+      "example": "00000000",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 3,
+      "title": "Nombre",
+      "prop": "fullname",
+      "example": "Fullname",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 4,
+      "title": "Email",
+      "prop": "email",
+      "example": "email@email.com",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 5,
+      "title": "Password",
+      "prop": "password",
+      "example": "password",
+      "type": "string",
+      "required": false,
+      "errors": []
+    },
+    {
+      "id": 6,
+      "title": "Posicion",
+      "prop": "position",
+      "example": "position",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 7,
+      "title": "Rol",
+      "prop": "role",
+      "example": "rol",
+      "type": "string",
+      "required": true,
+      "errors": []
+    },
+    {
+      "id": 8,
+      "title": "Dar de Baja",
+      "prop": "delete",
+      "example": "Si",
+      "type": "string",
+      "required": true,
+      "errors": []
+    }
+  ]
+}

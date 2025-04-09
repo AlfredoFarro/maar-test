@@ -1,0 +1,19 @@
+[
+  { "key": "row", "label": "", "sortable": false, "visible": false, "thStyle": { "width": "80px" } },
+  { "key": "code", "label": "IdRestriccion", "sortable": true, "visible": false, "thStyle": { "width": "160px" } },
+  { "key": "light", "label": "Semáforo", "sortable": true, "visible": false, "thStyle": { "width": "100px" } },
+  { "key": "description", "label": "Descripción", "sortable": true, "visible": true, "thStyle": { "width": "500px" } },
+  { "key": "category.code", "label": "Categoria", "sortable": true, "visible": true, "thStyle": { "width": "150px" } },
+  { "key": "status_similar", "label": "Estado", "sortable": true, "visible": true, "thStyle": { "width": "150px" } },
+  { "key": "status", "label": "Condicion", "sortable": true, "visible": true, "thStyle": { "width": "140px" } },
+  { "key": "user.name", "label": "Usuario Reg", "sortable": true, "visible": true, "thStyle": { "width": "160px" } },
+  { "key": "owner.name", "label": "Dueno", "sortable": true, "visible": true, "thStyle": { "width": "150px" } },
+  { "key": "co_owner.name", "label": "Co-Dueño", "sortable": true, "visible": false, "thStyle": { "width": "150px" } },
+  { "key": "type", "label": "Tipo", "sortable": true, "visible": false, "thStyle": { "width": "100px" } },
+  { "key": "detail", "label": "Detalle", "sortable": true, "visible": false, "thStyle": { "width": "125px" } },
+  { "key": "dependency", "label": "Dependencia", "sortable": false, "visible": false, "thStyle": { "width": "155px" } },
+  { "key": "leadtime", "label": "LeadTime", "sortable": false, "visible": false, "thStyle": { "width": "125px" } },
+  { "key": "project.code", "label": "Proyecto", "sortable": true, "visible": false, "thStyle": { "width": "130px" } },
+  { "key": "activity.code", "label": "Actividad", "sortable": true, "visible": false, "thStyle": { "width": "130px" } },
+  { "key": "actions", "label": "Acciones", "visible": true, "thStyle": { "width": "280px" } }
+]
