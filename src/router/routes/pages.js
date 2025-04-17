@@ -29,6 +29,16 @@ export default [
       redirectIfLoggedIn: true,
     },
   },
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/register/register.vue'),
+    meta: {
+      layout: 'full',
+      resource: 'Auth',
+      redirectIfLoggedIn: true,
+    },
+  },
   
   // {
   //   path: '/register',

@@ -6,5 +6,6 @@ const AuthService = {
         var resp = await VueStoreService.post("auth/login",data,store)
         return resp;
     },
+    
 }
 export default AuthService;

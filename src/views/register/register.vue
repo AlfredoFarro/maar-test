@@ -13,15 +13,45 @@
       <div class="header" v-if="v < 6">
         <img src="@/assets/images/logo_1.svg" />
       </div>
-      <form @submit.prevent="login">
+      <form @submit.prevent="register">
         <div class="form-group">
-          <label :style="{ color: color }">Documento</label>
+          <label :style="{ color: color }">Nombre Completo</label>
+          <input
+            v-model="userData.fullname"
+            type="text"
+            class="form-control"
+            :style="{ color: color }"
+            name="fullname"
+          />
+        </div>
+        <div class="form-group">
+          <label :style="{ color: color }">Nro de Documento</label>
           <input
             v-model="userData.document"
             type="text"
-            :style="{ color: color }"
             class="form-control"
+            :style="{ color: color }"
             name="document"
+          />
+        </div>
+        <div class="form-group">
+          <label :style="{ color: color }">Confirmar Nro de Documento</label>
+          <input
+            v-model="confirmDocument"
+            type="text"
+            class="form-control"
+            :style="{ color: color }"
+            name="confirmDocument"
+          />
+        </div>
+        <div class="form-group">
+          <label :style="{ color: color }">Correo</label>
+          <input
+            v-model="userData.email"
+            type="email"
+            class="form-control"
+            :style="{ color: color }"
+            name="email"
           />
         </div>
         <div class="form-group">
@@ -29,19 +59,25 @@
           <input
             v-model="userData.password"
             type="password"
-            :style="{ color: color }"
             class="form-control"
+            :style="{ color: color }"
             name="password"
           />
         </div>
-        <button type="submit" class="btn gradient">Ingresar</button>
         <div class="form-group">
-          <small :style="{ color: color }">¿Olvidaste tu contraseña?</small>
+          <label :style="{ color: color }">Confirmar Contraseña</label>
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="form-control"
+            :style="{ color: color }"
+            name="confirmPassword"
+          />
         </div>
-        <div class="form-group">
-          <small :style="{ color: color }" @click="goToRegister">Registrar</small>
-        </div>
+        <button type="submit" class="btn gradient">Registrarse</button>
       </form>
+  
+      <!-- Modal para el código de verificación -->
       <div class="modal" v-if="showVerificationModal">
         <div class="modal-content">
           <h2>Ingresa el código de verificación</h2>
@@ -65,56 +101,39 @@
   
   <script>
   import UserService from '@/services/UserService'; // Importamos el servicio
-  
   export default {
     data() {
       return {
         userData: {
+          fullname: '',
           document: '',
+          email: '',
           password: '',
         },
-        internetFlag: true,
+        confirmDocument: '',
+        confirmPassword: '',
+        color: '#fff',
         v: 6,
-        isActiveUser:'',
-        color: '#FFF',
         showVerificationModal: false,
         verificationCode: ''
-      };
+      }
     },
     methods: {
-      async login() {
-        if (!this.internetFlag) {
-          console.log('No hay conexión a internet');
-          return;
+      async register() {
+        if (this.userData.document !== this.confirmDocument) {
+          alert('Los números de documento no coinciden.')
+          return
         }
   
-        try {
-          // Usamos el servicio para hacer el login, pasando el store
-          const resp = await UserService.login(this.userData, this.$store);  // Pasamos el store aquí
-          console.log('response:',resp)
-          this.isActiveUser=resp.data.data.isActive
-          console.log(this.isActiveUser)
-          if (String(this.isActiveUser) === '0') {
-            this.showVerificationModal = true;
-          }
-          // Verificamos si hay un error en la respuesta
-          if (resp.data.error) {
-            console.log('Error al hacer login');
-            return;
-          }
-
-          if (resp) {
-            console.log('Login exitoso:', resp.data.user);
-
-            // Si la contraseña es 'maar', notificamos que debe cambiar la contraseña
-            
-          }
-          
-          
-        } catch (err) {
-          console.log('Error durante el login:', err);
+        if (this.userData.password !== this.confirmPassword) {
+          alert('Las contraseñas no coinciden.')
+          return
         }
-        
+        const resp = await UserService.register(this.userData, this.$store);
+        console.log('response:',resp.data.data.code)
+        localStorage.setItem('document', this.userData.document)
+        localStorage.setItem('activationCode', resp.data.data.code)
+        this.showVerificationModal = true
       },
       async verifyCode() {
         if (this.verificationCode.trim() === '') {
@@ -146,19 +165,12 @@
       closeModal() {
         this.showVerificationModal = false
         this.verificationCode = ''
-      },
-      goToRegister() {
-        this.$router.push('/register');
       }
-    },
-    mounted() {
-      console.log('LOGIN');
-    },
-  };
+    }
+  }
   </script>
   
   <style scoped>
-  
   .container {
     display: flex;
     justify-content: center;
@@ -168,15 +180,8 @@
     width: 100%;
     padding: 1rem;
     box-sizing: border-box;
-    /* background: linear-gradient(
-        to bottom,
-        rgba(0, 65, 145, 0.65) 0%,
-        rgba(0, 30, 98, 0.85) 100%
-      ),
-      url('/assets/images/login_bg.jpg'); */
-    
-   
   }
+  
   .full-bg{
     background: linear-gradient(
         to bottom,
@@ -188,6 +193,7 @@
       min-height: 117.6vh;
       padding: 0;
   }
+  
   .header {
     margin-bottom: 2rem;
     margin-left: auto;
@@ -204,7 +210,7 @@
   }
   
   form {
-    background-color: rgba(255, 255, 255, 0.05); /* transparencia tipo glass */
+    background-color: rgba(255, 255, 255, 0.05);
     padding: 2rem;
     border-radius: 1rem;
     backdrop-filter: blur(10px);
@@ -266,6 +272,23 @@
     background: linear-gradient(to right, #00a0c1, #00b399);
   }
   
+  button.cancel {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+  
+  button.cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
   small {
     display: block;
     text-align: center;
@@ -275,8 +298,9 @@
     color: #fff;
     font-size: 0.9rem;
   }
-/* Estilos para el modal */
-.modal {
+  
+  /* Estilos para el modal */
+  .modal {
     position: fixed;
     top: 0;
     left: 0;
