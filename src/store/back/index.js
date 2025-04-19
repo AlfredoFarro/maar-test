@@ -48,7 +48,7 @@ export default {
           }
           
           return {
-            data: res.data,
+            data: res.data.data,
             status: true
           }
         })
