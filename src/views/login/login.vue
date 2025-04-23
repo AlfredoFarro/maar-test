@@ -135,7 +135,7 @@
             alert('Código verificado correctamente ✅')
             this.closeModal()
 
-             this.$router.push('/loginnuevo')
+             this.$router.push('/login')
         } else {
           alert('El código ingresado no es correcto ❌')
         }

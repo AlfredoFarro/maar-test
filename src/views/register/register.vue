@@ -153,7 +153,7 @@
             alert('Código verificado correctamente ✅')
             this.closeModal()
             // Aquí podrías redirigir o limpiar el formulario
-             this.$router.push('/loginnuevo')
+             this.$router.push('/login')
         } else {
           alert('El código ingresado no es correcto ❌')
         }
