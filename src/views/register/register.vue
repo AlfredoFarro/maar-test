@@ -132,7 +132,7 @@
         const resp = await UserService.register(this.userData, this.$store);
         console.log('response:',resp.data.data.code)
         localStorage.setItem('document', this.userData.document)
-        localStorage.setItem('activationCode', resp.data.data.code)
+        localStorage.setItem('activationCode', resp.data.code)
         this.showVerificationModal = true
       },
       async verifyCode() {
