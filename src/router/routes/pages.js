@@ -9,7 +9,7 @@ export default [
       action: 'read',
     },
   },
-  {
+  /* {
     path: '/login',
     name: 'auth-login',
     component: () => import('@/views/authentication/login.vue'),
@@ -18,10 +18,10 @@ export default [
       resource: 'Auth',
       redirectIfLoggedIn: true,
     },
-  },
+  }, */
   {
-    path: '/loginnuevo',
-    name: 'loginnuevo',
+    path: '/login',
+    name: 'auth-login',
     component: () => import('@/views/login/login.vue'),
     meta: {
       layout: 'full',
