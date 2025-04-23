@@ -65,7 +65,7 @@
   
   <script>
   import UserService from '@/services/UserService'; // Importamos el servicio
-  
+  import useJwt from '@/auth/jwt/useJwt'
   export default {
     data() {
       return {
@@ -89,25 +89,26 @@
         }
   
         try {
-          // Usamos el servicio para hacer el login, pasando el store
-          const resp = await UserService.login(this.userData, this.$store);  // Pasamos el store aquí
+          const resp = await UserService.login(this.userData, this.$store);
           console.log('response:',resp)
-          this.isActiveUser=resp.data.data.isActive
+          this.isActiveUser=resp.data.isActive
           console.log(this.isActiveUser)
           if (String(this.isActiveUser) === '0') {
             this.showVerificationModal = true;
           }
-          // Verificamos si hay un error en la respuesta
-          if (resp.data.error) {
+
+          if (resp.error) {
             console.log('Error al hacer login');
             return;
           }
 
           if (resp) {
-            console.log('Login exitoso:', resp.data.user);
-
-            // Si la contraseña es 'maar', notificamos que debe cambiar la contraseña
-            
+            console.log('Login exitoso:', resp.data.token);
+            useJwt.setToken(resp.data.token)
+            useJwt.setRefreshToken(resp.data.token)
+            localStorage.setItem('userData', JSON.stringify(resp.data))
+            const userId =localStorage.getItem('userData') ?  JSON.parse(localStorage.getItem('userData')).id:null
+            console.log('userId',userId)
           }
           
           
@@ -133,15 +134,15 @@
             console.log('response:',resp)
             alert('Código verificado correctamente ✅')
             this.closeModal()
-            // Aquí podrías redirigir o limpiar el formulario
+
              this.$router.push('/loginnuevo')
         } else {
           alert('El código ingresado no es correcto ❌')
         }
         
-        // Cerramos el modal y limpiamos el formulario o redirigimos
+
         this.closeModal()
-        // this.$router.push('/dashboard') // Descomenta si quieres redirigir después
+
       },
       closeModal() {
         this.showVerificationModal = false
@@ -168,12 +169,7 @@
     width: 100%;
     padding: 1rem;
     box-sizing: border-box;
-    /* background: linear-gradient(
-        to bottom,
-        rgba(0, 65, 145, 0.65) 0%,
-        rgba(0, 30, 98, 0.85) 100%
-      ),
-      url('/assets/images/login_bg.jpg'); */
+
     
    
   }
@@ -204,7 +200,7 @@
   }
   
   form {
-    background-color: rgba(255, 255, 255, 0.05); /* transparencia tipo glass */
+    background-color: rgba(255, 255, 255, 0.05); 
     padding: 2rem;
     border-radius: 1rem;
     backdrop-filter: blur(10px);
@@ -275,7 +271,7 @@
     color: #fff;
     font-size: 0.9rem;
   }
-/* Estilos para el modal */
+
 .modal {
     position: fixed;
     top: 0;
