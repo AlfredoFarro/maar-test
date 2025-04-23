@@ -10,7 +10,7 @@ const UserService = {
         return resp;
     },
     async confirm(data,store){
-        var resp = await VueStoreService.post("confirm-code",data,store)
+        var resp = await VueStoreService.post("confirm",data,store)
         return resp;
     },
 }
