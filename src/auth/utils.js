@@ -72,7 +72,7 @@ export const getUserAcessPermissions = (role) => {
   let permissions = [];
   switch (role) {  
     
-    case "superadmin":
+    case "administrador":
       permissions = [
         "cronograma",
         "cronograma-registro",
