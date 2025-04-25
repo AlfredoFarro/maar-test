@@ -89,7 +89,7 @@
           </validation-provider>
           <b-form-group v-if="isEdit">
             <div class="d-flex justify-content-between">
-              <label for="password">Contrase単a</label>
+              <label for="password">Contraseña</label>
             </div>
 
             <b-input-group class="input-group-merge">
@@ -100,7 +100,7 @@
                 :type="passwordFieldType"
                 name="login-password"
                 autocomplete="off"
-                placeholder="Contrase単a"
+                placeholder="Contraseña"
               />
               <b-input-group-append is-text>
                 <feather-icon
@@ -114,7 +114,7 @@
 
           <b-form-group v-if="!isEdit">
             <div class="d-flex justify-content-between">
-              <label for="password">Contrase単a</label>
+              <label for="password">Contraseña</label>
             </div>
             <validation-provider
               #default="{ errors }"
@@ -133,7 +133,7 @@
                   :class="errors.length > 0 ? 'is-invalid' : null"
                   name="login-password"
                   autocomplete="off"
-                  placeholder="Contrase単a"
+                  placeholder="Contraseña"
                 />
                 <b-input-group-append is-text>
                   <feather-icon
@@ -321,8 +321,8 @@ export default {
           value: 'DNI'
         },
         {
-          text: 'Carnet de Extranjer鱈a',
-          value: 'Carnet de Extranjer鱈a'
+          text: 'Carnet de Extranjería',
+          value: 'Carnet de Extranjería'
         },
       ],
       config: {
@@ -341,7 +341,7 @@ export default {
           firstDayOfWeek: 1,
           weekdays: {
             shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-            longhand: ['Domingo', 'Lunes', 'Martes', 'Mi辿rcoles', 'Jueves', 'Viernes', 'S叩bado']
+            longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
           },
           months: {
             shorthand: [
@@ -354,14 +354,14 @@ export default {
               'Jul',
               'Ago',
               'Sep',
-              '�ct',
+              'Оct',
               'Nov',
               'Dic'
             ],
             longhand: [
               'Enero',
               'Febrero',
-              '�arzo',
+              'Мarzo',
               'Abril',
               'Mayo',
               'Junio',
@@ -439,7 +439,7 @@ export default {
           if (date1.diff(date2, 'days') > 0) {
             this.$swal({
               icon: 'warning',
-              title: 'Fecha inv叩lida',
+              title: 'Fecha inválida',
               text: 'La fecha identificada no puede ser mayor a la fecha requerida',
               customClass: {
                 confirmButton: 'btn btn-success'
@@ -455,7 +455,7 @@ export default {
           if (date2.diff(date1, 'days') < 0) {
             this.$swal({
               icon: 'warning',
-              title: 'Fecha inv叩lida',
+              title: 'Fecha inválida',
               text: 'La fecha requerida no puede ser menor a la fecha identificada',
               customClass: {
                 confirmButton: 'btn btn-success'
@@ -585,7 +585,7 @@ export default {
               title: 'Error!',
               text: resp.data.message
                 ? resp.data.message
-                : 'Ocurri坦 un error al ' +
+                : 'Ocurrió un error al ' +
                   (this.isEdit == true ? 'actualizar' : 'registrar') +
                   ' los datos del formulario.',
               icon: 'error',
