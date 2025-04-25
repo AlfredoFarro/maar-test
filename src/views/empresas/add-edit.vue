@@ -33,12 +33,12 @@
 
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
           
-          <validation-provider #default="{ errors }" name="code" rules="requeridoE">
-            <b-form-group label="Código" label-for="code">
+          <validation-provider #default="{ errors }" name="ruc" rules="requeridoE">
+            <b-form-group label="RUC" label-for="ruc">
               <b-form-input
-                v-model="items.code"
-                id="code"
-                placeholder="Código"
+                v-model="items.ruc"
+                id="ruc"
+                placeholder="RUC"
                 autocomplete="off"
               />
               <small
@@ -49,11 +49,11 @@
             </b-form-group>
           </validation-provider>
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
-            <b-form-group label="Nombre" label-for="name">
+            <b-form-group label="Nombre de la Empresa" label-for="name">
               <b-form-input
-                v-model="items.description"
+                v-model="items.name"
                 id="name"
-                placeholder="Nombre"
+                placeholder="Nombre de la Empresa"
                 autocomplete="off"
               />
               <small
@@ -202,8 +202,8 @@ export default {
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
       items: {
-          code: '',
-          description: '',
+          ruc: '',
+          name: '',
       },
       proyecto_id: null,
       temp: {},
@@ -284,14 +284,14 @@ export default {
         this.temp = item
         this.proyecto_id = item.id
         console.log("PROYECTO ID", this.proyecto_id)
-        this.items.code = item.code
-        this.items.description = item.description
+        this.items.ruc = item.ruc
+        this.items.name = item.name
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
-          code: '',
-          description: '',
+          ruc: '',
+          name: '',
         }
         console.log("project id", this.items)
         this.isEdit = false
@@ -302,8 +302,8 @@ export default {
       this.$refs.refFormObserver.reset()
       this.isEdit = false
       this.items = {
-        code: '',
-        description: '',
+        ruc: '',
+        name: '',
       }
     },
     async onSubmit(data) {

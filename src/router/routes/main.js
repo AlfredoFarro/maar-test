@@ -300,11 +300,11 @@ export default [{
     },
   },
   {
-    path: '/proyectos',
-    name: 'proyectos',
-    component: () => import('@/views/proyectos/index.vue'),
+    path: '/empresas',
+    name: 'empresas',
+    component: () => import('@/views/empresas/index.vue'),
     meta: {
-      pageTitle: 'Proyectos',
+      pageTitle: 'Empresas',
       breadcrumb: [{
         text: 'Listar',
         active: true,

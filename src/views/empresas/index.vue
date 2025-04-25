@@ -19,12 +19,12 @@
           <b-row>
             <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
-                <b-form-group label="Nombre" label-for="name" class="mr-2">
+                <b-form-group label="Nombre de la Empresa" label-for="name" class="mr-2">
                   <b-form-input
                     type="text"
                     label="name"
                     id="name"
-                    placeholder="Nombre"
+                    placeholder="Nombre de la Empresa"
                     v-model="name"
                     @input="filter()"
                     class="select-obra"
@@ -36,13 +36,13 @@
             </b-col> 
             <b-col md="7" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
-                <b-form-group label="Código" label-for="code" class="mr-2">
+                <b-form-group label="RUC" label-for="ruc" class="mr-2">
                   <b-form-input
                     type="text"
-                    label="code"
-                    id="code"
-                    placeholder="Código"
-                    v-model="code"
+                    label="ruc"
+                    id="ruc"
+                    placeholder="RUC"
+                    v-model="ruc"
                     @input="filter()"
                     class="select-obra"
                     autocomplete="off"
@@ -77,9 +77,10 @@
             <div class="card_img">
               <img :src="item.url ? apiurl + item.url : sideImg" :alt="'imagen_project_' + index" />
             </div>
+
             <div class="card_content px-2 py-2 d-flex flex-column">
-              <span class="card_content_sub">{{ item.code }}</span>
-              <span class="card_content_title mb-2">{{ item.description }}</span>
+              <span class="card_content_sub">{{ item.ruc }}</span>
+              <span class="card_content_title mb-2">{{ item.name }}</span>
               <div class="d-flex justify-content-between">
                 <b-button
                   size="sm"
@@ -218,8 +219,8 @@ export default {
     return {
       showLoading: false,
       fields: [
-        { key: 'code', label: 'Codigo', sortable: false },
-        { key: 'description', label: 'Descripción', sortable: false },
+        { key: 'ruc', label: 'Ruc', sortable: false },
+        { key: 'name', label: 'Nombre', sortable: false },
         { key: 'contract_type', label: 'Tipo Contrato', sortable: false },
         { key: 'amount', label: 'Monto', sortable: false },
         { key: 'participation', label: 'Participación', sortable: false },
@@ -227,8 +228,8 @@ export default {
         { key: 'actions', label: 'Acciones' }
       ],
       form: {
-        code: null,
-        description: '',
+        ruc: null,
+        name: '',
       },
       records: [],
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
@@ -243,7 +244,7 @@ export default {
       sort: 'id',
       order: 'desc',
       name: '',
-      code: '',
+      ruc: '',
       apiurl: APIURL,
       isAdd: false,
       sideImg: require('@/assets/images/access/default.png')
@@ -277,10 +278,10 @@ export default {
       console.log("FILTROS")
       
       if (this.name != null && this.name != '') {
-        this.arrayFilters.push({ keyContains: 'description', key: 'contains', value: this.name })
+        this.arrayFilters.push({ keyContains: 'name', key: 'contains', value: this.name })
       }
-      if (this.code != null && this.code != '') {
-        this.arrayFilters.push({ keyContains: 'code', key: 'contains', value: this.code })
+      if (this.ruc != null && this.ruc != '') {
+        this.arrayFilters.push({ keyContains: 'ruc', key: 'contains', value: this.ruc })
       }
       
       this.getData()
@@ -301,16 +302,17 @@ export default {
     addProyecto(){
       this.isAdd = true
       this.$refs.proyectoAdd.setData()
+
     },
     edit(item) {
       console.log('itemAS', item)
       this.form.id = item.id
-      this.form.code = item.code
-      this.form.description = item.description
+      this.form.ruc = item.ruc
+      this.form.name = item.name
      
       console.log('this.form', this.form)
       this.isAdd = true
-
+      console.log("aqui")
       this.$refs.proyectoAdd.setData(this.form)
 
     },

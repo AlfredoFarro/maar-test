@@ -2,7 +2,7 @@
 import VueStoreService from './VueStoreService';
 const ProjectsService = {
     async getProyectos(filter,store){        
-        var resp = await VueStoreService.get("project"+filter, store)      
+        var resp = await VueStoreService.get("enterprise"+filter, store)      
         return resp;
     },
     async getProyectosByLessons(filter,store){        
@@ -14,15 +14,15 @@ const ProjectsService = {
         return resp;
     },
     async saveProject(data,store){
-        var resp = await VueStoreService.post("project",data,store)
+        var resp = await VueStoreService.post("enterprise",data,store)
         return resp;
     },
     async getProjectById(project_id,store){
-        var resp = await VueStoreService.get( "project/"+project_id,store)
+        var resp = await VueStoreService.get( "enterprise/"+project_id,store)
         return resp;
     },
     async updateProject(project_id,data,store){
-        var resp = await VueStoreService.patch("project/"+project_id,data,store)
+        var resp = await VueStoreService.patch("enterprise/"+project_id,data,store)
         return resp;
     },
     async validateDeleteProject (project_id,store){
@@ -30,7 +30,7 @@ const ProjectsService = {
         return resp;
     },
     async deleteProject(project_id,store){
-        var resp = await VueStoreService.delete("project/"+project_id,store)
+        var resp = await VueStoreService.delete("enterprise/"+project_id,store)
         return resp;
     },
 }

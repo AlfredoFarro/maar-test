@@ -71,10 +71,10 @@ export default {
         route: 'perfil',
       },
       {
-        icon: 'FolderIcon',
-        id: 'proyectos',
-        title: 'Proyectos',
-        route: 'proyectos',
+        icon: 'Share2Icon',
+        id: 'empresas',
+        title: 'Empresas',
+        route: 'empresas',
       },
       /* {
         icon: 'FolderIcon',
@@ -83,7 +83,7 @@ export default {
         route: 'formularios',
       }, */
       {
-        icon: 'Share2Icon',
+        icon: 'FolderIcon',
         id: 'sedes',
         title: 'Sedes',
         route: 'sedes',
