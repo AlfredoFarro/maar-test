@@ -7,6 +7,7 @@ export default [
     title: 'Cronograma',
     route: 'cronograma',
   },
+
   {
     header: 'Cronograma Agregar',
     icon: 'FolderIcon',

@@ -175,7 +175,7 @@ export default {
               this.$router.push({ name: 'cronograma'})
             }else if(userData.role.description == "administrador"){
               console.log("LOG A PROYECTOS")
-              this.$router.push({ name: 'cronograma'})
+              this.$router.push({ name: 'empresas'})
             }else if(userData.role.description == "piloto"){
               console.log("LOG A PERFIL")
               this.$router.push({ name: 'perfil'})

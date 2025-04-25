@@ -17,7 +17,7 @@
       <div
         class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1"
       >
-        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} sede</h5>
+        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} proyecto</h5>
 
         <feather-icon
           class="ml-1 cursor-pointer"
@@ -36,7 +36,7 @@
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
             <b-form-group label="Nombre" label-for="name">
               <b-form-input
-                v-model="items.description"
+                v-model="items.name"
                 id="name"
                 placeholder="Nombre"
                 autocomplete="off"
@@ -48,16 +48,32 @@
               >
             </b-form-group>
           </validation-provider>
-          <validation-provider #default="{ errors }" name="project_id" rules="requeridoE">
-            <b-form-group label="Proyecto" label-for="project_id">
+          <validation-provider #default="{ errors }" name="empresa_id" rules="requeridoE">
+            <b-form-group label="Empresa" label-for="empresa_id">
               <v-select
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="proyectos"
-                label="description"
-                input-id="project_id"
-                :reduce="(proyectos) => proyectos.id"
-                v-model="items.projectId"
-                placeholder="Proyecto"
+                :options="empresas"
+                label="name"
+                input-id="enterprise_id"
+                :reduce="(empresas) => empresas.id"
+                v-model="items.enterpriseId"
+                placeholder="Empresa"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
+
+          <validation-provider #default="{ errors }" name="latitude" rules="requeridoE">
+            <b-form-group label="Latitud" label-for="latitude">
+              <b-form-input
+                v-model="items.latitude"
+                id="latitude"
+                placeholder="Latitud"
+                autocomplete="off"
               />
               <small
                 class="text-danger alert"
@@ -67,6 +83,21 @@
             </b-form-group>
           </validation-provider>
           
+          <validation-provider #default="{ errors }" name="longitude" rules="requeridoE">
+            <b-form-group label="Longitud" label-for="longitude">
+              <b-form-input
+                v-model="items.longitude"
+                id="longitude"
+                placeholder="Longitud"
+                autocomplete="off"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
           <!-- Form Actions -->
           <div class="d-flex mt-2 justify-content-end">
             <b-button
@@ -147,7 +178,7 @@ export default {
       showLoading: false,
       tabIndex: 0,
       records: [],
-      proyectos: [],
+      empresas: [],
       
       config: {
         plugins: [
@@ -204,12 +235,14 @@ export default {
       subcategory: [],
       especialidades: [],
       leadTime: '',
-      project_id: this.$parent.$parent.project_id,
+      enterprise_id: this.$parent.$parent.enterprise_id,
       items: {
-          description: '',
-          projectId: null,
+          name: '',
+          enterpriseId: null,
+          longitude:'',
+          latitude:'',
       },
-      sede_id: null,
+      project_id: null,
       temp: {},
       userData: JSON.parse(localStorage.getItem('userData'))
     }
@@ -278,12 +311,12 @@ export default {
     async getData(id=null) {
       this.showLoading = true
       let url =
-        `?limit=1000000&order=asc&sort=description`
-      const respProyectos = await ProjectsService.getProyectos(url, this.$store)
-      console.log('respProyectos', respProyectos)
+        `?limit=1000000&order=asc&sort=name`
+      const respEmpresas = await ProjectsService.getProyectos(url, this.$store)
+      console.log('respEmpresas', respEmpresas)
       const respRoles = await RoleUserService.getRoles('', this.$store)
-      if (respProyectos.status) {
-        this.proyectos = respProyectos.data.rows
+      if (respEmpresas.status) {
+        this.empresas = respEmpresas.data.rows
       }
       if (respRoles.status) {
         this.roles = respRoles.data.rows
@@ -291,23 +324,26 @@ export default {
       this.showLoading = false
     },
     setData(item) {
-      console.log('items', item)
       
       if (item) {
         console.log('items add-edit', item)
         this.temp = item
-        this.sede_id = item.id
-        console.log("SEDE ID", this.sede_id)
-        this.items.description = item.description
-        this.items.projectId = item.projectId
+        this.project_id = item.id
+        this.items.enterpriseId = item.enterpriseId
+        this.items.name = item.name
+        this.items.latitude = item.latitude
+        this.items.longitude = item.longitude
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
-          description: '',
-          projectId: this.$parent.$parent.project_id,
+          name: '',
+          enterpriseId: this.$parent.$parent.enterpriseId,
+          longitude: '',
+          latitude: '',
         }
-        console.log("project id", this.items)
+        this.project_id = null  
+        console.log("ITEMS SETEADOS", this.items)
         this.isEdit = false
       }
       console.log('temp EN ADD', this.temp)
@@ -316,9 +352,12 @@ export default {
       this.$refs.refFormObserver.reset()
       this.isEdit = false
       this.items = {
-        description: '',
-        projectId: null,
+        name: '',
+        enterpriseId: null,
+        longitude: '',
+        latitude: '',
       }
+      this.project_id = null
     },
     async onSubmit(data) {
       console.log('data', data)
@@ -332,8 +371,8 @@ export default {
           if (this.isEdit == false) {
             resp = await SedeService.saveSede(data, this.$store)
           } else {
-            console.log("SEDE ID ANTES DE UPDATE", this.sede_id)
-            resp = await SedeService.updateSede(this.sede_id, data, this.$store)
+            console.log("ID PROYECTO A ACTUALIZAR", this.project_id)
+            resp = await SedeService.updateSede(this.project_id, data, this.$store)
             console.log("UPDATEADO")
           }
           console.log('resp', resp)

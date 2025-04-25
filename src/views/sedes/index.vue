@@ -20,24 +20,24 @@
           <b-row>
             <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100 mb-1 mb-lg-0 mt-02">
-                <b-form-group label="Proyecto" label-for="project" class="mr-2">
+                <b-form-group label="Empresa" label-for="enterprise" class="mr-2">
                   <v-select
                     :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="proyectos"
-                    label="code"
-                    input-id="project"
-                    :reduce="(proyectos) => proyectos.id"
-                    placeholder="Proyecto"
-                    v-model="project_id"
+                    :options="empresas"
+                    label="ruc"
+                    input-id="enterprise"
+                    :reduce="(empresas) => empresas.id"
+                    placeholder="Empresa"
+                    v-model="enterprise_id"
                     @input="filter()"
                     class="select-obra"
                     :disabled="user_role != 'administrador'"
                   >
                     <template v-slot:selected-option="option">
-                      {{ option.code }} - {{ option.description }}
+                      {{ option.name }} - {{ option.ruc }}
                     </template>
                     <template slot="option" slot-scope="option">
-                      {{ option.code }} - {{ option.description }}
+                      {{ option.name }} - {{ option.ruc }}
                     </template>
                   </v-select>
                 </b-form-group>
@@ -62,13 +62,28 @@
             </b-col> 
             <b-col md="7" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
-                <b-form-group label="Código" label-for="code" class="mr-2">
+                <b-form-group label="Latitud" label-for="latitude" class="mr-2">
                   <b-form-input
                     type="text"
-                    label="code"
-                    id="code"
-                    placeholder="Código"
-                    v-model="code"
+                    label="latitude"
+                    id="latitude"
+                    placeholder="Latitud"
+                    v-model="latitude"
+                    @input="filter()"
+                    class="select-obra"
+                    autocomplete="off"
+                  >
+                  </b-form-input>
+                </b-form-group>
+              </div>  
+              <div class="w-100">
+                <b-form-group label="Longitud" label-for="longitude" class="mr-2">
+                  <b-form-input
+                    type="text"
+                    label="longitude"
+                    id="longitude"
+                    placeholder="Longitud"
+                    v-model="longitude"
                     @input="filter()"
                     class="select-obra"
                     autocomplete="off"
@@ -236,21 +251,26 @@ export default {
 
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '50px' } },
-        { key: 'code', label: 'Código', sortable: false, visible: true, thStyle: { width: '155px' } },
-        { key: 'description', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '160px' } },
+        { key: 'enterprise.name', label: 'Empresa', sortable: false, visible: true, thStyle: { width: '135px' } },
+        { key: 'name', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '135px' } },
+        { key: 'latitude', label: 'Latitud', sortable: false, visible: true, thStyle: { width: '140px' } },
+        { key: 'longitude', label: 'Longitud', sortable: false, visible: true, thStyle: { width: '140px' } },
+
       ],
       form: {
-          code: '',
-          description: '',
-          projectId: null,
+          name: '',
+          latitude: '',
+          longitude: '',
+          enterpriseId: null,
         },
       
-      project_id: JSON.parse(localStorage.getItem('project_id')),
+        enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
       name: '',
-      code: '',
+      latitude: '',
+      longitude: '',
       records: [],
-      projectSelect: '',
-      proyectos: [],
+      enterpriseSelect: '',
+      empresas: [],
       arrayFilters: [],
       currentPage: 1,
       entries: [10, 20, 50, 100],
@@ -416,15 +436,16 @@ export default {
     },
     addSede(){
       this.isAdd = true
-      this.form.projectId = this.project_id
+      this.form.enterpriseId = this.enterprise_id
       this.$refs.sedeAdd.setData()
     },
     edit(item) {
         console.log('item', item)
         this.form.id = item.id
-        this.form.code = item.code
-        this.form.description = item.description
-        this.form.projectId = this.project_id
+        this.form.name = item.name
+        this.form.latitude = item.latitude
+        this.form.longitude = item.longitude
+        this.form.enterpriseId = item.enterprise.id
         console.log('this.form', this.form)
         this.isAdd = true
         this.$refs.sedeAdd.setData(this.form)
@@ -499,14 +520,17 @@ export default {
       this.arrayFilters = []
       console.log("FILTROS")
       
-      if (this.project_id != null && this.project_id != '') {
-        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
+      if (this.enterprise_id != null && this.enterprise_id != '') {
+        this.arrayFilters.push({ keyContains: 'enterprise.id', key: 'equals', value: this.enterprise_id })
       }
       if (this.name != null && this.name != '') {
-        this.arrayFilters.push({ keyContains: 'description', key: 'contains', value: this.name })
+        this.arrayFilters.push({ keyContains: 'name', key: 'contains', value: this.name })
       }
-      if (this.code != null && this.code != '') {
-        this.arrayFilters.push({ keyContains: 'code', key: 'contains', value: this.code })
+      if (this.latitude != null && this.latitude != '') {
+        this.arrayFilters.push({ keyContains: 'latitude', key: 'contains', value: this.latitude })
+      }
+      if (this.longitude != null && this.longitude != '') {
+        this.arrayFilters.push({ keyContains: 'longitude', key: 'contains', value: this.longitude })
       }
       
       this.getAllData()
@@ -589,18 +613,12 @@ export default {
     },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const url2 = `?limit=100000&page=${this.currentPage}&order=asc`
+      const respEmpresas = await ProjectsService.getProyectos(url2, this.$store)
+      console.log("aaaaaaa",respEmpresas.data.rows)
       console.log("HLA")
-      if (respProyectos.status) {
-        this.proyectos = respProyectos.data.rows
-        // if (respProyectos.data.rows.length > 0) {
-        //   this.project_id = respProyectos.data.rows[0].id
-        // } else {
-        //   if (user.role == 'planner') {
-        //     this.project_id = 0
-        //   }
-        // }
+      if (respEmpresas.status) {
+        this.empresas = respEmpresas.data.rows
         this.filter()
       }
     },
@@ -839,7 +857,7 @@ export default {
     },
     clean() {
       this.statusFilter = ''
-      this.project_id = null
+      this.enterprise_id = null
       var arrayFilter = []
       if (this.user_role != 'administrador') {
         const proyects = []
@@ -848,15 +866,15 @@ export default {
           const element = this.estados[index]
           estados.push(element.value)
         }
-        if (this.proyectos.length > 0) {
-          for (let index = 0; index < this.proyectos.length; index++) {
-            const element = this.proyectos[index]
+        if (this.empresas.length > 0) {
+          for (let index = 0; index < this.empresas.length; index++) {
+            const element = this.empresas[index]
             proyects.push(element.id)
           }
         }
         if (proyects.length > 0) {
           arrayFilter.push({
-            keyContains: 'project_id',
+            keyContains: 'enterprise_id',
             key: 'in',
             value: JSON.stringify(proyects)
           })
