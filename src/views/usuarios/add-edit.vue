@@ -470,7 +470,7 @@ export default {
       this.showLoading = true
       const urlOrder =
         `?limit=1000000&order=asc&sort=description`	
-      const respProyectos = await ProjectsService.getProyectos(urlOrder, this.$store)
+      const respProyectos = await ProjectsService.getProyectos('', this.$store)
       console.log('respProyectos', respProyectos)
       //const respRoles = await RoleUserService.getRoles(urlOrder, this.$store)
       //const respPosition = await PositionService.getPositions(urlOrder, this.$store)
