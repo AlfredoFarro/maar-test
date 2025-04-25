@@ -5,7 +5,7 @@
       <!-- Login v1 -->
       <b-card class="mb-0 px-1 py-1 px-lg-4 py-lg-3" no-body>
         <b-card-title class="mb-1 font-weight-bold text-center d-flex flex-column align-items-center" title-tag="h2">
-          <img class="img_login" src="@/assets/images/logo_1.svg" alt="">
+          <img class="img_login" src="@/assets/images/logo/logo-jjc-grupo.svg" alt="">
           TARJETA MAAR
         </b-card-title>
         <!-- form -->
@@ -175,7 +175,7 @@ export default {
               this.$router.push({ name: 'cronograma'})
             }else if(userData.role.description == "administrador"){
               console.log("LOG A PROYECTOS")
-              this.$router.push({ name: 'seleccionar-proyecto'})
+              this.$router.push({ name: 'cronograma'})
             }else if(userData.role.description == "piloto"){
               console.log("LOG A PERFIL")
               this.$router.push({ name: 'perfil'})

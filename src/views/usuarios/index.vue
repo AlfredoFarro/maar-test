@@ -31,7 +31,7 @@
                     v-model="project_id"
                     @input="filter()"
                     class="select-obra"
-                    :disabled="user_role != 'superadmin'"
+                    :disabled="user_role != 'administrador'"
                   >
                     <template v-slot:selected-option="option">
                       {{ option.code }} - {{ option.description }}
@@ -158,7 +158,7 @@
               <b-button
                   size="sm"
                   class=""
-                  :disabled="!rolesAllowed.includes(user_role) || data.item.role.description == 'superadmin'"
+                  :disabled="!rolesAllowed.includes(user_role) || data.item.role.description == 'administrador'"
                   @click.prevent="edit(data.item)"
                   v-b-tooltip.noninteractive.hover.left="'Editar'"
                   variant="flat-success"
@@ -317,7 +317,7 @@ export default {
       order: 'desc',
       userData: JSON.parse(localStorage.getItem('userData')),
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['superadmin', 'gestor'],
+      rolesAllowed: ['administrador', 'gestor'],
       isAdd: false,
       selectedRecords: {
         arrayId: []
@@ -913,7 +913,7 @@ export default {
       this.statusFilter = ''
       this.project_id = null
       var arrayFilter = []
-      if (this.user_role != 'superadmin') {
+      if (this.user_role != 'administrador') {
         const proyects = []
         const estados = []
         for (let index = 0; index < this.estados.length; index++) {

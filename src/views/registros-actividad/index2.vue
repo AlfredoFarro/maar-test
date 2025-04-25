@@ -1244,7 +1244,7 @@ export default {
       this.statusFilter = ''
       this.project_id = null
       var arrayFilter = []
-      if (this.user_role != 'superadmin') {
+      if (this.user_role != 'administrador') {
         const proyects = []
         const estados = []
         for (let index = 0; index < this.estados.length; index++) {

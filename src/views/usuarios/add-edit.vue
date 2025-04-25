@@ -510,7 +510,7 @@ export default {
       }
       if (respRoles.status) {
         this.roles = respRoles.data.rows
-        //eliminar el rol superadmin de this.roles
+        //eliminar el rol administrador de this.roles
         this.roles = this.roles.filter(rol => rol.id != 1)
       }
       if (respPosition.status) {

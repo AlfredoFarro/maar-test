@@ -26,7 +26,7 @@
                     v-model="project_id"
                     @input="getSelect()"
                     class="select-obra"
-                    :disabled="user_role != 'superadmin'"
+                    :disabled="user_role != 'administrador'"
                     
                   >
                     <template v-slot:selected-option="option">
@@ -464,7 +464,7 @@ export default {
       order: 'desc',
       userData: JSON.parse(localStorage.getItem('userData')),
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['superadmin', 'gestor', 'planner', 'supervisor'],
+      rolesAllowed: ['administrador', 'gestor', 'planner', 'supervisor'],
       isAdd: false,
       selectedRecords: {
         arrayId: []
@@ -1148,7 +1148,7 @@ export default {
       console.log('resp MY FORMSss', resp)
       if (resp.status) {
         this.allData = resp.data;
-        if(this.user_role == 'superadmin' && this.project_id != null && this.project_id != ''){
+        if(this.user_role == 'administrador' && this.project_id != null && this.project_id != ''){
           console.log("ES ADMIN")
           this.allData = this.allData.filter(item => item.project.id == this.project_id)
         }
@@ -1395,7 +1395,7 @@ export default {
       this.statusFilter = ''
       this.project_id = null
       var arrayFilter = []
-      if (this.user_role != 'superadmin') {
+      if (this.user_role != 'administrador') {
         const proyects = []
         const estados = []
         for (let index = 0; index < this.estados.length; index++) {

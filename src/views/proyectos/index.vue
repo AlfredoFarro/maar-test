@@ -232,7 +232,7 @@ export default {
       },
       records: [],
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['superadmin'],
+      rolesAllowed: ['administrador'],
       documentSelect: [],
       arrayFilters: [],
       currentPage: 1,
