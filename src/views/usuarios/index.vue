@@ -196,6 +196,9 @@
             <template #cell(dateEnd)="data">
               <span>{{ validDate(data.item.dateEnd) }}</span>
             </template>
+            <template #cell(role_id)="data">
+              <span>{{ getRoleName(data.item.role.id) }}</span>
+            </template>
           </b-table>
         </div>
         <div class="mx-2 mb-2">
@@ -292,6 +295,7 @@ export default {
 
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
+        { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '55px' } },
         { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '55px' } },
         { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '60px' } },
         { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '60px' } },
@@ -307,6 +311,7 @@ export default {
           flagMsg: null,
           isActive: null,
           isAccessWeb: null,
+          roleId: null,
         },
         
       project_id: JSON.parse(localStorage.getItem('project_id')),
@@ -443,6 +448,14 @@ export default {
     
       this.tableHead.style.width = this.tableCard.offsetWidth - 1 + "px";
       this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
+    },
+    getRoleName(roleId) {
+      const roles = {
+        1: 'Administrador',
+        2: 'Jefe de Proyecto',
+        3: 'Colaborador'
+      };
+      return roles[roleId] || 'Sin rol'; // Por si el role_id no existe
     },
     setupScrollSync() {
       this.tableHead.addEventListener("scroll", () => {

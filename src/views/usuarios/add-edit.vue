@@ -89,7 +89,7 @@
           </validation-provider>
           <b-form-group v-if="isEdit">
             <div class="d-flex justify-content-between">
-              <label for="password">Contraseña</label>
+              <label for="password">Contrase単a</label>
             </div>
 
             <b-input-group class="input-group-merge">
@@ -100,7 +100,7 @@
                 :type="passwordFieldType"
                 name="login-password"
                 autocomplete="off"
-                placeholder="Contraseña"
+                placeholder="Contrase単a"
               />
               <b-input-group-append is-text>
                 <feather-icon
@@ -114,7 +114,7 @@
 
           <b-form-group v-if="!isEdit">
             <div class="d-flex justify-content-between">
-              <label for="password">Contraseña</label>
+              <label for="password">Contrase単a</label>
             </div>
             <validation-provider
               #default="{ errors }"
@@ -133,7 +133,7 @@
                   :class="errors.length > 0 ? 'is-invalid' : null"
                   name="login-password"
                   autocomplete="off"
-                  placeholder="Contraseña"
+                  placeholder="Contrase単a"
                 />
                 <b-input-group-append is-text>
                   <feather-icon
@@ -201,7 +201,16 @@
               >{{ errors[0] }}</small>
             </b-form-group>
           </validation-provider>
-          
+          <b-form-group label="Rol" label-for="role">
+            <v-select
+              v-model="items.roleId"
+              :options="roles"
+              label="name"
+              :reduce="role => role.id"
+              placeholder="Seleccione un rol"
+              input-id="role"
+            />
+          </b-form-group>
           
           
           
@@ -312,8 +321,8 @@ export default {
           value: 'DNI'
         },
         {
-          text: 'Carnet de Extranjería',
-          value: 'Carnet de Extranjería'
+          text: 'Carnet de Extranjer鱈a',
+          value: 'Carnet de Extranjer鱈a'
         },
       ],
       config: {
@@ -332,7 +341,7 @@ export default {
           firstDayOfWeek: 1,
           weekdays: {
             shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-            longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+            longhand: ['Domingo', 'Lunes', 'Martes', 'Mi辿rcoles', 'Jueves', 'Viernes', 'S叩bado']
           },
           months: {
             shorthand: [
@@ -345,14 +354,14 @@ export default {
               'Jul',
               'Ago',
               'Sep',
-              'Оct',
+              '�ct',
               'Nov',
               'Dic'
             ],
             longhand: [
               'Enero',
               'Febrero',
-              'Мarzo',
+              '�arzo',
               'Abril',
               'Mayo',
               'Junio',
@@ -372,6 +381,11 @@ export default {
       especialidades: [],
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
+      roles: [
+        { id: 1, name: 'Administrador' },
+        { id: 2, name: 'Jefe de Proyecto' },
+        { id: 3, name: 'Colaborador' },
+      ],
       items: {
           document: '',
           email: '',
@@ -380,6 +394,7 @@ export default {
           flagMsg: null,
           isActive: null,
           isAccessWeb: null,
+          roleId: null,
       },
       user_id: null,
       temp: {},
@@ -424,7 +439,7 @@ export default {
           if (date1.diff(date2, 'days') > 0) {
             this.$swal({
               icon: 'warning',
-              title: 'Fecha inválida',
+              title: 'Fecha inv叩lida',
               text: 'La fecha identificada no puede ser mayor a la fecha requerida',
               customClass: {
                 confirmButton: 'btn btn-success'
@@ -440,7 +455,7 @@ export default {
           if (date2.diff(date1, 'days') < 0) {
             this.$swal({
               icon: 'warning',
-              title: 'Fecha inválida',
+              title: 'Fecha inv叩lida',
               text: 'La fecha requerida no puede ser menor a la fecha identificada',
               customClass: {
                 confirmButton: 'btn btn-success'
@@ -539,10 +554,10 @@ export default {
         if (success) {
           let resp = ''
           console.log('data TO SAVE', data)
-          if(data.roleId == 2 || data.roleId == 6){
+          /* if(data.roleId == 2 || data.roleId == 6){
             data.groupId = []
             console.log("ES PILOTO NO TIENE GRUPO", data)
-          }
+          } */
           if (this.isEdit == false) {
             resp = await UserService.registerU(formData, this.$store)
           } else {
@@ -570,7 +585,7 @@ export default {
               title: 'Error!',
               text: resp.data.message
                 ? resp.data.message
-                : 'Ocurrió un error al ' +
+                : 'Ocurri坦 un error al ' +
                   (this.isEdit == true ? 'actualizar' : 'registrar') +
                   ' los datos del formulario.',
               icon: 'error',
