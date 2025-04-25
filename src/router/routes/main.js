@@ -312,11 +312,11 @@ export default [{
     },
   },
   {
-    path: '/sedes',
-    name: 'sedes',
-    component: () => import('@/views/sedes/index.vue'),
+    path: '/proyectos',
+    name: 'proyectos',
+    component: () => import('@/views/proyectos/index.vue'),
     meta: {
-      pageTitle: 'Sedes',
+      pageTitle: 'Proyectos',
       breadcrumb: [{
         text: 'Listar',
         active: true,

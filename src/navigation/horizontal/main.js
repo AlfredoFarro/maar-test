@@ -251,11 +251,11 @@ export default [
     hide: true,
   },
   {
-    header: 'Sedes',
+    header: 'Proyectos',
     icon: 'FolderIcon',
-    id: 'sedes',
-    title: 'Sedes',
-    route: 'sedes',
+    id: 'proyectos',
+    title: 'Proyectos',
+    route: 'proyectos',
     hide: true,
   },
   {
