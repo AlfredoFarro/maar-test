@@ -35,48 +35,9 @@
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
             <b-form-group label="Nombre" label-for="name">
               <b-form-input
-                v-model="items.description"
+                v-model="items.name"
                 id="name"
                 placeholder="Nombre"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
-            </b-form-group>
-          </validation-provider>
-          
-          <validation-provider #default="{ errors }" name="project_id" rules="requeridoE">
-            <b-form-group label="Proyecto" label-for="project_id">
-              <v-select
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="proyectos"
-                label="description"
-                input-id="project_id"
-                :reduce="(proyectos) => proyectos.id"
-                v-model="items.projectId"
-                placeholder="Proyecto"
-                @input="getSedes()"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
-            </b-form-group>
-          </validation-provider>
-          
-          <validation-provider #default="{ errors }" name="sede" rules="requeridoE">
-            <b-form-group label="Sede" label-for="sede">
-              <v-select
-                v-model="items.sedeId"
-                label="description"
-                :options="sedes"
-                :reduce="(sede) => sede.id"
-                id="sede"
-                placeholder="Sede"
                 autocomplete="off"
               />
               <small
@@ -228,9 +189,7 @@ export default {
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
       items: {
-          description: '',
-          sedeId: null,
-          projectId: this.$parent.$parent.project_id,
+          name: '',
       },
       group_id: null,
       temp: {},
@@ -318,7 +277,6 @@ export default {
       this.showLoading = false
     },
     async getSedes(){
-      this.items.sedeId = null
       let url = `?limit=1000000&order=asc&sort=description&filter=` + JSON.stringify([{ keyContains: 'project.id', key: 'equals', value: this.items.projectId }])
       console.log("URL", url)
 
@@ -337,16 +295,13 @@ export default {
         this.temp = item
         this.group_id = item.id
         console.log("SEDE ID", this.group_id)
-        this.items.description = item.description
-        this.items.sedeId = item.sede.id
-        this.items.projectId = item.projectId
+        this.items.name = item.name
+        //this.items.sedeId = item.category.id
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
-          description: '',
-          sedeId: null,
-          projectId: this.$parent.$parent.project_id,
+          name: '',
         }
         console.log("project id", this.items)
         this.isEdit = false
@@ -357,9 +312,7 @@ export default {
       this.$refs.refFormObserver.reset()
       this.isEdit = false
       this.items = {
-        description: '',
-        sedeId: null,
-        projectId: null,
+        name: '',
       }
     },
     async onSubmit(data) {

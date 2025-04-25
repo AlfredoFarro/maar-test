@@ -19,7 +19,7 @@
         <b-card-body>
           <b-row>
             <b-col md="12" lg="7" class="d-flex flex-column flex-lg-row justify-content-start">
-              <div class="w-100 mb-1 mb-lg-0 mt-02">
+              <!-- <div class="w-100 mb-1 mb-lg-0 mt-02">
                 <b-form-group label="Proyecto" label-for="project" class="mr-2">
                   <v-select
                     :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -41,13 +41,13 @@
                     </template>
                   </v-select>
                 </b-form-group>
-              </div>
+              </div> -->
               <div class="w-100">
                 <b-form-group label="Nombre" label-for="name" class="mr-2">
                   <b-form-input
                     type="text"
                     label="name"
-                    id="name"
+                    id="name1"
                     placeholder="Nombre"
                     v-model="name"
                     @input="filter()"
@@ -95,14 +95,14 @@
                 class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
               >
              
-              <b-button
+              <!-- <b-button
                   class="mr-2"
                   variant="warning"
                   :disabled="!rolesAllowed.includes(user_role)"
                   @click="importUser()"
                 >
                   <span class="text-nowrap"> <feather-icon icon="DownloadIcon" /> Importar </span>
-                </b-button>
+                </b-button> -->
 
               </div>
             </b-col>
@@ -148,37 +148,51 @@
             @sort-changed="sortChanged"
           >
             <!-- Column: Actions -->
-        
             <template #cell(row)="data">
               <div style="width: 0px !important">
-                <b-form-checkbox  :checked="selectedRecords.arrayId.includes(data.item)" />
+                <b-form-checkbox :checked="selectedRecords.arrayId.includes(data.item)" />
               </div>
             </template>
+
             <template #cell(actions)="data">
               <b-button
-                  size="sm"
-                  class=""
-                  :disabled="!rolesAllowed.includes(user_role) || data.item.role.description == 'administrador'"
-                  @click.prevent="edit(data.item)"
-                  v-b-tooltip.noninteractive.hover.left="'Editar'"
-                  variant="flat-success"
-                >
+                size="sm"
+                class=""
+                :disabled="!rolesAllowed.includes(user_role) || (data.item.role && data.item.role.description === 'administrador')"
+                @click.prevent="edit(data.item)"
+                v-b-tooltip.noninteractive.hover.left="'Editar'"
+                variant="flat-success"
+              >
                 <feather-icon size="20" icon="Edit2Icon" />
               </b-button>
               <b-button
-                  size="sm"
-                  class=""
-                  v-b-tooltip.noninteractive.hover.left="'Eliminar'"
-                  :disabled="!rolesAllowed.includes(user_role)"
-                  @click="deleteAction(data.item)"
-                  variant="flat-danger"
-                >
+                size="sm"
+                class=""
+                v-b-tooltip.noninteractive.hover.left="'Eliminar'"
+                :disabled="!rolesAllowed.includes(user_role)"
+                @click="deleteAction(data.item)"
+                variant="flat-danger"
+              >
                 <feather-icon size="20" icon="XIcon" />
               </b-button>
             </template>
+
+            <template #cell(isActive)="data">
+              <span>{{ data.item.isActive ? 'Sí' : 'No' }}</span>
+            </template>
+          
+            <template #cell(flagMsg)="data">
+              <span>{{ data.item.flagMsg ? 'Sí' : 'No' }}</span>
+            </template>
+          
+            <template #cell(isAccessWeb)="data">
+              <span>{{ data.item.isAccessWeb ? 'Sí' : 'No' }}</span>
+            </template>
+
             <template #cell(dateInit)="data">
               <span>{{ validDate(data.item.dateInit) }}</span>
             </template>
+
             <template #cell(dateEnd)="data">
               <span>{{ validDate(data.item.dateEnd) }}</span>
             </template>
@@ -278,26 +292,23 @@ export default {
 
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
-        { key: 'docType', label: 'Tipo de Documento', sortable: false, visible: true, thStyle: { width: '155px' } },
-        { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '155px' } },
-        { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '160px' } },
-        { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '160px' } },
-        { key: 'project.description', label: 'Proyecto', sortable: false, visible: true, thStyle: { width: '150px' } },        
-        { key: 'position.description', label: 'Posición', sortable: true, visible: true, thStyle: { width: '160px' } },
-        { key: 'role.description', label: 'Rol', sortable: true, visible: true, thStyle: { width: '160px' } },
+        { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '55px' } },
+        { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'isActive', label: 'Activo', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'flagMsg', label: 'Habilitado Correos', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'isAccessWeb', label: 'Accede web', sortable: false, visible: true, thStyle: { width: '60px' } },
       ],
       form: {
-          docType: '',
           document: '',
           email: '',
           password: '',
           fullname: '',
-          projectId: null,
-          roleId: null,
-          positionId: null,
-          groupId: [],
+          flagMsg: null,
+          isActive: null,
+          isAccessWeb: null,
         },
-      
+        
       project_id: JSON.parse(localStorage.getItem('project_id')),
       records: [],
       projectSelect: '',
@@ -393,37 +404,43 @@ export default {
   },
   methods: {
     fixedElements() {
-      if (!this.trs[0].classList.contains('b-table-empty-row')) {
-        const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);
-
-        if (thsTotalWidth > this.tableCard.offsetWidth) {
-          this.ths.forEach((th, index) => {
-            th.style.flex = "0 0 " + th.offsetWidth + "px";
-          });
-        } else {
-          this.ths.forEach((th, index) => {
-            th.style.flex = "1 1 " + th.offsetWidth + "px";
-          });
-        }
-
-        this.trs.forEach((tr, index) => {
-          const tds = tr.querySelectorAll('td');
-
-          this.ths.forEach((th, index) => {
-            tds[index].style.width = th.offsetWidth + "px";
-
-            if (thsTotalWidth > this.tableCard.offsetWidth) {
-              tds[index].style.flex = "0 0 " + th.offsetWidth + "px";
-            } else {
-              tds[index].style.flex = "1 1 " + th.offsetWidth + "px";
-            }
-          });
-        });
-        
-      } else {
-        this.selectableTable.style.width = this.tableHead.querySelector('tr').offsetWidth + 1 + "px";
+      // Verificar si los elementos del DOM existen
+      if (!this.selectableTable || !this.tableCard) {
+        return;
       }
-
+    
+      this.ths = this.selectableTable.querySelector('thead')?.querySelectorAll('th');
+      this.trs = this.selectableTable.querySelector('tbody')?.querySelectorAll('tr');
+    
+      // Si no hay filas o la tabla está vacía, salir
+      if (!this.trs || this.trs.length === 0 || this.trs[0].classList.contains('b-table-empty-row')) {
+        this.selectableTable.style.width = this.tableHead.querySelector('tr').offsetWidth + 1 + "px";
+        return;
+      }
+    
+      // Resto del código para ajustar el ancho de las celdas...
+      const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);
+    
+      if (thsTotalWidth > this.tableCard.offsetWidth) {
+        this.ths.forEach((th, index) => {
+          th.style.flex = "0 0 " + th.offsetWidth + "px";
+        });
+      } else {
+        this.ths.forEach((th, index) => {
+          th.style.flex = "1 1 " + th.offsetWidth + "px";
+        });
+      }
+    
+      this.trs.forEach((tr, index) => {
+        const tds = tr.querySelectorAll('td');
+        this.ths.forEach((th, index) => {
+          tds[index].style.width = th.offsetWidth + "px";
+          tds[index].style.flex = thsTotalWidth > this.tableCard.offsetWidth 
+            ? "0 0 " + th.offsetWidth + "px" 
+            : "1 1 " + th.offsetWidth + "px";
+        });
+      });
+    
       this.tableHead.style.width = this.tableCard.offsetWidth - 1 + "px";
       this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
     },
@@ -474,14 +491,11 @@ export default {
     edit(item) {
         console.log('item', item)
         this.form.id = item.id
-        this.form.docType = item.docType
         this.form.document = item.document
         this.form.email = item.email
-        this.form.password = item.password
         this.form.fullname = item.fullname
-        this.form.projectId = item.project.id
-        this.form.roleId = item.role.id
-        this.form.positionId = item.position.id
+        this.isActive = item.isActive
+
         
         //mapear el array groups para solo quedarme con los valores id de cada elemento del array
         if(item.groups){
@@ -571,12 +585,10 @@ export default {
           key: 'equals',
           value: 'LiberadoPorDueño'
         }) */
-      if (this.project_id != null && this.project_id != '') {
-        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
-      }
 
-      if (this.name != null && this.name != '') {
-        this.arrayFilters.push({ keyContains: 'fullname', key: 'contains', value: this.name })
+
+      if (this.fullname != null && this.fullname != '') {
+        this.arrayFilters.push({ keyContains: 'fullname', key: 'contains', value: this.fullname })
       }
       // if (this.statusFilter != null && this.statusFilter != '') {
       //   this.arrayFilters.push({ keyContains: 'status', key: 'equals', value: this.statusFilter })
@@ -663,19 +675,9 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
-      console.log("HLA")
-      if (respProyectos.status) {
-        this.proyectos = respProyectos.data.rows
-        // if (respProyectos.data.rows.length > 0) {
-        //   this.project_id = respProyectos.data.rows[0].id
-        // } else {
-        //   if (user.role == 'planner') {
-        //     this.project_id = 0
-        //   }
-        // }
+      
         this.filter()
-      }
+      
     },
     async getData() {
       this.showLoading = true
@@ -736,9 +738,11 @@ export default {
     },
     getSortedData(sortBy, sortOrder) {
       let sortedData = [...this.allData];
-      if (this.description != null && this.description != '') {
-        const searchTerm = this.description.toLowerCase();
-        sortedData = sortedData.filter(item => item.description.toLowerCase().includes(searchTerm));      
+      if (this.name != null && this.name !== '') {
+        const searchTerm = this.name.toLowerCase();
+        sortedData = sortedData.filter(item =>
+          item.fullname && item.fullname.toLowerCase().includes(searchTerm)
+        );
       }
       sortedData.sort((a, b) => {
         const aValue = this.getAttributeValue(a, sortBy);

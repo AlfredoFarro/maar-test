@@ -93,9 +93,9 @@ export default {
       },
       {
         icon: 'GridIcon',
-        id: 'grupos',
-        title: 'Grupos',
-        route: 'grupos',
+        id: 'categorias',
+        title: 'Categorias',
+        route: 'categorias',
       },
       {
         icon: 'UserIcon',

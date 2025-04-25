@@ -324,11 +324,11 @@ export default [{
     },
   },
   {
-    path: '/grupos',
-    name: 'grupos',
+    path: '/categorias',
+    name: 'categorias',
     component: () => import('@/views/grupos/index.vue'),
     meta: {
-      pageTitle: 'Grupos',
+      pageTitle: 'Categorias',
       breadcrumb: [{
         text: 'Listar',
         active: true,

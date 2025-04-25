@@ -18,47 +18,6 @@
       <b-card ref="filterContent" no-body class="sticky">
         <b-card-body>
           <b-row>
-            <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
-              <div class="w-100 mb-1 mb-lg-0 mt-02">
-                <b-form-group label="Proyecto" label-for="project" class="mr-2">
-                  <v-select
-                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="proyectos"
-                    label="code"
-                    input-id="project"
-                    :reduce="(proyectos) => proyectos.id"
-                    placeholder="Proyecto"
-                    v-model="project_id"
-                    @input="filter()"
-                    class="select-obra"
-                    :disabled="user_role != 'administrador'"
-                  >
-                    <template v-slot:selected-option="option">
-                      {{ option.code }} - {{ option.description }}
-                    </template>
-                    <template slot="option" slot-scope="option">
-                      {{ option.code }} - {{ option.description }}
-                    </template>
-                  </v-select>
-                </b-form-group>
-              </div>
-            </b-col>
-            <b-col md="4" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
-              <div class="w-100">
-                <b-form-group label="Sede" label-for="sede">
-                  <v-select
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  :options="sedes"
-                  label="description"
-                  input-id="sede"
-                  :reduce="(sedes) => sedes.id"
-                  placeholder="Sede"
-                  @input="filter()"
-                  v-model="sede"
-                  class="select-obra"/>
-                </b-form-group>
-              </div>
-            </b-col>
             <b-col md="4" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
                 <b-form-group label="Nombre" label-for="name" class="mr-2">
@@ -76,23 +35,6 @@
                 </b-form-group>
               </div>   
             </b-col> 
-            <b-col md="7" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
-              <div class="w-100">
-                <b-form-group label="Código" label-for="code" class="mr-2">
-                  <b-form-input
-                    type="text"
-                    label="code"
-                    id="code"
-                    placeholder="Código"
-                    v-model="code"
-                    @input="filter()"
-                    class="select-obra"
-                    autocomplete="off"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>  
-            </b-col>
 
             
             <b-col md="6" lg="2" class="d-flex">              
@@ -135,15 +77,6 @@
               </div>
             </template>
             <template #cell(actions)="data">
-              <b-button
-                  size="sm"
-                  class=""
-                  @click.prevent="openModal(data.item)"
-                  v-b-tooltip.noninteractive.hover.left="'Ver Integrantes'"
-                  variant="flat-primary"
-                >
-                <feather-icon size="20" icon="EyeIcon" />
-              </b-button>
               <b-button
                   size="sm"
                   class=""
@@ -281,20 +214,16 @@ export default {
 
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '50px' } },
-        { key: 'sede.description', label: 'Sede', sortable: false, visible: true, thStyle: { width: '130px' } },
-        { key: 'code', label: 'Código', sortable: false, visible: true, thStyle: { width: '155px' } },
-        { key: 'description', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '160px' } },
+        { key: 'name', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '160px' } },
       ],
       fieldsModal: [
-        { key: 'document', label: 'DNI', sortable: true },
-        { key: 'fullname', label: 'Nombre', sortable: true },
-        { key: 'email', label: 'Email', sortable: true},
-        { key: 'role.description', label: 'Perfil', sortable: true}
+
+        { key: 'name', label: 'Nombre', sortable: true },
+
       ],
       form: {
-          code: '',
-          description: '',
           projectId: null,
+          name: '',
         },
       
       project_id: JSON.parse(localStorage.getItem('project_id')),
@@ -492,10 +421,7 @@ export default {
     edit(item) {
         console.log('item', item)
         this.form.id = item.id
-        this.form.code = item.code
-        this.form.description = item.description
-        this.form.projectId = this.project_id
-        this.form.sede = item.sede
+        this.form.name = item.name
         console.log('this.form', this.form)
         this.isAdd = true
         this.$refs.groupAdd.setData(this.form)
@@ -570,18 +496,11 @@ export default {
       this.arrayFilters = []
       console.log("FILTROS")
       
-      if (this.project_id != null && this.project_id != '') {
-        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
-      }
-      if (this.sede != null && this.sede != '') {
-        this.arrayFilters.push({ keyContains: 'sede.id', key: 'equals', value: this.sede })
-      }
+      
       if (this.name != null && this.name != '') {
-        this.arrayFilters.push({ keyContains: 'description', key: 'contains', value: this.name })
+        this.arrayFilters.push({ keyContains: 'name', key: 'contains', value: this.name })
       }
-      if (this.code != null && this.code != '') {
-        this.arrayFilters.push({ keyContains: 'code', key: 'contains', value: this.code })
-      }
+      
       
       this.getAllData()
     },

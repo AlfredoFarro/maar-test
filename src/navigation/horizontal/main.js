@@ -259,11 +259,11 @@ export default [
     hide: true,
   },
   {
-    header: 'Grupos',
+    header: 'Categorias',
     icon: 'FolderIcon',
-    id: 'grupos',
-    title: 'Grupos',
-    route: 'grupos',
+    id: 'categorias',
+    title: 'Categorias',
+    route: 'categorias',
     hide: true,
   },
   {
