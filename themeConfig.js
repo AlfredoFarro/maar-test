@@ -11,7 +11,7 @@ export const $themeConfig = {
   app: {
     appName: 'Gestión de Restricciones', // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
-    appLogoImage: require('@/assets/images/logo/logo_white.png'), // Will update logo in navigation menu (Branding)
+    appLogoImage: require('@/assets/images/logo/logo_white_name.png'), // Will update logo in navigation menu (Branding)
     // eslint-disable-next-line global-require, import/no-unresolved
     appLogoImageRes: require('@/assets/images/logo/logo_white_res.png'),
     // eslint-disable-next-line global-require, import/no-unresolved
