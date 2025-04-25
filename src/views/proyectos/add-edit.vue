@@ -1,7 +1,7 @@
 <template>
   <!-- eslint-disable -->
   <b-sidebar
-    id="add-proyecto"
+    id="add-sede"
     :visible="isAdd"
     bg-variant="white"
     sidebar-class="sidebar-lg"
@@ -17,7 +17,7 @@
       <div
         class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1"
       >
-        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nuevo' }} proyecto</h5>
+        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} proyecto</h5>
 
         <feather-icon
           class="ml-1 cursor-pointer"
@@ -33,25 +33,10 @@
 
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
           
-          <validation-provider #default="{ errors }" name="code" rules="requeridoE">
-            <b-form-group label="Código" label-for="code">
-              <b-form-input
-                v-model="items.code"
-                id="code"
-                placeholder="Código"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
-            </b-form-group>
-          </validation-provider>
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
             <b-form-group label="Nombre" label-for="name">
               <b-form-input
-                v-model="items.description"
+                v-model="items.name"
                 id="name"
                 placeholder="Nombre"
                 autocomplete="off"
@@ -63,7 +48,56 @@
               >
             </b-form-group>
           </validation-provider>
+          <validation-provider #default="{ errors }" name="empresa_id" rules="requeridoE">
+            <b-form-group label="Empresa" label-for="empresa_id">
+              <v-select
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="empresas"
+                label="name"
+                input-id="enterprise_id"
+                :reduce="(empresas) => empresas.id"
+                v-model="items.enterpriseId"
+                placeholder="Empresa"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
+
+          <validation-provider #default="{ errors }" name="latitude" rules="requeridoE">
+            <b-form-group label="Latitud" label-for="latitude">
+              <b-form-input
+                v-model="items.latitude"
+                id="latitude"
+                placeholder="Latitud"
+                autocomplete="off"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
           
+          <validation-provider #default="{ errors }" name="longitude" rules="requeridoE">
+            <b-form-group label="Longitud" label-for="longitude">
+              <b-form-input
+                v-model="items.longitude"
+                id="longitude"
+                placeholder="Longitud"
+                autocomplete="off"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
           <!-- Form Actions -->
           <div class="d-flex mt-2 justify-content-end">
             <b-button
@@ -107,6 +141,7 @@ import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
 import TravelService from '@/services/TravelService'
 import UserService from '@/services/UserService'
 import ProjectsService from '@/services/ProjectsService'
+import RoleUserService from '@/services/RoleUserService'
 import moment from 'moment'
 Vue.use(BootstrapVue)
 export default {
@@ -143,7 +178,7 @@ export default {
       showLoading: false,
       tabIndex: 0,
       records: [],
-      proyectos: [],
+      empresas: [],
       
       config: {
         plugins: [
@@ -200,12 +235,14 @@ export default {
       subcategory: [],
       especialidades: [],
       leadTime: '',
-      project_id: this.$parent.$parent.project_id,
+      enterprise_id: this.$parent.$parent.enterprise_id,
       items: {
-          code: '',
-          description: '',
+          name: '',
+          enterpriseId: null,
+          longitude:'',
+          latitude:'',
       },
-      proyecto_id: null,
+      project_id: null,
       temp: {},
       userData: JSON.parse(localStorage.getItem('userData'))
     }
@@ -228,6 +265,12 @@ export default {
       }
       return ''
     },
+    async getPilots() {
+      let resp = await UserService.getPilots('',this.$store)
+      this.pilots = resp.data
+      console.log('PILOTOOOOOS', this.pilots)
+    },
+    
     diferenDate(fecha, val) {
       if (fecha != null) {
         if (val == 1) {
@@ -268,32 +311,39 @@ export default {
     async getData(id=null) {
       this.showLoading = true
       let url =
-        `?filter=` + JSON.stringify([{ keyContains: 'project_id', key: 'equals', value: id }])
-      const respProyectos = await ProjectsService.getProyectos('', this.$store)
-      if (respProyectos.status) {
-        this.proyectos = respProyectos.data.rows
+        `?limit=1000000&order=asc&sort=name`
+      const respEmpresas = await ProjectsService.getProyectos(url, this.$store)
+      console.log('respEmpresas', respEmpresas)
+      const respRoles = await RoleUserService.getRoles('', this.$store)
+      if (respEmpresas.status) {
+        this.empresas = respEmpresas.data.rows
       }
-      
+      if (respRoles.status) {
+        this.roles = respRoles.data.rows
+      }
       this.showLoading = false
     },
     setData(item) {
-      console.log('items', item)
       
       if (item) {
         console.log('items add-edit', item)
         this.temp = item
-        this.proyecto_id = item.id
-        console.log("PROYECTO ID", this.proyecto_id)
-        this.items.code = item.code
-        this.items.description = item.description
+        this.project_id = item.id
+        this.items.enterpriseId = item.enterpriseId
+        this.items.name = item.name
+        this.items.latitude = item.latitude
+        this.items.longitude = item.longitude
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
-          code: '',
-          description: '',
+          name: '',
+          enterpriseId: this.$parent.$parent.enterpriseId,
+          longitude: '',
+          latitude: '',
         }
-        console.log("project id", this.items)
+        this.project_id = null  
+        console.log("ITEMS SETEADOS", this.items)
         this.isEdit = false
       }
       console.log('temp EN ADD', this.temp)
@@ -302,9 +352,12 @@ export default {
       this.$refs.refFormObserver.reset()
       this.isEdit = false
       this.items = {
-        code: '',
-        description: '',
+        name: '',
+        enterpriseId: null,
+        longitude: '',
+        latitude: '',
       }
+      this.project_id = null
     },
     async onSubmit(data) {
       console.log('data', data)
@@ -316,10 +369,10 @@ export default {
           console.log('data TO SAVE', data)
 
           if (this.isEdit == false) {
-            resp = await ProjectsService.saveProject(data, this.$store)
+            resp = await SedeService.saveSede(data, this.$store)
           } else {
-            console.log("PROYECTO ID ANTES DE UPDATE", this.proyecto_id)
-            resp = await ProjectsService.updateProject(this.proyecto_id, data, this.$store)
+            console.log("ID PROYECTO A ACTUALIZAR", this.project_id)
+            resp = await SedeService.updateSede(this.project_id, data, this.$store)
             console.log("UPDATEADO")
           }
           console.log('resp', resp)
@@ -333,16 +386,17 @@ export default {
               },
               buttonsStyling: false
             })
-            this.$parent.$parent.getData()
+            this.$parent.$parent.getAllData()
             this.$emit('update:is-add', false)
             this.resetForm()
           } else {
             this.$swal({
               title: 'Error!',
-              text: 
-                  'Ocurrió un error al ' +
+              text: resp.data.message
+                ? resp.data.message
+                : 'Ocurrió un error al ' +
                   (this.isEdit == true ? 'actualizar' : 'registrar') +
-                  ' los datos del proyecto.',
+                  ' los datos de la sede.',
               icon: 'error',
               customClass: {
                 confirmButton: 'btn btn-primary'

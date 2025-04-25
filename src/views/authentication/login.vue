@@ -145,7 +145,7 @@ export default {
               localStorage.setItem('project_name', userData.project.description)
               console.log("LOG A CRONOGRAMA")
               this.$router.push({ name: 'cronograma'})
-            }else if(userData.role.description == "superadmin"){
+            }else if(userData.role.description == "administrador"){
               console.log("LOG A PROYECTOS")
               this.$router.push({ name: 'seleccionar-proyecto'})
             }else if(userData.role.description == "piloto"){

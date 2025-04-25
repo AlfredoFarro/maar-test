@@ -20,7 +20,7 @@
     <ul class="nav navbar-nav">
       <li class="nav-item p-1">
         <h3 class="text-white">
-          CRUZ DEL SUR
+          JJC Grupo
         </h3>
       </li>
     </ul>
@@ -136,7 +136,7 @@ export default {
   },
   computed: {
     addProject() {
-      if(this.userData.role.description == 'superadmin' && this.$route.name=='seleccionar-proyecto'){
+      if(this.userData.role.description == 'administrador' && this.$route.name=='seleccionar-proyecto'){
        
         return true;
 
@@ -164,7 +164,7 @@ export default {
   },
   methods: {
     changeProyect() {
-      if(this.userData.role.description != 'superadmin'){
+      if(this.userData.role.description != 'administrador'){
           return;
         }
       localStorage.removeItem('project_id')

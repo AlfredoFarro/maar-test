@@ -31,7 +31,7 @@ export const cleanStorageBySocket=()=>{
  */
 export const getHomeRouteForLoggedInUser = userRole => {
   if(!userRole) return { name: 'auth-login' }
-  return 'cronograma'
+  return 'empresas'
   /* const log_type = localStorage.getItem('log_type')
   const {is_lesson =false, is_restriction = false,role_lesson,role_restriction} = userRole.role_user[0];
   if(log_type == 'Restricciones'){
@@ -74,6 +74,8 @@ export const getUserAcessPermissions = (role) => {
     
     case "administrador":
       permissions = [
+        "empresas",
+        "proyectos",
         "cronograma",
         "cronograma-registro",
         "cronograma-editar",

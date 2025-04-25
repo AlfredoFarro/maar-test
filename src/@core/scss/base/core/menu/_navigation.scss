@@ -78,14 +78,14 @@
     display: flex;
     justify-content: center;
     transition: 300ms ease all, background 0s;
-    background-color: #005193;
+    background-color: #333547;
     .navbar-brand {
       display: flex;
       align-items: center;
       margin-top: 0.35rem;
       font-size: inherit;
       .brand-logo img {
-        max-width: 230px;
+        max-width: 90px;
       }
       .brand-text {
         color: $primary;

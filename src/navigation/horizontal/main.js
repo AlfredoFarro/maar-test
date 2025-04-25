@@ -7,6 +7,7 @@ export default [
     title: 'Cronograma',
     route: 'cronograma',
   },
+
   {
     header: 'Cronograma Agregar',
     icon: 'FolderIcon',
@@ -242,19 +243,19 @@ export default [
     hide: true,
   },
   {
+    header: 'Empresas',
+    icon: 'FolderIcon',
+    id: 'empresas',
+    title: 'Empresas',
+    route: 'empresas',
+    hide: true,
+  },
+  {
     header: 'Proyectos',
     icon: 'FolderIcon',
     id: 'proyectos',
     title: 'Proyectos',
     route: 'proyectos',
-    hide: true,
-  },
-  {
-    header: 'Sedes',
-    icon: 'FolderIcon',
-    id: 'sedes',
-    title: 'Sedes',
-    route: 'sedes',
     hide: true,
   },
   {

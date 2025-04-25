@@ -9,14 +9,40 @@
       opacity=".75"
       rounded="sm"
     >
-      <add-edit
-          :is-add.sync="isAdd"
-          ref="proyectoAdd"
-        >
-      </add-edit>
+    <add-edit
+        :is-add.sync="isAdd"
+        ref="sedeAdd"
+      >
+    </add-edit>
+    <!-- <filters :filtros="fields" :is-add.sync="isAdd" ref="filters"> </filters> -->
       <b-card ref="filterContent" no-body class="sticky">
         <b-card-body>
           <b-row>
+            <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
+              <div class="w-100 mb-1 mb-lg-0 mt-02">
+                <b-form-group label="Empresa" label-for="enterprise" class="mr-2">
+                  <v-select
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="empresas"
+                    label="ruc"
+                    input-id="enterprise"
+                    :reduce="(empresas) => empresas.id"
+                    placeholder="Empresa"
+                    v-model="enterprise_id"
+                    @input="filter()"
+                    class="select-obra"
+                    :disabled="user_role != 'administrador'"
+                  >
+                    <template v-slot:selected-option="option">
+                      {{ option.name }} - {{ option.ruc }}
+                    </template>
+                    <template slot="option" slot-scope="option">
+                      {{ option.name }} - {{ option.ruc }}
+                    </template>
+                  </v-select>
+                </b-form-group>
+              </div>
+            </b-col>
             <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
                 <b-form-group label="Nombre" label-for="name" class="mr-2">
@@ -36,13 +62,28 @@
             </b-col> 
             <b-col md="7" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
-                <b-form-group label="Código" label-for="code" class="mr-2">
+                <b-form-group label="Latitud" label-for="latitude" class="mr-2">
                   <b-form-input
                     type="text"
-                    label="code"
-                    id="code"
-                    placeholder="Código"
-                    v-model="code"
+                    label="latitude"
+                    id="latitude"
+                    placeholder="Latitud"
+                    v-model="latitude"
+                    @input="filter()"
+                    class="select-obra"
+                    autocomplete="off"
+                  >
+                  </b-form-input>
+                </b-form-group>
+              </div>  
+              <div class="w-100">
+                <b-form-group label="Longitud" label-for="longitude" class="mr-2">
+                  <b-form-input
+                    type="text"
+                    label="longitude"
+                    id="longitude"
+                    placeholder="Longitud"
+                    v-model="longitude"
                     @input="filter()"
                     class="select-obra"
                     autocomplete="off"
@@ -62,7 +103,7 @@
                   class="mr-2"
                   variant="primary"
                   :disabled="!rolesAllowed.includes(user_role)"
-                  @click="addProyecto()"
+                  @click="addSede()"
                 >
                   <span class="text-nowrap"> <feather-icon icon="PlusCircleIcon" /> Agregar </span>
                 </b-button>
@@ -71,79 +112,56 @@
           </b-row>
         </b-card-body>
       </b-card>
-      <b-row v-if="records.length > 0">
-        <b-col v-for="(item, index) in records" :key="index" cols="12" sm="6" md="4" lg="3">
-          <div class="card_project d-flex flex-column mb-2">
-            <div class="card_img">
-              <img :src="item.url ? apiurl + item.url : sideImg" :alt="'imagen_project_' + index" />
-            </div>
-            <div class="card_content px-2 py-2 d-flex flex-column">
-              <span class="card_content_sub">{{ item.code }}</span>
-              <span class="card_content_title mb-2">{{ item.description }}</span>
-              <div class="d-flex justify-content-between">
-                <b-button
-                  size="sm"
-                  class="border-0 px-0 btn_edit"
-                  @click.prevent="edit(item)"
-                  :disabled="!rolesAllowed.includes(user_role)"
-                  v-b-tooltip.noninteractive.hover.top="'Editar'"
-                  variant="light"
-                  style="font-size: 15px;"
-                >
-                  Editar
-                </b-button>
-                <b-button
+      <b-card no-body ref="tableCard">
+        <div class="table-overflow">
+          <b-table
+            class="position-relative"
+            empty-text="No existen"
+            :fields="visibleFields"
+            :hover="true"
+            id="__BVID__185"
+            :items="records"
+            no-border-collapse
+            ref="selectableTable"            
+            show-empty                     
+            @sort-changed="sortChanged"
+          >
+            <!-- Column: Actions -->
+        
+            <template #cell(row)="data">
+              <div style="width: 0px !important">
+                <b-form-checkbox  :checked="selectedRecords.arrayId.includes(data.item)" />
+              </div>
+            </template>
+            <template #cell(actions)="data">
+              <b-button
                   size="sm"
                   class=""
-                  :disabled="!rolesAllowed.includes(user_role)"
-                  v-b-tooltip.noninteractive.hover.top="'Eliminar'"
-                  @click="deleteAction(item)"
+                  @click.prevent="edit(data.item)"
+                  v-b-tooltip.noninteractive.hover.left="'Editar'"
+                  variant="flat-success"
+                >
+                <feather-icon size="20" icon="Edit2Icon" />
+              </b-button>
+              <b-button
+                  size="sm"
+                  class=""
+                  v-b-tooltip.noninteractive.hover.left="'Eliminar'"
+                  @click="deleteAction(data.item)"
                   variant="flat-danger"
                 >
-                  <feather-icon size="20" icon="Trash2Icon" />
-                </b-button>
-              </div>
-            </div>
-          </div>
-        </b-col>
-      </b-row>
-      <b-card no-body>
-        <!-- <b-table
-          class="position-relative"
-          :hover="true"
-          :items="records"
-          responsive
-          :fields="fields"
-          show-empty
-          empty-text="No existen"
-          @sort-changed="sortChanged"
-          no-border-collapse
-        >
-          <template #cell(actions)="data">
-            <b-button
-              size="sm"
-              class=""
-              @click.prevent="edit(data.item)"
-              v-b-tooltip.noninteractive.hover.top="'Editar'"
-              variant="flat-success"
-            >
-              <feather-icon icon="Edit2Icon" />
-            </b-button>
-            <b-button
-              size="sm"
-              class=""
-              v-b-tooltip.noninteractive.hover.top="'Eliminar'"
-              @click="deleteAction(data.item)"
-              variant="flat-danger"
-            >
-              <feather-icon icon="Trash2Icon" />
-            </b-button>
-          </template>
-          <template #cell(amount)="data">
-            <span>{{ data.item ? (parseFloat(data.item.amount)).toLocaleString('en'): parseFloat(0)}}</span>
-          </template>
-        </b-table> -->
-        <div class=" p-2">
+                <feather-icon size="20" icon="XIcon" />
+              </b-button>
+            </template>
+            <template #cell(dateInit)="data">
+              <span>{{ validDate(data.item.dateInit) }}</span>
+            </template>
+            <template #cell(dateEnd)="data">
+              <span>{{ validDate(data.item.dateEnd) }}</span>
+            </template>
+          </b-table>
+        </div>
+        <div class="mx-2 mb-2">
           <b-row>
             <b-col sm="3">
               <b-form-group
@@ -198,15 +216,22 @@
 
 <script>
 /* eslint-disable */
-const APIURL = process.env.APIURLFILE
-import Vue from 'vue'
-import filters from './filters.vue'
+import SedeService from '@/services/SedeService'
+import ProjectsService from '@/services/ProjectsService'
+import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
+import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
+import { required } from '@validations'
 import { BootstrapVue, BootstrapVueIcons, VBTooltip } from 'bootstrap-vue'
+import moment from 'moment'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import Vue from 'vue'
+import flatPickr from 'vue-flatpickr-component'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
-import ProjectsService from '@/services/ProjectsService'
+import filters from './filters.vue'
 import addEdit from './add-edit.vue'
 
+const APIURL = process.env.APIURLFILE
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 export default {
@@ -216,108 +241,240 @@ export default {
   },
   data() {
     return {
+      status: '',
+      statusFilter: '',
+      required,
+      apiurl: APIURL,
       showLoading: false,
+      show: false,
+     
+
       fields: [
-        { key: 'code', label: 'Codigo', sortable: false },
-        { key: 'description', label: 'Descripción', sortable: false },
-        { key: 'contract_type', label: 'Tipo Contrato', sortable: false },
-        { key: 'amount', label: 'Monto', sortable: false },
-        { key: 'participation', label: 'Participación', sortable: false },
-        { key: 'manager', label: 'Gerente', sortable: false },
-        { key: 'actions', label: 'Acciones' }
+        { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '50px' } },
+        { key: 'enterprise.name', label: 'Empresa', sortable: false, visible: true, thStyle: { width: '135px' } },
+        { key: 'name', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '135px' } },
+        { key: 'latitude', label: 'Latitud', sortable: false, visible: true, thStyle: { width: '140px' } },
+        { key: 'longitude', label: 'Longitud', sortable: false, visible: true, thStyle: { width: '140px' } },
+
       ],
       form: {
-        code: null,
-        description: '',
-      },
+          name: '',
+          latitude: '',
+          longitude: '',
+          enterpriseId: null,
+        },
+      
+        enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
+      name: '',
+      latitude: '',
+      longitude: '',
       records: [],
-      user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['superadmin'],
-      documentSelect: [],
+      enterpriseSelect: '',
+      empresas: [],
       arrayFilters: [],
       currentPage: 1,
       entries: [10, 20, 50, 100],
       showEntrie: 10,
       totalElements: 0,
+      currentPage1: 1,
+      entries1: [10, 20, 50, 100],
+      showEntrie1: 10,
+      totalElements1: 0,
       id: 0,
       sort: 'id',
       order: 'desc',
-      name: '',
-      code: '',
-      apiurl: APIURL,
+      userData: JSON.parse(localStorage.getItem('userData')),
+      user_role: JSON.parse(localStorage.getItem('userData')).role.description,
+      rolesAllowed: ['administrador', 'gestor'],
       isAdd: false,
-      sideImg: require('@/assets/images/access/default.png')
+      selectedRecords: {
+        arrayId: []
+      },
+      allData: [],
+      allDataSorted: [],
+      navbar: null,
+      filterContent: null,
+      tableCard: null,
+      tableContainer: null,
+      selectableTable: null,
+      tableHead: null,
+      ths: null,
+      trs: null,
     }
   },
   components: {
     vSelect,
-    filters,
+    flatPickr,
     addEdit,
-
+    filters,
+    AppTimeline,
+    ValidationProvider,
+    ValidationObserver,
+    AppTimelineItem,
+},
+  computed: {
+    visibleFields() {
+      return this.fields.filter((field) => field.visible)
+    }
+  },
+  created() {
+    // Escucha un evento personalizado llamado 'executeGetData'
+    this.$bus.on('executeGetDataRestrictionxLiberar', () => {
+      // Llama a la función getData pasando las variables
+      console.log('ejecutando rest x liberar')
+      this.filter();
+    });
   },
   mounted() {
-    this.getData()
+    this.filter()
+    this.getSelect()
+
+    this.navbar = document.querySelector(".navbar");
+    this.filterContent = this.$refs.filterContent;
+    this.tableContainer = this.$el.querySelector(".table-overflow");
+    this.tableCard = this.$refs.tableCard;
+    this.selectableTable = this.$refs.selectableTable.$el;
+    this.tableHead = this.selectableTable.querySelector("thead");
+    this.ths = this.selectableTable.querySelector('thead').querySelectorAll('th');
+
+    this.setupScrollSync();
+    new ResizeObserver(this.fixedElements).observe(this.tableCard);
+  },
+  watch: {
+    records(newVal, oldVal) {
+      this.$nextTick(() => {
+        this.trs = this.selectableTable.querySelector('tbody').querySelectorAll('tr');
+        
+        this.fixedElements()
+      })
+    },
+    visibleFields(newVal, oldVal) {
+      this.$nextTick(() => {
+        this.ths = this.selectableTable.querySelector('thead').querySelectorAll('th');
+        this.fixedElements()
+      })
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleWindowScroll);
+    window.removeEventListener("resize", this.fixedElements);
   },
   methods: {
-    cambioPagina(e) {
-      this.currentPage = e
-      this.getData()
-    },
-    changeSizePage() {
-      this.getData()
-    },
-    sortChanged(data) {
-      this.sort = data.sortBy
-      if (data.sortDesc) {
-        this.order = 'desc'
-      } else this.order = 'asc'
-    },
-    filter() {
-      this.arrayFilters = []
-      console.log("FILTROS")
-      
-      if (this.name != null && this.name != '') {
-        this.arrayFilters.push({ keyContains: 'description', key: 'contains', value: this.name })
+    fixedElements() {
+      if (!this.trs[0].classList.contains('b-table-empty-row')) {
+        const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);
+
+        if (thsTotalWidth > this.tableCard.offsetWidth) {
+          this.ths.forEach((th, index) => {
+            th.style.flex = "0 0 " + th.offsetWidth + "px";
+          });
+        } else {
+          this.ths.forEach((th, index) => {
+            th.style.flex = "1 1 " + th.offsetWidth + "px";
+          });
+        }
+
+        this.trs.forEach((tr, index) => {
+          const tds = tr.querySelectorAll('td');
+
+          this.ths.forEach((th, index) => {
+            tds[index].style.width = th.offsetWidth + "px";
+
+            if (thsTotalWidth > this.tableCard.offsetWidth) {
+              tds[index].style.flex = "0 0 " + th.offsetWidth + "px";
+            } else {
+              tds[index].style.flex = "1 1 " + th.offsetWidth + "px";
+            }
+          });
+        });
+        
+      } else {
+        this.selectableTable.style.width = this.tableHead.querySelector('tr').offsetWidth + 1 + "px";
       }
-      if (this.code != null && this.code != '') {
-        this.arrayFilters.push({ keyContains: 'code', key: 'contains', value: this.code })
-      }
-      
-      this.getData()
+
+      this.tableHead.style.width = this.tableCard.offsetWidth - 1 + "px";
+      this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
     },
-    async getData() {
-      this.showLoading = true
-      const url =
-        `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
-        JSON.stringify(this.arrayFilters)
-      const respProyectos = await ProjectsService.getProyectos(url, this.$store)
-      console.log('respProyectos', respProyectos)
-      if (respProyectos.status) {
-        this.records = respProyectos.data.rows
-        this.totalElements = respProyectos.data.responseFilter.total_rows
-      }
-      this.showLoading = false
+    setupScrollSync() {
+      this.tableHead.addEventListener("scroll", () => {
+        this.tableContainer.scrollLeft = this.tableHead.scrollLeft;
+        this.tableHead.style.transform = `translateX(${this.tableHead.scrollLeft}px)`;
+      });
+
+      this.tableContainer.addEventListener("scroll", () => {
+        this.tableHead.scrollLeft = this.tableContainer.scrollLeft;
+        this.tableHead.style.transform = `translateX(${this.tableHead.scrollLeft}px)`;
+      });
+
+      window.addEventListener("scroll", this.handleWindowScroll);
+      window.addEventListener("resize", this.fixedElements);
     },
-    addProyecto(){
+    handleWindowScroll() {
+      this.filterContent.style.top = this.navbar.offsetHeight + "px";
+
+      if (this.tableCard.offsetTop - this.navbar.offsetHeight - 7 - window.scrollY <= 0) {
+        this.tableHead.classList.add("fixed");
+        this.tableHead.style.top = this.navbar.offsetHeight + this.filterContent.offsetHeight + "px";
+      } else {
+        this.tableHead.classList.remove("fixed");
+        this.tableHead.style.top = null;
+      }
+    },
+    openModal() {
+     
+      this.modalOpen = true;
+
+    },
+    closeModal() {
+      this.modalOpen = false;
+    },
+
+    onRowSelectedOrder(items) {
+     
+      this.selectedRecords.arrayId = items
+     
+    },
+    addSede(){
       this.isAdd = true
-      this.$refs.proyectoAdd.setData()
+      this.form.enterpriseId = this.enterprise_id
+      this.$refs.sedeAdd.setData()
     },
     edit(item) {
-      console.log('itemAS', item)
-      this.form.id = item.id
-      this.form.code = item.code
-      this.form.description = item.description
+        console.log('item', item)
+        this.form.id = item.id
+        this.form.name = item.name
+        this.form.latitude = item.latitude
+        this.form.longitude = item.longitude
+        this.form.enterpriseId = item.enterprise.id
+        console.log('this.form', this.form)
+        this.isAdd = true
+        this.$refs.sedeAdd.setData(this.form)
+      },
+    selectAll(val) {
      
-      console.log('this.form', this.form)
-      this.isAdd = true
-
-      this.$refs.proyectoAdd.setData(this.form)
-
+      if (val) {
+     
+        this.$refs.selectableTable.selectAllRows()
+      } else {
+        this.$refs.selectableTable.clearSelected()
+      }
+      //
     },
-    async deleteAction(data) {
-     
+    validDate(fecha) {
+      fecha = new Date(fecha)
+      if (fecha != null) {
+        const year = new Date(fecha).getFullYear()
+        if (year <= 1970) {
+          return ''
+        }
+        return moment(fecha, 'yyyy-MM-DD HH:mm').utc(fecha).format('yyyy-MM-DD')
+      }
+      return ''
+    },
+    async deleteAction(data){
+      //DELETE USER
       this.$swal({
-        title: '¿Desea eliminar este proyecto?',
+        title: '¿Desea eliminar esta sede?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, eliminalo',
@@ -328,34 +485,411 @@ export default {
         buttonsStyling: false
       }).then((result) => {
         if (result.value) {
+          this.currentPage = 1
+          this.$swal({
+            icon: 'success',
+            title: 'Eliminado!',
+            text: 'La sede ha sido eliminada.',
+            customClass: {
+              confirmButton: 'btn btn-success'
+            }
+          })
           this.deleteData(data.id)
         }
       })
     },
     async deleteData(id) {
-      console.log('id', id)
-      const resp = await ProjectsService.deleteProject(id, this.$store)
-      if (resp.status) {
-        this.currentPage = 1
-        this.$swal({
-          icon: 'success',
-          title: 'Eliminado!',
-          text: 'El proyecto ha sido eliminado.',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-        this.getData()
+      console.log('id del usuario', id)
+      const resp = await SedeService.deleteSede(id, this.$store)
+      console.log('resp delete',resp)
+      if (resp) {
+        this.getAllData()
       } else {
         this.$swal({
           icon: 'error',
           title: 'Error',
-          text: 'Ocurrió un error al eliminar el proyecto seleccionada.',
+          text: 'Ocurrió un error al eliminar el usuario.',
           customClass: {
             confirmButton: 'btn btn-success'
           }
         })
       }
+      console.log('respDelete', resp)
+    },
+    filter() {
+      this.arrayFilters = []
+      console.log("FILTROS")
+      
+      if (this.enterprise_id != null && this.enterprise_id != '') {
+        this.arrayFilters.push({ keyContains: 'enterprise.id', key: 'equals', value: this.enterprise_id })
+      }
+      if (this.name != null && this.name != '') {
+        this.arrayFilters.push({ keyContains: 'name', key: 'contains', value: this.name })
+      }
+      if (this.latitude != null && this.latitude != '') {
+        this.arrayFilters.push({ keyContains: 'latitude', key: 'contains', value: this.latitude })
+      }
+      if (this.longitude != null && this.longitude != '') {
+        this.arrayFilters.push({ keyContains: 'longitude', key: 'contains', value: this.longitude })
+      }
+      
+      this.getAllData()
+    },
+    cambioPagina(e) {
+      this.currentPage = e
+      this.records = this.allDataSorted[e - 1];
+
+      /* this.getData() */
+    },
+    changeSizePage() {
+      this.getAllData()
+    },
+    sortChanged(data) {
+      this.sort = data.sortBy
+      this.currentPage = 1
+      this.getSortedData(data.sortBy, data.sortDesc ? 'desc' : 'asc')
+      this.records = this.allDataSorted[0]
+      /* this.sort = data.sortBy
+      if (data.sortDesc) {
+        this.order = 'desc'
+      } else this.order = 'asc' */
+    },
+    closeComment() {
+      this.comment = ''
+      this.addComent = false
+    },
+    showTimeLine(item) {
+    
+      this.restriction_id = item.id
+      this.$refs['modal-comment'].show()
+      this.getTimeLine(item.id)
+    },
+    async getTimeLine(id) {
+      const resp = ''
+    
+      if (resp.status) {
+        this.timeLine = resp.data
+      
+      }
+    },
+    async addComment() {
+      this.$refs.addComentarios.validate().then(async (success) => {
+        if (success) {
+          this.isDisabled = true
+          let datos = {}
+          const userData = JSON.parse(localStorage.getItem('userData'))
+          datos.restriction_id = this.restriction_id
+          datos.description = this.comment
+          datos.user_id = userData.id
+       
+          const respComment = ''
+          if (respComment.status) {
+            this.$swal({
+              title: 'Registrado',
+              text: 'El comentario ha sido registrado.',
+              icon: 'success',
+              customClass: {
+                confirmButton: 'btn btn-primary'
+              },
+              buttonsStyling: false
+            })
+            this.addComent = false
+            this.getAllData()
+            this.$refs['modal-comment'].hide()
+          } else {
+            this.$swal({
+              title: 'Error!',
+              text: ' Hubo un error al registrar el comentario',
+              icon: 'error',
+              customClass: {
+                confirmButton: 'btn btn-primary'
+              },
+              buttonsStyling: false
+            })
+          }
+          this.isDisabled = false
+        }
+      })
+    },
+    async getSelect() {
+      const user = JSON.parse(localStorage.getItem('userData'))
+      const url2 = `?limit=100000&page=${this.currentPage}&order=asc`
+      const respEmpresas = await ProjectsService.getProyectos(url2, this.$store)
+      console.log("aaaaaaa",respEmpresas.data.rows)
+      console.log("HLA")
+      if (respEmpresas.status) {
+        this.empresas = respEmpresas.data.rows
+        this.filter()
+      }
+    },
+    async getData() {
+      this.showLoading = true
+      const url =
+        `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
+        JSON.stringify(this.arrayFilters)
+     
+      const resp = ''
+     
+      if (resp.status) {
+       
+        this.records = resp.data.rows
+        this.totalElements = resp.data.responseFilter.total_rows
+      }
+
+      this.showLoading = false
+    },
+    async getAllData() {
+      this.showLoading = true;
+      const url =
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
+        console.log("HOLA")
+      const resp = await SedeService.getSedes(url, this.$store)
+    
+      console.log('resp sede', resp)
+      if (resp.status) {
+        this.allData = resp.data.rows;
+        this.records = this.allData;
+        this.totalElements = resp.data.responseFilter.total_rows
+       if(this.allData.length > 0){
+
+         this.getSortedData("id", 'desc')
+         
+         this.records = this.allDataSorted[0]
+        }
+      }
+      this.showLoading = false;
+    },
+    getAttributeValue(obj, attribute) {
+    // Si el atributo contiene un punto, es un atributo anidado
+      if (attribute.includes('.')) {
+        const parts = attribute.split('.');
+        let value = obj;
+
+        for (const part of parts) {
+          if (value && value.hasOwnProperty(part)) {
+            value = value[part];
+          } else {
+            return null; // Manejo de error si no se encuentra el atributo anidado
+          }
+        }
+
+        return value;
+      } else {
+        return obj[attribute];
+      }
+    },
+
+    getSortedData(sortBy, sortOrder) {
+      let sortedData = [...this.allData];
+      if (this.description != null && this.description != '') {
+        const searchTerm = this.description.toLowerCase();
+        sortedData = sortedData.filter(item => item.description.toLowerCase().includes(searchTerm));      
+      }
+      sortedData.sort((a, b) => {
+        const aValue = this.getAttributeValue(a, sortBy);
+        const bValue = this.getAttributeValue(b, sortBy);
+
+        if (sortOrder === 'asc') {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        } else if (sortOrder === 'desc') {
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        }
+      });
+
+      this.allDataSorted = [];
+      for (let i = 0; i < sortedData.length; i += this.showEntrie) {
+        this.allDataSorted.push(sortedData.slice(i, i + this.showEntrie));
+      }
+
+    },
+    async getDatosExport() {
+      const url =
+        `?limit=100&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
+        JSON.stringify(this.arrayFilters)
+      const resp = ''
+      if (resp.status) {
+        this.totalData = resp.data.rows
+        this.totalElementExport = resp.data.rows.length
+      }
+    },
+    actionLiberar(item,type) {
+    
+      let status;
+      if(type === 1){
+        status = 'LiberadoPorPlanner';
+      
+       this.$swal({
+        title: '¿Seguro que desea liberar esta restricción?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, liberalo',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1'
+        },
+        buttonsStyling: false
+      }).then(async (result) => {
+         if (result.value) {
+          const resp = ''
+          if (resp.status) {
+            this.currentPage = 1
+            this.$swal({
+              icon: 'success',
+              title: 'Liberado!',
+              text: 'La restricción fue liberada con éxito.',
+              customClass: {
+                confirmButton: 'btn btn-success'
+              }
+            })
+            this.getAllData()
+          } else {
+            this.$swal({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al liberar la restricción seleccionada.',
+              customClass: {
+                confirmButton: 'btn btn-success'
+              }
+            })
+          }
+        }
+      })
+      }else{
+          status = 'Oficializado';
+          /* this.openModal() */
+          this.$swal.fire({
+            title: '¿Seguro que desea rechazar esta restricción?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, rechazalo',
+            html: `
+              <input type="text" style="margin: 15px 0" id="inputValuexRechazar" class="swal2-input" placeholder="Ingrese la razón">
+            `,
+            customClass: {
+              confirmButton: 'btn btn-primary',
+              cancelButton: 'btn btn-outline-danger ml-1'
+            },
+            buttonsStyling: false
+          }).then(async (result) => {
+            if (result.value) {
+              const inputValue = document.getElementById('inputValuexRechazar').value; 
+
+             
+
+              const resp = ''
+            
+
+              if (resp.status) {
+                this.currentPage = 1
+                this.$swal({
+                  icon: 'success',
+                  title: 'Rechazado!',
+                  text: 'La restricción fue rechazada con éxito.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                })
+                this.getAllData()
+              } else {
+                this.$swal({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Ocurrió un error al rechazar la restricción seleccionada.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                })
+              }
+            }
+          });
+      }
+    },
+    async changeStatus() {
+   
+      let filterArrays = []
+      for (let index = 0; index < this.selectedRecords.arrayId.length; index++) {
+        const element = this.selectedRecords.arrayId[index]
+        filterArrays.push(element.id)
+      }
+     
+      this.$swal({
+        title: '¿Seguro que desea cambiar a esta(s) restriccion(es)?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, cambialo',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1'
+        },
+        buttonsStyling: false
+      }).then(async (result) => {
+        if (result.value) {
+          if (filterArrays.length > 0) {
+            const resp = ''
+            if (resp.status) {
+              this.currentPage = 1
+              this.$swal({
+                icon: 'success',
+                title: 'Cambiado!',
+                text: 'Los estados fueron cambiados.',
+                customClass: {
+                  confirmButton: 'btn btn-success'
+                }
+              })
+              this.getAllData()
+            } else {
+              this.$swal({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al cambiar el estado de la restricción seleccionada.',
+                customClass: {
+                  confirmButton: 'btn btn-success'
+                }
+              })
+            }
+          }
+        }
+      })
+    },
+    showFilters() {
+      this.isAdd = true
+    },
+    clean() {
+      this.statusFilter = ''
+      this.enterprise_id = null
+      var arrayFilter = []
+      if (this.user_role != 'administrador') {
+        const proyects = []
+        const estados = []
+        for (let index = 0; index < this.estados.length; index++) {
+          const element = this.estados[index]
+          estados.push(element.value)
+        }
+        if (this.empresas.length > 0) {
+          for (let index = 0; index < this.empresas.length; index++) {
+            const element = this.empresas[index]
+            proyects.push(element.id)
+          }
+        }
+        if (proyects.length > 0) {
+          arrayFilter.push({
+            keyContains: 'enterprise_id',
+            key: 'in',
+            value: JSON.stringify(proyects)
+          })
+        }
+        if (estados.length > 0) {
+          arrayFilter.push({
+            keyContains: 'status',
+            key: 'in',
+            value: JSON.stringify(estados)
+          })
+        }
+      }
+
+      this.arrayFilters = arrayFilter
+      this.getAllData()
     }
   }
 }
@@ -363,38 +897,77 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
-.card_project {
-  border-radius: 15px;
-  box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;
-  // background: linear-gradient(118deg, #001955, rgba(0, 25, 85, 0.7))
-  background: linear-gradient(
-    0deg,
-    rgba(246, 249, 252, 1) 0%,
-    rgba(234, 242, 249, 1) 48%,
-    rgba(223, 235, 248, 1) 100%
-  );
+@import '@core/scss/vue/libs/vue-flatpicker.scss';
+.pad-export {
+  padding: 0.52rem 1rem !important;
 }
-.card_project .card_content .card_content_sub {
-  color: #59ccd0;
-  font-weight: 600;
+.content_main {
+  .content_timeline {
+    max-height: 450px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+  .content_form {
+    display: flex;
+    justify-content: center;
+  }
 }
-.card_project .card_content .card_content_title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #001955;
+.select-obra .vs__dropdown-menu {
+  max-height: 200px;
+  overflow-y: scroll;
 }
-.card_img img {
+.mt-02{
+  margin-top: .2rem;
+}
+
+.sticky {
+  position: sticky;
+  z-index: 3;
+}
+
+.table-overflow {
+  overflow-x: auto;
   width: 100%;
-  object-fit: cover;
-  height: 200px;
-  border-radius: 15px 15px 0px 0px;
-  background-color: #fff !important;
-}
-.card_content .btn_edit:hover{
-  background-color: transparent !important;
-}
-.card_content .btn_edit{
-  color:  #001955;
-  font-weight: 600;
+
+  thead {
+    display: flex;
+    overflow-x: auto;
+    position: absolute;
+    top: 0;
+
+    &.fixed {
+      position: fixed;
+      transform: translateX(0px) !important;
+      z-index: 2;
+    }
+
+    tr {
+      display: flex;
+      flex: 1 1 auto;
+
+      th {
+        flex: 0 0 auto;
+        padding: 0.72rem 2rem !important;
+      }
+    }
+  }
+
+  tbody {
+    overflow-x: auto;
+
+    tr {
+      display: flex;
+
+      &.b-table-empty-row {
+        td {
+          flex: 0 0 100%;
+        }
+      }
+
+      td {
+        flex: 0 0 auto;
+      }
+    }
+  }
 }
 </style>

@@ -1061,7 +1061,7 @@ export default {
       if (resp.status) {
         this.allData = resp.data;
         console.log("ROLE",this.user_role)
-        if(this.user_role != 'superadmin' && this.user_role != 'monitor'){
+        if(this.user_role != 'administrador' && this.user_role != 'monitor'){
           console.log("FILTRADO POR APPROVE")
           this.allData = this.allData.filter(obj => {
             if(obj.canApprove == true){
@@ -1069,7 +1069,7 @@ export default {
             }
           })
         }
-        if((this.user_role == 'superadmin' || this.user_role == 'monitor') && this.project_id != null && this.project_id != ''){
+        if((this.user_role == 'administrador' || this.user_role == 'monitor') && this.project_id != null && this.project_id != ''){
           this.allData = this.allData.filter(item => item.project.id == this.project_id)
         }
         if (this.sede != null && this.sede != '') {
@@ -1301,7 +1301,7 @@ export default {
       this.statusFilter = ''
       this.project_id = null
       var arrayFilter = []
-      if (this.user_role != 'superadmin') {
+      if (this.user_role != 'administrador') {
         const proyects = []
         const estados = []
         for (let index = 0; index < this.estados.length; index++) {

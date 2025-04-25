@@ -64,17 +64,17 @@ export default {
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
       userData: JSON.parse(localStorage.getItem('userData')),
       children: [
-      {
+/*       {
         icon: 'UserIcon',
         id: 'perfil',
         title: 'Perfil',
         route: 'perfil',
-      },
+      }, */
       {
-        icon: 'FolderIcon',
-        id: 'proyectos',
-        title: 'Proyectos',
-        route: 'proyectos',
+        icon: 'Share2Icon',
+        id: 'empresas',
+        title: 'Empresas',
+        route: 'empresas',
       },
       /* {
         icon: 'FolderIcon',
@@ -83,10 +83,10 @@ export default {
         route: 'formularios',
       }, */
       {
-        icon: 'Share2Icon',
-        id: 'sedes',
-        title: 'Sedes',
-        route: 'sedes',
+        icon: 'FolderIcon',
+        id: 'proyectos',
+        title: 'Proyectos',
+        route: 'proyectos',
       },
       {
         id: '',      
@@ -103,7 +103,7 @@ export default {
         title: 'Usuarios',
         route: 'usuarios',
       },
-      {
+/*       {
         icon: 'FolderIcon',
         id: 'plantilla',
         title: 'Plantilla Servicio',
@@ -120,7 +120,7 @@ export default {
         id: 'plantilla-operativo',
         title: 'Plantilla Operativo',
         route: 'plantilla-operativo',
-      },
+      }, */
       {
         id: '',      
       },

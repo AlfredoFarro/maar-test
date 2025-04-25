@@ -1,7 +1,7 @@
 <template>
   <!-- eslint-disable -->
   <b-sidebar
-    id="add-sede"
+    id="add-proyecto"
     :visible="isAdd"
     bg-variant="white"
     sidebar-class="sidebar-lg"
@@ -17,7 +17,7 @@
       <div
         class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1"
       >
-        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} sede</h5>
+        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} empresa</h5>
 
         <feather-icon
           class="ml-1 cursor-pointer"
@@ -33,12 +33,12 @@
 
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
           
-          <validation-provider #default="{ errors }" name="name" rules="requeridoE">
-            <b-form-group label="Nombre" label-for="name">
+          <validation-provider #default="{ errors }" name="ruc" rules="requeridoE">
+            <b-form-group label="RUC" label-for="ruc">
               <b-form-input
-                v-model="items.description"
-                id="name"
-                placeholder="Nombre"
+                v-model="items.ruc"
+                id="ruc"
+                placeholder="RUC"
                 autocomplete="off"
               />
               <small
@@ -48,16 +48,13 @@
               >
             </b-form-group>
           </validation-provider>
-          <validation-provider #default="{ errors }" name="project_id" rules="requeridoE">
-            <b-form-group label="Proyecto" label-for="project_id">
-              <v-select
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="proyectos"
-                label="description"
-                input-id="project_id"
-                :reduce="(proyectos) => proyectos.id"
-                v-model="items.projectId"
-                placeholder="Proyecto"
+          <validation-provider #default="{ errors }" name="name" rules="requeridoE">
+            <b-form-group label="Nombre de la Empresa" label-for="name">
+              <b-form-input
+                v-model="items.name"
+                id="name"
+                placeholder="Nombre de la Empresa"
+                autocomplete="off"
               />
               <small
                 class="text-danger alert"
@@ -110,7 +107,6 @@ import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
 import TravelService from '@/services/TravelService'
 import UserService from '@/services/UserService'
 import ProjectsService from '@/services/ProjectsService'
-import RoleUserService from '@/services/RoleUserService'
 import moment from 'moment'
 Vue.use(BootstrapVue)
 export default {
@@ -206,10 +202,10 @@ export default {
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
       items: {
-          description: '',
-          projectId: null,
+          ruc: '',
+          name: '',
       },
-      sede_id: null,
+      proyecto_id: null,
       temp: {},
       userData: JSON.parse(localStorage.getItem('userData'))
     }
@@ -232,12 +228,6 @@ export default {
       }
       return ''
     },
-    async getPilots() {
-      let resp = await UserService.getPilots('',this.$store)
-      this.pilots = resp.data
-      console.log('PILOTOOOOOS', this.pilots)
-    },
-    
     diferenDate(fecha, val) {
       if (fecha != null) {
         if (val == 1) {
@@ -278,16 +268,12 @@ export default {
     async getData(id=null) {
       this.showLoading = true
       let url =
-        `?limit=1000000&order=asc&sort=description`
-      const respProyectos = await ProjectsService.getProyectos(url, this.$store)
-      console.log('respProyectos', respProyectos)
-      const respRoles = await RoleUserService.getRoles('', this.$store)
+        `?filter=` + JSON.stringify([{ keyContains: 'project_id', key: 'equals', value: id }])
+      const respProyectos = await ProjectsService.getProyectos('', this.$store)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
       }
-      if (respRoles.status) {
-        this.roles = respRoles.data.rows
-      }
+      
       this.showLoading = false
     },
     setData(item) {
@@ -296,16 +282,16 @@ export default {
       if (item) {
         console.log('items add-edit', item)
         this.temp = item
-        this.sede_id = item.id
-        console.log("SEDE ID", this.sede_id)
-        this.items.description = item.description
-        this.items.projectId = item.projectId
+        this.proyecto_id = item.id
+        console.log("PROYECTO ID", this.proyecto_id)
+        this.items.ruc = item.ruc
+        this.items.name = item.name
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
-          description: '',
-          projectId: this.$parent.$parent.project_id,
+          ruc: '',
+          name: '',
         }
         console.log("project id", this.items)
         this.isEdit = false
@@ -316,8 +302,8 @@ export default {
       this.$refs.refFormObserver.reset()
       this.isEdit = false
       this.items = {
-        description: '',
-        projectId: null,
+        ruc: '',
+        name: '',
       }
     },
     async onSubmit(data) {
@@ -330,10 +316,10 @@ export default {
           console.log('data TO SAVE', data)
 
           if (this.isEdit == false) {
-            resp = await SedeService.saveSede(data, this.$store)
+            resp = await ProjectsService.saveProject(data, this.$store)
           } else {
-            console.log("SEDE ID ANTES DE UPDATE", this.sede_id)
-            resp = await SedeService.updateSede(this.sede_id, data, this.$store)
+            console.log("PROYECTO ID ANTES DE UPDATE", this.proyecto_id)
+            resp = await ProjectsService.updateProject(this.proyecto_id, data, this.$store)
             console.log("UPDATEADO")
           }
           console.log('resp', resp)
@@ -347,17 +333,16 @@ export default {
               },
               buttonsStyling: false
             })
-            this.$parent.$parent.getAllData()
+            this.$parent.$parent.getData()
             this.$emit('update:is-add', false)
             this.resetForm()
           } else {
             this.$swal({
               title: 'Error!',
-              text: resp.data.message
-                ? resp.data.message
-                : 'Ocurrió un error al ' +
+              text: 
+                  'Ocurrió un error al ' +
                   (this.isEdit == true ? 'actualizar' : 'registrar') +
-                  ' los datos de la sede.',
+                  ' los datos del proyecto.',
               icon: 'error',
               customClass: {
                 confirmButton: 'btn btn-primary'

@@ -6,7 +6,7 @@
         class="ml-25 text-white"
         href="/"
         target="_blank"
-      >CRUZ DEL SUR</b-link>
+      >JJC Grupo</b-link>
       <span class="d-none d-sm-inline-block">, Todos los derechos reservados</span>
     </span>
   </p>
