@@ -5,6 +5,10 @@ const ProjectsService = {
         var resp = await VueStoreService.get("enterprise"+filter, store)      
         return resp;
     },
+    async getProyectos2(filter,store){        
+        var resp = await VueStoreService.get("project"+filter, store)      
+        return resp;
+    },
     async getProyectosByLessons(filter,store){        
         var resp = await VueStoreService.get("project/listByLesson"+filter, store)      
         return resp;

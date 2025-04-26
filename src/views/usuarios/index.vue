@@ -19,29 +19,29 @@
         <b-card-body>
           <b-row>
             <b-col md="12" lg="7" class="d-flex flex-column flex-lg-row justify-content-start">
-              <!-- <div class="w-100 mb-1 mb-lg-0 mt-02">
+              <div class="w-100 mb-1 mb-lg-0 mt-02">
                 <b-form-group label="Proyecto" label-for="project" class="mr-2">
                   <v-select
                     :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="proyectos"
-                    label="code"
+                    :options="proyectosFiltrados"
+                    label="name"  
                     input-id="project"
-                    :reduce="(proyectos) => proyectos.id"
-                    placeholder="Proyecto"
-                    v-model="project_id"
-                    @input="filter()"
+                    :reduce="proyecto => proyecto.id"
+                    placeholder="Seleccione proyecto"
+                    v-model="selectedProject"
+                    @input="handleProjectChange"
                     class="select-obra"
                     :disabled="user_role != 'administrador'"
                   >
-                    <template v-slot:selected-option="option">
-                      {{ option.code }} - {{ option.description }}
+                    <template v-slot:option="option">
+                       {{ option.name }} <!-- Muestra código y nombre -->
                     </template>
-                    <template slot="option" slot-scope="option">
-                      {{ option.code }} - {{ option.description }}
+                    <template v-slot:selected-option="option">
+                       {{ option.name }} <!-- Muestra selección actual -->
                     </template>
                   </v-select>
                 </b-form-group>
-              </div> -->
+              </div>
               <div class="w-100">
                 <b-form-group label="Nombre" label-for="name" class="mr-2">
                   <b-form-input
@@ -49,7 +49,7 @@
                     label="name"
                     id="name1"
                     placeholder="Nombre"
-                    v-model="name"
+                    v-model="searchName"
                     @input="filter()"
                     class="select-obra"
                     autocomplete="off"
@@ -199,6 +199,9 @@
             <template #cell(role_id)="data">
               <span>{{ getRoleName(data.item.role.id) }}</span>
             </template>
+            <template #cell(formattedProjects)="data">
+              {{ formatProjects(data.item.project_user) }}
+            </template>
           </b-table>
         </div>
         <div class="mx-2 mb-2">
@@ -292,10 +295,18 @@ export default {
       comment: '',
       addComent: false,
       modalOpen: false,
-
+      selectedProject: null,  // Para el v-select de proyectos
+      searchName: '',  
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
         { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '55px' } },
+        { 
+          key: 'formattedProjects', 
+          label: 'Proyectos', 
+          sortable: false, 
+          visible: true, 
+          thStyle: { width: '55px' }
+        },
         { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '55px' } },
         { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '60px' } },
         { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '60px' } },
@@ -312,12 +323,15 @@ export default {
           isActive: null,
           isAccessWeb: null,
           roleId: null,
+          projects:[],
         },
         
-      project_id: JSON.parse(localStorage.getItem('project_id')),
+      project_id: null,
+      project_name: '',
       records: [],
       projectSelect: '',
       proyectos: [],
+      proyectosFiltrados: [],
       arrayFilters: [],
       currentPage: 1,
       entries: [10, 20, 50, 100],
@@ -374,6 +388,7 @@ export default {
     });
   },
   mounted() {
+    this.cargarProyectos()
     this.filter()
     this.getSelect()
 
@@ -408,6 +423,30 @@ export default {
     window.removeEventListener("resize", this.fixedElements);
   },
   methods: {
+    async cargarProyectos() {
+      try {
+        const response = await ProjectsService.getProyectos2('', this.$store);
+        console.log("Respuesta cruda de proyectos:", response); // Verifica la respuesta completa
+        if (response.status) {
+          this.proyectos = response.data.rows;
+          this.proyectosFiltrados = [...this.proyectos];
+          console.log("Proyectos cargados:", this.proyectos); // Verifica estructura
+        }
+      } catch (error) {
+        console.error("Error cargando proyectos:", error);
+      }
+    },
+
+    handleProjectChange(name) {
+      this.project_name = name;
+      this.filter(); // Llama a tu método de filtrado
+      // Opcional: Emitir evento si es necesario
+      this.$emit('project-changed', name);
+    },
+    formatProjects(projectUser) {
+      if (!projectUser || !Array.isArray(projectUser)) return 'Sin proyectos';
+      return projectUser.map(pu => pu.project?.name).filter(Boolean).join(', ');
+    },
     fixedElements() {
       // Verificar si los elementos del DOM existen
       if (!this.selectableTable || !this.tableCard) {
@@ -502,28 +541,19 @@ export default {
       this.$refs.userAdd.getData(this.project_id)
     },
     edit(item) {
-        console.log('item', item)
-        this.form.id = item.id
-        this.form.document = item.document
-        this.form.email = item.email
-        this.form.fullname = item.fullname
-        this.isActive = item.isActive
-
+      console.log('item completo recibido:', item); // Verifica la estructura completa
         
-        //mapear el array groups para solo quedarme con los valores id de cada elemento del array
-        if(item.groups){
-          item.groups.forEach((group) => {
-            this.form.groupId.push(group.approverGroupId)
-          })
-          console.log('this.form.groupId', this.form.groupId)
-        }
-        console.log('this.form', this.form)
-        this.isAdd = true
-        this.$refs.userAdd.setData(this.form)
-        this.$refs.userAdd.getData(this.project_id)
-        this.form.groupId = []
-
-      },
+      // Pasa directamente el item al componente hijo sin usar this.form
+      this.isAdd = true;
+        
+      this.$nextTick(() => {
+        this.$refs.userAdd.setData(item); // Pasa el item directamente
+        this.$refs.userAdd.getData(this.project_id);
+      });
+      
+      // Limpia groupId si es necesario (según tu lógica)
+      this.form.groupId = [];
+    },
     selectAll(val) {
      
       if (val) {
@@ -592,21 +622,23 @@ export default {
     },
     filter() {
       this.arrayFilters = []
-      console.log("FILTROS")
-      /* this.arrayFilters.push({
-          keyContains: 'status',
-          key: 'equals',
-          value: 'LiberadoPorDueño'
-        }) */
-
-
-      if (this.fullname != null && this.fullname != '') {
-        this.arrayFilters.push({ keyContains: 'fullname', key: 'contains', value: this.fullname })
+      if (this.selectedProject) {
+        this.arrayFilters.push({ 
+          key: 'project_user', 
+          keyContains: 'any', 
+          value: {
+            'project.id': this.selectedProject
+          }
+        });
       }
-      // if (this.statusFilter != null && this.statusFilter != '') {
-      //   this.arrayFilters.push({ keyContains: 'status', key: 'equals', value: this.statusFilter })
-      // }
-     
+  
+      if (this.searchName) {
+        this.arrayFilters.push({ 
+          keyContains: 'fullname', 
+          key: 'contains', 
+          value: this.searchName 
+        })
+      }
       this.getAllData()
     },
     cambioPagina(e) {
@@ -709,24 +741,38 @@ export default {
       this.showLoading = false
     },
     async getAllData() {
-      this.showLoading = true;
-      const url =
-        `?limit=10000&filter=` +
-        JSON.stringify(this.arrayFilters)
-        console.log("HOLA")
-      const resp = await UserService.getUsers(url, this.$store)
-    
-      console.log('resp TRAVELS', resp)
-      if (resp.status) {
-        this.allData = resp.data.rows;
-        this.records = this.allData;
-        this.totalElements = resp.data.responseFilter.total_rows
-      }
-      this.getSortedData("id", 'desc')
+  this.showLoading = true;
+  const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);
   
-      this.records = this.allDataSorted[0]
-      this.showLoading = false;
-    },
+  try {
+    const resp = await UserService.getUsers(url, this.$store);
+    console.log('resp TRAVELS', resp);
+
+    if (resp.status) {
+      // 1. Crear una nueva referencia del array para forzar reactividad
+      this.allData = [...resp.data.rows]; 
+      
+      // 2. Actualizar los datos ordenados
+      this.getSortedData("id", 'desc');
+      
+      // 3. Asignar a records usando slice para nueva referencia
+      this.records = this.allDataSorted[0] ? [...this.allDataSorted[0]] : [];
+      
+      this.totalElements = resp.data.responseFilter.total_rows;
+      
+      // 4. Forzar actualización de la tabla
+      this.$nextTick(() => {
+        if (this.$refs.selectableTable) {
+          this.$refs.selectableTable.refresh();
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error en getAllData:', error);
+  } finally {
+    this.showLoading = false;
+  }
+},
     getAttributeValue(obj, attribute) {
     // Si el atributo contiene un punto, es un atributo anidado
       if (attribute.includes('.')) {
@@ -751,12 +797,21 @@ export default {
     },
     getSortedData(sortBy, sortOrder) {
       let sortedData = [...this.allData];
-      if (this.name != null && this.name !== '') {
-        const searchTerm = this.name.toLowerCase();
-        sortedData = sortedData.filter(item =>
-          item.fullname && item.fullname.toLowerCase().includes(searchTerm)
-        );
-      }
+      if (this.searchName && this.searchName !== '') {
+    const searchTerm = this.searchName.toLowerCase();
+    sortedData = sortedData.filter(item =>
+      item.fullname && item.fullname.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Filtro por proyecto (si project_name es el nombre del proyecto)
+  if (this.project_name && typeof this.project_name === 'string') {
+    const searchTerm = this.project_name.toLowerCase();
+    sortedData = sortedData.filter(item =>
+      item.project_user && item.project_user.some(p => 
+        p.project && p.project.name.toLowerCase().includes(searchTerm))
+    );
+  }
       sortedData.sort((a, b) => {
         const aValue = this.getAttributeValue(a, sortBy);
         const bValue = this.getAttributeValue(b, sortBy);

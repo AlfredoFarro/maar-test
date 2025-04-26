@@ -209,6 +209,24 @@
               :reduce="role => role.id"
               placeholder="Seleccione un rol"
               input-id="role"
+              @input="onRoleChange" 
+            />
+          </b-form-group>
+        
+          <!-- Dropdown de Proyectos (condicional) -->
+          <b-form-group v-if="items.roleId === 2" label="Proyectos" label-for="projects">
+            <v-select
+              v-model="items.projects"
+              :options="proyectos"
+              :value="items.projects"
+              label="name"
+              :reduce="project => project.id"
+              :multiple="true"
+              :clearable="true"
+              placeholder="Seleccione proyecto(s)"
+              input-id="projects"
+              key="projects-selector"
+
             />
           </b-form-group>
           
@@ -395,6 +413,7 @@ export default {
           isActive: null,
           isAccessWeb: null,
           roleId: null,
+          projects: [],
       },
       user_id: null,
       temp: {},
@@ -406,6 +425,18 @@ export default {
   },
   
   methods: {
+    forceUpdate() {
+      this.$forceUpdate();
+    },
+    onRoleChange(roleId) {
+      // Resetear proyectos al cambiar el rol
+      this.items.projects = [];
+
+      // Si el rol no es Jefe de Proyecto, asegurarse de limpiar los proyectos
+      if (roleId !== 2) {
+        this.items.projects = [];
+      }
+    },
     async getSelect(){
       this.items.groupId = []
       this.getGroups()
@@ -470,7 +501,7 @@ export default {
       this.showLoading = true
       const urlOrder =
         `?limit=1000000&order=asc&sort=description`	
-      const respProyectos = await ProjectsService.getProyectos('', this.$store)
+      const respProyectos = await ProjectsService.getProyectos2('', this.$store)
       console.log('respProyectos', respProyectos)
       //const respRoles = await RoleUserService.getRoles(urlOrder, this.$store)
       //const respPosition = await PositionService.getPositions(urlOrder, this.$store)
@@ -500,31 +531,39 @@ export default {
     },
     setData(items) {
       if (items) {
-        console.log('items add-edit', items)
-        this.temp = items
-        this.user_id = items.id
-        this.items.document = items.document
-        this.items.email = items.email
-        this.items.password = items.password
-        this.items.fullname = items.fullname
-        this.items.flagMsg = items.flagMsg
-        this.items.isActive = items.isActive
-        this.items.isAccessWeb = items.isAccessWeb
-        this.isEdit = true
-      } else {
-        this.temp = {}
+        console.log('Datos recibidos para edición:', items);
+        this.temp = items;
+        this.user_id = items.id;
+      
+        // Verifica si project_user existe y tiene datos
+        const userProjects = items.project_user && Array.isArray(items.project_user) 
+          ? items.project_user.map(pu => pu?.project?.id).filter(id => id !== undefined)
+          : [];
+      
+        console.log('Proyectos del usuario:', userProjects);
+      
+        // Asigna los valores manteniendo la reactividad
         this.items = {
-          document: '',
-          email: '',
+          document: items.document || '',
+          email: items.email || '',
           password: '',
-          fullname: '',
-          flagMsg: null,
-          isActive: null,
-          isAccessWeb: null,
+          fullname: items.fullname || '',
+          flagMsg: items.flagMsg !== null ? Boolean(items.flagMsg) : null,
+          isActive: items.isActive !== null ? Boolean(items.isActive) : null,
+          isAccessWeb: items.isAccessWeb !== null ? Boolean(items.isAccessWeb) : null,
+          roleId: items.role?.id || null,
+          projects: userProjects
+        };
+      
+        this.isEdit = true;
+      
+        // Forzar actualización después de que los datos estén listos
+        this.$nextTick(() => {
+          this.$forceUpdate();
+        });
+      } else {
+        this.resetForm();
       }
-        this.isEdit = false
-      }
-      console.log('temp EN ADD', this.temp)
     },
     resetForm() {
       this.$refs.refFormObserver.reset()
@@ -538,6 +577,8 @@ export default {
           flagMsg: null,
           isActive: null,
           isAccessWeb: null,
+          roleId: null,
+          projects: []
       }
     },
     async onSubmit(data) {
@@ -546,6 +587,11 @@ export default {
       formData.isAccessWeb = this.items.isAccessWeb ? 1 : 0;
       formData.isActive = this.items.isActive ? 1 : 0;
       formData.flagMsg = this.items.flagMsg ? 1 : 0;
+      // Solo agregar projects si el rol es Jefe de Proyecto (id: 2)
+      formData.projects = this.items.roleId === 2 
+      ? (Array.isArray(this.items.projects) ? this.items.projects : [])
+      : [] // Array vacío para limpiar asociaciones
+
       console.log('data1', formData)
       this.$refs.refFormObserver.validate().then(async (success) => {
         this.showLoading = true
