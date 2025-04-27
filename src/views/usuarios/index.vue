@@ -57,6 +57,53 @@
                   </b-form-input>
                 </b-form-group>
               </div>    
+              <div class="w-100 ml-lg-2">
+                <b-form-group label="Rol" label-for="role" class="mr-2">
+                  <v-select
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="roleOptions"
+                    label="name"
+                    input-id="role"
+                    :reduce="role => role.id"
+                    placeholder="Todos los roles"
+                    v-model="selectedRole"
+                    @input="filter()"
+                    class="select-obra"
+                  />
+                </b-form-group>
+              </div>
+            
+              <!-- Nuevo filtro de DNI -->
+              <div class="w-100 ml-lg-2">
+                <b-form-group label="DNI" label-for="dni" class="mr-2">
+                  <b-form-input
+                    type="text"
+                    id="dni"
+                    placeholder="Buscar por DNI"
+                    v-model="dniFilter"
+                    @input="filter()"
+                    class="select-obra"
+                    autocomplete="off"
+                  />
+                </b-form-group>
+              </div>
+            
+              <!-- Nuevo filtro de estado -->
+              <div class="w-100 ml-lg-2">
+                <b-form-group label="Estado" label-for="status" class="mr-2">
+                  <v-select
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="statusOptions"
+                    label="text"
+                    input-id="status"
+                    :reduce="status => status.value"
+                    placeholder="Todos los estados"
+                    v-model="isActiveFilter"
+                    @input="filter()"
+                    class="select-obra"
+                  />
+                </b-form-group>
+              </div>
             </b-col>
             <!-- <b-col md="12" lg="3" >
               <div class="w-100 mb-1 mb-lg-0 mt-02">
@@ -297,6 +344,18 @@ export default {
       modalOpen: false,
       selectedProject: null,  // Para el v-select de proyectos
       searchName: '',  
+      selectedRole: null,
+      dniFilter: '',
+      isActiveFilter: null,
+      roleOptions: [
+        { id: 1, name: 'Administrador' },
+        { id: 2, name: 'Jefe de Proyecto' },
+        { id: 3, name: 'Colaborador' }
+      ],
+      statusOptions: [
+        { text: 'Activo', value: 1 },
+        { text: 'Inactivo', value: 0 }
+      ],
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
         { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '55px' } },
@@ -637,6 +696,31 @@ export default {
           keyContains: 'fullname', 
           key: 'contains', 
           value: this.searchName 
+        })
+      }
+      if (this.selectedRole) {
+        this.arrayFilters.push({
+          key: 'role.id',
+          keyContains: 'equals',
+          value: this.selectedRole
+        })
+      }
+    
+      // Filtro por DNI
+      if (this.dniFilter) {
+        this.arrayFilters.push({
+          key: 'document',
+          keyContains: 'contains',
+          value: this.dniFilter
+        })
+      }
+    
+      // Filtro por estado activo
+      if (this.isActiveFilter !== null) {
+        this.arrayFilters.push({
+          key: 'isActive',
+          keyContains: 'equals',
+          value: this.isActiveFilter
         })
       }
       this.getAllData()

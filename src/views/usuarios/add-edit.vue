@@ -153,65 +153,61 @@
             </validation-provider>
           </b-form-group>
 
-          <validation-provider #default="{ errors }" name="mail_enabled" rules="required">
-            <b-form-group>
-              <b-form-checkbox
-                id="mail_enabled"
-                v-model="items.flagMsg"
-                name="mail_enabled"
-                class="custom-control-primary"
-              >
-                Habilitado para enviar correo
-              </b-form-checkbox>
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-              >{{ errors[0] }}</small>
-            </b-form-group>
-          </validation-provider>
-          <validation-provider #default="{ errors }" name="active" rules="required">
-            <b-form-group>
-              <b-form-checkbox
-                id="active"
-                v-model="items.isActive"
-                name="active"
-                class="custom-control-primary"
-              >
-                Activo
-              </b-form-checkbox>
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-              >{{ errors[0] }}</small>
-            </b-form-group>
-          </validation-provider>
-          <validation-provider #default="{ errors }" name="web_access" rules="required">
-            <b-form-group>
-              <b-form-checkbox
-                id="web_access"
-                v-model="items.isAccessWeb"
-                name="web_access"
-                class="custom-control-primary"
-              >
-                Accede a la web
-              </b-form-checkbox>
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-              >{{ errors[0] }}</small>
-            </b-form-group>
-          </validation-provider>
-          <b-form-group label="Rol" label-for="role">
-            <v-select
-              v-model="items.roleId"
-              :options="roles"
-              label="name"
-              :reduce="role => role.id"
-              placeholder="Seleccione un rol"
-              input-id="role"
-              @input="onRoleChange" 
-            />
+          <b-form-group>
+            <b-form-checkbox
+              id="mail_enabled"
+              v-model="items.flagMsg"
+              name="mail_enabled"
+              class="custom-control-primary"
+              switch
+            >
+              Habilitado para enviar correo
+            </b-form-checkbox>
           </b-form-group>
+
+          <!-- Switch para "Activo" -->
+          <b-form-group>
+            <b-form-checkbox
+              id="active"
+              v-model="items.isActive"
+              name="active"
+              class="custom-control-primary"
+              switch
+            >
+              Activo
+            </b-form-checkbox>
+          </b-form-group>
+
+          <!-- Switch para "Accede a la web" -->
+          <b-form-group>
+            <b-form-checkbox
+              id="web_access"
+              v-model="items.isAccessWeb"
+              name="web_access"
+              class="custom-control-primary"
+              switch
+            >
+              Accede a la web
+            </b-form-checkbox>
+          </b-form-group>
+          <validation-provider #default="{ errors }" name="rol" rules="requeridoE">
+            <b-form-group label="Rol" label-for="role">
+              <v-select
+                v-model="items.roleId"
+                :options="roles"
+                label="name"
+                :reduce="role => role.id"
+                placeholder="Seleccione un rol"
+                input-id="role"
+                @input="onRoleChange"
+                :class="{'is-invalid': errors.length > 0}"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+              >{{ errors[0] }}</small>
+            </b-form-group>
+          </validation-provider>
         
           <!-- Dropdown de Proyectos (condicional) -->
           <b-form-group v-if="items.roleId === 2" label="Proyectos" label-for="projects">
