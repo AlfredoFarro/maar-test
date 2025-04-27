@@ -510,7 +510,7 @@ export default {
     this.getGeneral()
     this.filter()
     this.getSelect()
-    this.getSedes()
+    this.getEmpresas()
 
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
@@ -611,7 +611,7 @@ export default {
       }
       this.photo = null
     },
-    async getSedes(){
+    async getEmpresas(){
         const arrayFilters = []
         this.items.sedeId = null
         if (this.project_id != null && this.project_id != '') {
@@ -620,7 +620,7 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getSedes(url, this.$store)
+        const respSedes = await SedeService.getEmpresas(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
@@ -1085,7 +1085,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       console.log("PROYECTOS", respProyectos)
       let arrayFilters = []
       arrayFilters.push({ keyContains: 'role.description', key: 'equals', value: 'piloto' })

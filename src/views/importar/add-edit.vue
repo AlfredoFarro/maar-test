@@ -451,14 +451,14 @@ export default {
     },
     async getData(){
       this.getPilots()
-      this.getSedes()
+      this.getEmpresas()
       
       /* this.getForms(this.items.projectId) */
     },
     consultItems(){
       console.log("CONSULTANDO ITEMS", this.items.sedeCode)
     },
-    async getSedes(){
+    async getEmpresas(){
         const arrayFilters = []
         this.items.sedeCode = null
         console.log("PROJECT IDddd", this.projectId)
@@ -469,7 +469,7 @@ export default {
         `?limit=10000&filter=` +
         JSON.stringify(arrayFilters)
         console.log("URL SEDES",url)
-        const respSedes = await SedeService.getSedes(url, this.$store)
+        const respSedes = await SedeService.getEmpresas(url, this.$store)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
             console.log("SEDES",this.sedes)

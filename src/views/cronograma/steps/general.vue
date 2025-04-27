@@ -347,7 +347,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
         },
         async getSelects(){
             console.log("GET SELECT")
-            this.getSedes()
+            this.getEmpresas()
             this.getPilots()
             this.getProjects()
             this.$emit('cambiar-valor', this.items.projectId)
@@ -370,11 +370,11 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
             console.log('PILOTOOOOOS', this.pilots)
         },
         async getProjects() {
-            const respProyectos = await ProjectsService.getProyectos('', this.$store)
+            const respProyectos = await ProjectsService.getEmpresas('', this.$store)
             this.proyectos = respProyectos.data.rows
             console.log('PROYECTOS', this.proyectos)
         },
-        async getSedes(){
+        async getEmpresas(){
             const arrayFilters = []
             this.items.sedeId = null
             if (this.items.projectId != null && this.items.projectId != '') {
@@ -384,7 +384,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
             `?limit=10000&filter=` +
             JSON.stringify(arrayFilters)
             console.log("URL SEDES",url)
-            const respSedes = await SedeService.getSedes(url, this.$store)
+            const respSedes = await SedeService.getEmpresas(url, this.$store)
             if (respSedes.status) {
                 this.sedes = respSedes.data.rows
                 console.log("SEDES",this.sedes)

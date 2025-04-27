@@ -6,8 +6,8 @@
       <b-card-header class="px-2 py-2 pb-0">
         <b-row class="w-100 h-100">
           <b-col md="3">
-            <label>Codigo</label>
-            <b-form-input @input="filter" v-model="codigo" placeholder="Nombre" />
+            <label>RUC</label>
+            <b-form-input @input="filter" v-model="ruc" placeholder="Nombre" />
           </b-col>
           <b-col md="5">
             <div class="d-flex justify-content-center justify-content-md-start align-items-center mt-1 h-100">
@@ -238,7 +238,7 @@ export default {
       isAdd: false,
       isUpdate: false,
       see_more: false,
-      codigo: '',
+      ruc: '',
       company_id: null,
       roleFilter: null,
       records: [],
@@ -264,11 +264,11 @@ export default {
     },
     async filter() {
       var arrayFilter = []
-      if (this.codigo != '' && this.codigo != null) {
+      if (this.ruc != '' && this.ruc != null) {
         arrayFilter.push({
-          keyContains: 'code',
+          keyContains: 'ruc',
           key: 'contains',
-          value: this.codigo
+          value: this.ruc
         })
       }
       console.log('arrayFilter', arrayFilter)
@@ -277,7 +277,7 @@ export default {
       this.$parent.$parent.getData()
     },
     clean() {
-      this.codigo = ''
+      this.ruc = ''
       var arrayFilter = []
       this.$parent.$parent.arrayFilters = arrayFilter
       this.$parent.$parent.getData()

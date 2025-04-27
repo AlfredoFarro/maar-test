@@ -177,9 +177,9 @@ export default {
     },
     methods: {
         async getData(){
-            this.getProyectos()
+            this.getEmpresas()
             this.getFormularios()
-            this.getSedes()
+            this.getEmpresas()
             this.getGroupsCodes()
         },
         async searchGroup(item){
@@ -329,9 +329,9 @@ export default {
             this.selectedRow[this.selectedField] = data;
             this.modalOpen = false;
         },
-        async getProyectos(){
+        async getEmpresas(){
             const user = JSON.parse(localStorage.getItem('userData'))
-            const respProyectos = await ProjectsService.getProyectos('', this.$store)
+            const respProyectos = await ProjectsService.getEmpresas('', this.$store)
             if (respProyectos.status) {
                 this.proyectos = respProyectos.data.rows
                 console.log("PROYECTOS",this.proyectos)
@@ -344,7 +344,7 @@ export default {
                 console.log("FORMULARIOS",this.formularios)
             }
         },
-        async getSedes(){
+        async getEmpresas(){
             const arrayFilters = []
             this.items.sede = null
             if (this.items.project_id != null && this.items.project_id != '') {
@@ -353,7 +353,7 @@ export default {
             const url =
             `?limit=10000&filter=` +
             JSON.stringify(arrayFilters)
-            const respSedes = await SedeService.getSedes(url, this.$store)
+            const respSedes = await SedeService.getEmpresas(url, this.$store)
             if (respSedes.status) {
                 this.sedes = respSedes.data.rows
                 console.log("SEDES",this.sedes)

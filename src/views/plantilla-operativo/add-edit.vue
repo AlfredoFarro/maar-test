@@ -432,7 +432,7 @@ export default {
       this.showLoading = true
       let url =
         `?filter=` + JSON.stringify([{ keyContains: 'project_id', key: 'equals', value: id }])
-      const respProyectos = await ProjectsService.getProyectos('', this.$store)
+      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
       const respRoles = await RoleUserService.getRoles('', this.$store)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows

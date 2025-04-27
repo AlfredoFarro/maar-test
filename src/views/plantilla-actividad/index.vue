@@ -328,7 +328,7 @@ export default {
     });
   },
   mounted() {
-    this.getProyectos()
+    this.getEmpresas()
     this.getSelect()
     this.filter()
 
@@ -640,7 +640,7 @@ export default {
         JSON.stringify(arrayFilters)
       const respUsers = await UserService.getUsers(url, this.$store)
       //LLAMAR SERVICIO GET SEDE
-      const respSedes = await SedeService.getSedes(url2, this.$store)
+      const respSedes = await SedeService.getEmpresas(url2, this.$store)
       if (respUsers.status) {
         this.usuarios = respUsers.data.rows
         console.log('usuarios', this.usuarios)
@@ -652,9 +652,9 @@ export default {
       
       this.filter()
     },
-    async getProyectos() {
+    async getEmpresas() {
       const url2 = `?limit=100000&order=asc&sort=code`
-      const resp = await ProjectsService.getProyectos(url2, this.$store)
+      const resp = await ProjectsService.getEmpresas(url2, this.$store)
       if (resp.status) {
         this.proyectos = resp.data.rows
       }

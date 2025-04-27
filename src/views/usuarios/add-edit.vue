@@ -282,7 +282,7 @@ import TravelService from '@/services/TravelService'
 import GroupService from '@/services/GroupService'
 import UserService from '@/services/UserService'
 import PositionService from '@/services/PositionService'
-import ProjectsService from '@/services/ProjectsService'
+import SedeService from '@/services/SedeService'
 import RoleUserService from '@/services/RoleUserService'
 import moment from 'moment'
 Vue.use(BootstrapVue)
@@ -524,7 +524,7 @@ export default {
       this.showLoading = true
       const urlOrder =
         `?limit=1000000&order=asc&sort=description`	
-      const respProyectos = await ProjectsService.getProyectos2('', this.$store)
+      const respProyectos = await SedeService.getProyectos('', this.$store)
       console.log('respProyectos', respProyectos)
       //const respRoles = await RoleUserService.getRoles(urlOrder, this.$store)
       //const respPosition = await PositionService.getPositions(urlOrder, this.$store)

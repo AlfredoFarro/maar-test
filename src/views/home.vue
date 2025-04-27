@@ -173,7 +173,7 @@ export default {
       const url =
         `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
         JSON.stringify(this.arrayFilters)
-      const respProyectos = await ProjectsService.getProyectos(url, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
      
       if (respProyectos.status) {
         this.records = respProyectos.data.rows
