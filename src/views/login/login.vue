@@ -155,6 +155,7 @@ export default {
           if (response.status) {
             var userData = response.data
             if (userData.isActive === 0) {
+              localStorage.setItem('activationCode',userData.code)
               this.userIdToVerify = userData.id
               this.showVerificationModal = true
               return
