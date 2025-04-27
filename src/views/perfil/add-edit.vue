@@ -295,7 +295,7 @@ export default {
       this.showLoading = true
       let url =
         `?order=asc&sort=description`
-      const respProyectos = await ProjectsService.getProyectos(url, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
       console.log('respProyectos', respProyectos)
       const respRoles = await RoleUserService.getRoles('', this.$store)
       if (respProyectos.status) {

@@ -1,12 +1,8 @@
 /* eslint-disable*/
 import VueStoreService from './VueStoreService';
 const ProjectsService = {
-    async getProyectos(filter,store){        
+    async getEmpresas(filter,store){        
         var resp = await VueStoreService.get("enterprise"+filter, store)      
-        return resp;
-    },
-    async getProyectos2(filter,store){        
-        var resp = await VueStoreService.get("project"+filter, store)      
         return resp;
     },
     async getProyectosByLessons(filter,store){        

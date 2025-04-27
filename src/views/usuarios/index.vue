@@ -307,7 +307,7 @@
 <script>
 /* eslint-disable */
 import UserService from '@/services/UserService'
-import ProjectsService from '@/services/ProjectsService'
+import SedeService from '@/services/SedeService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -494,7 +494,7 @@ export default {
     },
     async cargarProyectos() {
       try {
-        const response = await ProjectsService.getProyectos2('', this.$store);
+        const response = await SedeService.getProyectos('', this.$store);
         console.log("Respuesta cruda de proyectos:", response); 
         if (response.status) {
           this.proyectos = response.data.rows;

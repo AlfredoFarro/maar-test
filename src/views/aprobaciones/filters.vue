@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     async getProjects() {
-      const respProyectos = await ProjectsService.getProyectos('', this.$store)
+      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
       console.log('respProyectos', respProyectos)
       if (respProyectos.status) {
         this.records = respProyectos.data.rows

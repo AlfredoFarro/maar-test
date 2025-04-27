@@ -1108,7 +1108,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       let arrayFilters = []
       arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
       const url =

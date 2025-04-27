@@ -547,7 +547,7 @@ export default {
     console.log('userGroups', this.userGroups)
     this.filter()
     this.getSelect()
-    this.getSedes()
+    this.getEmpresas()
 
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
@@ -994,7 +994,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       const respPilotos = await UserService.getPilots('', this.$store)
 
       console.log("PROYECTOS", respProyectos)
@@ -1028,7 +1028,7 @@ export default {
 
       this.showLoading = false
     },
-    async getSedes(){
+    async getEmpresas(){
         const arrayFilters = []
         if (this.project_id != null && this.project_id != '') {
             arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
@@ -1036,7 +1036,7 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getSedes(url, this.$store)
+        const respSedes = await SedeService.getEmpresas(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows

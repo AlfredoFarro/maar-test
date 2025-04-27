@@ -401,7 +401,7 @@ export default {
       console.log("GET DATA", id)
       this.getPilots()
       this.getProjects()
-      this.getSedes()
+      this.getEmpresas()
       if(id){
         this.items.projectId = id
       }
@@ -425,11 +425,11 @@ export default {
       console.log('PILOTOOOOOS', this.pilots)
     },
     async getProjects() {
-      const respProyectos = await ProjectsService.getProyectos('', this.$store)
+      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
       this.proyectos = respProyectos.data.rows
       console.log('PROYECTOS', this.proyectos)
     },
-    async getSedes(){
+    async getEmpresas(){
         const arrayFilters = []
         this.items.sedeId = null
         if (this.items.projectId != null && this.items.projectId != '') {
@@ -438,7 +438,7 @@ export default {
         const url =
         `?limit=10000&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getSedes(url, this.$store)
+        const respSedes = await SedeService.getEmpresas(url, this.$store)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
             console.log("SEDES",this.sedes)

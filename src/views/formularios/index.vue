@@ -937,7 +937,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=${this.order}&sort=${this.sort}`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       console.log("PROYECTOS", respProyectos)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows

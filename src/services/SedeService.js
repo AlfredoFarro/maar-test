@@ -1,7 +1,7 @@
 /* eslint-disable*/
 import VueStoreService from './VueStoreService';
 const SedeService = {
-    async getSedes(url,store){
+    async getProyectos(url,store){
         var resp = await VueStoreService.get("project"+url, store)
         return resp;
     },  

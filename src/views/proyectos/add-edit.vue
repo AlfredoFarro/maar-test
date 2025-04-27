@@ -312,7 +312,7 @@ export default {
       this.showLoading = true
       let url =
         `?limit=1000000&order=asc&sort=name`
-      const respEmpresas = await ProjectsService.getProyectos(url, this.$store)
+      const respEmpresas = await ProjectsService.getEmpresas(url, this.$store)
       console.log('respEmpresas', respEmpresas)
       const respRoles = await RoleUserService.getRoles('', this.$store)
       if (respEmpresas.status) {

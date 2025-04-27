@@ -582,7 +582,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc`
-      const respEmpresas = await ProjectsService.getProyectos(url2, this.$store)
+      const respEmpresas = await ProjectsService.getEmpresas(url2, this.$store)
       console.log("aaaaaaa",respEmpresas.data.rows)
       console.log("HLA")
       if (respEmpresas.status) {
@@ -612,7 +612,7 @@ export default {
         `?limit=10000&filter=` +
         JSON.stringify(this.arrayFilters)
         console.log("HOLA")
-      const resp = await SedeService.getSedes(url, this.$store)
+      const resp = await SedeService.getProyectos(url, this.$store)
     
       console.log('resp sede', resp)
       if (resp.status) {

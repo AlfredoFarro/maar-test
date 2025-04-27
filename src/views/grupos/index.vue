@@ -294,7 +294,7 @@ export default {
   mounted() {
     this.filter()
     this.getSelect()
-    this.getSedes()
+    this.getEmpresas()
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
     this.tableContainer = this.$el.querySelector(".table-overflow");
@@ -583,7 +583,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getProyectos(url2, this.$store)
+      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       console.log("HLA")
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
@@ -597,7 +597,7 @@ export default {
         this.filter()
       }
     },
-    async getSedes(){
+    async getEmpresas(){
         const arrayFilters = []
         this.sede = null
         if (this.project_id != null && this.project_id != '') {
@@ -606,7 +606,7 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getSedes(url, this.$store)
+        const respSedes = await SedeService.getEmpresas(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
