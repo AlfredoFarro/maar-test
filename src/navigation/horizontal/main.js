@@ -243,6 +243,14 @@ export default [
     hide: true,
   },
   {
+    header: 'Dashboard',
+    icon: 'FolderIcon',
+    id: 'dashboard',
+    title: 'Dashboard',
+    route: 'dashboard',
+    hide: true,
+  },
+  {
     header: 'Empresas',
     icon: 'FolderIcon',
     id: 'empresas',

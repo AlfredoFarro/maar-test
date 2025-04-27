@@ -60,38 +60,6 @@
                 </b-form-group>
               </div>   
             </b-col> 
-            <b-col md="7" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
-              <div class="w-100">
-                <b-form-group label="Latitud" label-for="latitude" class="mr-2">
-                  <b-form-input
-                    type="text"
-                    label="latitude"
-                    id="latitude"
-                    placeholder="Latitud"
-                    v-model="latitude"
-                    @input="filter()"
-                    class="select-obra"
-                    autocomplete="off"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>  
-              <div class="w-100">
-                <b-form-group label="Longitud" label-for="longitude" class="mr-2">
-                  <b-form-input
-                    type="text"
-                    label="longitude"
-                    id="longitude"
-                    placeholder="Longitud"
-                    v-model="longitude"
-                    @input="filter()"
-                    class="select-obra"
-                    autocomplete="off"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>  
-            </b-col>
 
             
             <b-col md="6" lg="2" class="d-flex">              
