@@ -153,42 +153,52 @@
             </validation-provider>
           </b-form-group>
 
+          <!-- Switch para "Habilitado para enviar correo" -->
           <b-form-group>
-            <b-form-checkbox
-              id="mail_enabled"
-              v-model="items.flagMsg"
-              name="mail_enabled"
-              class="custom-control-primary"
-              switch
-            >
-              Habilitado para enviar correo
-            </b-form-checkbox>
+            <label for="mail_enabled">Puede enviar correos</label>
+            <div class="d-flex align-items-center">
+              <span class="mr-1">No</span>
+              <b-form-checkbox
+                id="mail_enabled"
+                v-model="items.flagMsg"
+                name="mail_enabled"
+                class="custom-control-primary"
+                switch
+              />
+              <span class="ml-1">Sí</span>
+            </div>
           </b-form-group>
 
           <!-- Switch para "Activo" -->
           <b-form-group>
-            <b-form-checkbox
-              id="active"
-              v-model="items.isActive"
-              name="active"
-              class="custom-control-primary"
-              switch
-            >
-              Activo
-            </b-form-checkbox>
+            <label for="active">Esta Activo</label>
+            <div class="d-flex align-items-center">
+              <span class="mr-1">No</span>
+              <b-form-checkbox
+                id="active"
+                v-model="items.isActive"
+                name="active"
+                class="custom-control-primary"
+                switch
+              />
+              <span class="ml-1">Sí</span>
+            </div>
           </b-form-group>
 
           <!-- Switch para "Accede a la web" -->
           <b-form-group>
-            <b-form-checkbox
-              id="web_access"
-              v-model="items.isAccessWeb"
-              name="web_access"
-              class="custom-control-primary"
-              switch
-            >
-              Accede a la web
-            </b-form-checkbox>
+            <label for="web_access">Puede acceder a la web</label>
+            <div class="d-flex align-items-center">
+              <span class="mr-1">No</span>
+              <b-form-checkbox
+                id="web_access"
+                v-model="items.isAccessWeb"
+                name="web_access"
+                class="custom-control-primary"
+                switch
+              />
+              <span class="ml-1">Sí</span>
+            </div>
           </b-form-group>
           <validation-provider #default="{ errors }" name="rol" rules="requeridoE">
             <b-form-group label="Rol" label-for="role">
