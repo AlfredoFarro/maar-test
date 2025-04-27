@@ -4,14 +4,13 @@ export default [
     header: " ",
   },
   {
-    title: "Dashboard",
+    title: "Módulo de Dashboard",
     icon: "StopCircleIcon",
     children: [
       {
-        id: "empresas",
+        id: "dashboard",
         title: "Dashboard",
-        route: "empresas",
-        hide:true,
+        route: "dashboard",
       },
       {
         id: "cronograma",
@@ -33,21 +32,11 @@ export default [
     children: [
       {
         id: "cronograma",
-        title: "Dashboard",
-        route: "cronograma",
-        hide:true,
+        title: "Consolidado",
       },
       {
         id: "cronograma",
-        title: "Reportes",
-        route: "cronograma",
-        hide:true,
-      },
-      {
-        id: "cronograma",
-        title: "Registros",
-        route: "cronograma",
-        hide:true,
+        title: "Tendencias",
       },
     ]
   },
@@ -57,21 +46,15 @@ export default [
     children: [
       {
         id: "cronograma",
-        title: "Dashboard",
-        route: "cronograma",
-        hide:true,
+        title: "Registros consolidados",
       },
       {
         id: "cronograma",
-        title: "Reportes",
-        route: "cronograma",
-        hide:true,
+        title: "Registros con imágenes",
       },
       {
         id: "cronograma",
-        title: "Registros",
-        route: "cronograma",
-        hide:true,
+        title: "Registros digitales",
       },
     ]
   },

@@ -9,6 +9,7 @@ export default [{
       layout: "proyecto",
     },
   },
+
   //seleccionar tipo logueo
   {
     path: "/seleccionar-log-type",
@@ -317,6 +318,18 @@ export default [{
     component: () => import('@/views/proyectos/index.vue'),
     meta: {
       pageTitle: 'Proyectos',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
+  {
+    path: "/dashboard",
+    name: "dashboard",
+    component: () => import("@/views/dashboard/index.vue"),
+    meta: {
+      pageTitle: 'Dashboard',
       breadcrumb: [{
         text: 'Listar',
         active: true,
