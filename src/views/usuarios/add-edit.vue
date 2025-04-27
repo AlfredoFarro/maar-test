@@ -153,7 +153,7 @@
             </validation-provider>
           </b-form-group>
 
-          <!-- Switch para "Habilitado para enviar correo" -->
+
           <b-form-group>
             <label for="mail_enabled">Puede enviar correos</label>
             <div class="d-flex align-items-center">
@@ -169,7 +169,7 @@
             </div>
           </b-form-group>
 
-          <!-- Switch para "Activo" -->
+
           <b-form-group>
             <label for="active">Esta Activo</label>
             <div class="d-flex align-items-center">
@@ -219,7 +219,6 @@
             </b-form-group>
           </validation-provider>
         
-          <!-- Dropdown de Proyectos (condicional) -->
           <b-form-group v-if="items.roleId === 2" label="Proyectos" label-for="projects">
             <v-select
               v-model="items.projects"
@@ -240,7 +239,7 @@
           
 
           
-          <!-- Form Actions -->
+
           <div class="d-flex mt-2 justify-content-end">
             <b-button
               :disabled="invalid"
@@ -405,11 +404,7 @@ export default {
       especialidades: [],
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
-      roles: [
-        { id: 1, name: 'Administrador' },
-        { id: 2, name: 'Jefe de Proyecto' },
-        { id: 3, name: 'Colaborador' },
-      ],
+      roles: [],
       items: {
           document: '',
           email: '',
@@ -428,17 +423,40 @@ export default {
   },
   mounted() {
     this.getData()
+    this.loadRoles();
   },
   
   methods: {
+    async loadRoles() {
+      try {
+        const response = await UserService.getRoles('', this.$store);
+        if (response.status) {
+          this.roles = response.data.rows.map(role => ({
+            id: role.id, 
+            name: role.code 
+          }));
+
+        }
+      } catch (error) {
+        console.error('Error cargando roles:', error);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los roles',
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
+      }
+    },
     forceUpdate() {
       this.$forceUpdate();
     },
     onRoleChange(roleId) {
-      // Resetear proyectos al cambiar el rol
+
       this.items.projects = [];
 
-      // Si el rol no es Jefe de Proyecto, asegurarse de limpiar los proyectos
+
       if (roleId !== 2) {
         this.items.projects = [];
       }
@@ -454,8 +472,7 @@ export default {
         if (year <= 1970) {
           return ''
         }
-        // console.log('data fecha', fecha)
-        // console.log('fecha local', moment(fecha, 'yyyy-MM-DD HH:mm').utc(fecha).format('yyyy-MM-DD'))
+
         return moment(fecha, 'yyyy-MM-DD HH:mm').utc(fecha).format('yyyy-MM-DD')
       }
       return ''
@@ -593,10 +610,10 @@ export default {
       formData.isAccessWeb = this.items.isAccessWeb ? 1 : 0;
       formData.isActive = this.items.isActive ? 1 : 0;
       formData.flagMsg = this.items.flagMsg ? 1 : 0;
-      // Solo agregar projects si el rol es Jefe de Proyecto (id: 2)
+
       formData.projects = this.items.roleId === 2 
       ? (Array.isArray(this.items.projects) ? this.items.projects : [])
-      : [] // Array vacío para limpiar asociaciones
+      : [] 
 
       console.log('data1', formData)
       this.$refs.refFormObserver.validate().then(async (success) => {

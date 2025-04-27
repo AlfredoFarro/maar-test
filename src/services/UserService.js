@@ -30,6 +30,10 @@ const UserService = {
         var resp = await VueStoreService.delete("user/"+user_id,store)
         return resp;
     },
+    async getRoles(filter,store){
+        var resp = await VueStoreService.get("role"+filter, store)
+        return resp;
+    },
 }
 
 export default UserService;

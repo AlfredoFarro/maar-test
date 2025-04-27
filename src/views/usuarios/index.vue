@@ -34,10 +34,10 @@
                     :disabled="user_role != 'administrador'"
                   >
                     <template v-slot:option="option">
-                       {{ option.name }} <!-- Muestra código y nombre -->
+                       {{ option.name }} 
                     </template>
                     <template v-slot:selected-option="option">
-                       {{ option.name }} <!-- Muestra selección actual -->
+                       {{ option.name }} 
                     </template>
                   </v-select>
                 </b-form-group>
@@ -73,7 +73,7 @@
                 </b-form-group>
               </div>
             
-              <!-- Nuevo filtro de DNI -->
+             
               <div class="w-100 ml-lg-2">
                 <b-form-group label="DNI" label-for="dni" class="mr-2">
                   <b-form-input
@@ -88,7 +88,7 @@
                 </b-form-group>
               </div>
             
-              <!-- Nuevo filtro de estado -->
+             
               <div class="w-100 ml-lg-2">
                 <b-form-group label="Estado" label-for="status" class="mr-2">
                   <v-select
@@ -342,36 +342,25 @@ export default {
       comment: '',
       addComent: false,
       modalOpen: false,
-      selectedProject: null,  // Para el v-select de proyectos
+      selectedProject: null,  
       searchName: '',  
       selectedRole: null,
       dniFilter: '',
       isActiveFilter: null,
-      roleOptions: [
-        { id: 1, name: 'Administrador' },
-        { id: 2, name: 'Jefe de Proyecto' },
-        { id: 3, name: 'Colaborador' }
-      ],
+      roleOptions: [],
       statusOptions: [
         { text: 'Activo', value: 1 },
         { text: 'Inactivo', value: 0 }
       ],
       fields: [
         { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
-        { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '55px' } },
-        { 
-          key: 'formattedProjects', 
-          label: 'Proyectos', 
-          sortable: false, 
-          visible: true, 
-          thStyle: { width: '55px' }
-        },
+        { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '45px' } },
         { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '55px' } },
-        { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '50px' } },
         { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '60px' } },
-        { key: 'isActive', label: 'Activo', sortable: false, visible: true, thStyle: { width: '60px' } },
-        { key: 'flagMsg', label: 'Habilitado Correos', sortable: false, visible: true, thStyle: { width: '60px' } },
-        { key: 'isAccessWeb', label: 'Accede web', sortable: false, visible: true, thStyle: { width: '60px' } },
+        { key: 'isActive', label: 'Activo', sortable: false, visible: true, thStyle: { width: '30px' } },
+        { key: 'flagMsg', label: 'Habilitado Correos', sortable: false, visible: true, thStyle: { width: '30px' } },
+        { key: 'isAccessWeb', label: 'Accede web', sortable: false, visible: true, thStyle: { width: '30px' } },
       ],
       form: {
           document: '',
@@ -450,7 +439,7 @@ export default {
     this.cargarProyectos()
     this.filter()
     this.getSelect()
-
+    this.loadRoles();
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
     this.tableContainer = this.$el.querySelector(".table-overflow");
@@ -482,14 +471,35 @@ export default {
     window.removeEventListener("resize", this.fixedElements);
   },
   methods: {
+    async loadRoles() {
+      try {
+        const response = await UserService.getRoles('', this.$store);
+        if (response.status) {
+          this.roleOptions = response.data.rows.map(role => ({
+            id: role.id, 
+            name: role.code
+          }));
+        }
+      } catch (error) {
+        console.error('Error cargando roles:', error);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los roles',
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
+      }
+    },
     async cargarProyectos() {
       try {
         const response = await ProjectsService.getProyectos2('', this.$store);
-        console.log("Respuesta cruda de proyectos:", response); // Verifica la respuesta completa
+        console.log("Respuesta cruda de proyectos:", response); 
         if (response.status) {
           this.proyectos = response.data.rows;
           this.proyectosFiltrados = [...this.proyectos];
-          console.log("Proyectos cargados:", this.proyectos); // Verifica estructura
+          console.log("Proyectos cargados:", this.proyectos); 
         }
       } catch (error) {
         console.error("Error cargando proyectos:", error);
@@ -498,8 +508,8 @@ export default {
 
     handleProjectChange(name) {
       this.project_name = name;
-      this.filter(); // Llama a tu método de filtrado
-      // Opcional: Emitir evento si es necesario
+      this.filter(); 
+      
       this.$emit('project-changed', name);
     },
     formatProjects(projectUser) {
@@ -548,12 +558,8 @@ export default {
       this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
     },
     getRoleName(roleId) {
-      const roles = {
-        1: 'Administrador',
-        2: 'Jefe de Proyecto',
-        3: 'Colaborador'
-      };
-      return roles[roleId] || 'Sin rol'; // Por si el role_id no existe
+      const role = this.roleOptions.find(r => r.id === roleId);
+      return role ? role.name : 'Sin rol';
     },
     setupScrollSync() {
       this.tableHead.addEventListener("scroll", () => {
@@ -600,17 +606,17 @@ export default {
       this.$refs.userAdd.getData(this.project_id)
     },
     edit(item) {
-      console.log('item completo recibido:', item); // Verifica la estructura completa
+      console.log('item completo recibido:', item); 
         
-      // Pasa directamente el item al componente hijo sin usar this.form
+      
       this.isAdd = true;
         
       this.$nextTick(() => {
-        this.$refs.userAdd.setData(item); // Pasa el item directamente
+        this.$refs.userAdd.setData(item); 
         this.$refs.userAdd.getData(this.project_id);
       });
       
-      // Limpia groupId si es necesario (según tu lógica)
+      
       this.form.groupId = [];
     },
     selectAll(val) {
@@ -706,7 +712,7 @@ export default {
         })
       }
     
-      // Filtro por DNI
+      
       if (this.dniFilter) {
         this.arrayFilters.push({
           key: 'document',
@@ -715,7 +721,7 @@ export default {
         })
       }
     
-      // Filtro por estado activo
+      
       if (this.isActiveFilter !== null) {
         this.arrayFilters.push({
           key: 'isActive',
@@ -833,18 +839,18 @@ export default {
     console.log('resp TRAVELS', resp);
 
     if (resp.status) {
-      // 1. Crear una nueva referencia del array para forzar reactividad
+      
       this.allData = [...resp.data.rows]; 
       
-      // 2. Actualizar los datos ordenados
+      
       this.getSortedData("id", 'desc');
       
-      // 3. Asignar a records usando slice para nueva referencia
+      
       this.records = this.allDataSorted[0] ? [...this.allDataSorted[0]] : [];
       
       this.totalElements = resp.data.responseFilter.total_rows;
       
-      // 4. Forzar actualización de la tabla
+      
       this.$nextTick(() => {
         if (this.$refs.selectableTable) {
           this.$refs.selectableTable.refresh();
@@ -858,7 +864,7 @@ export default {
   }
 },
     getAttributeValue(obj, attribute) {
-    // Si el atributo contiene un punto, es un atributo anidado
+    
       if (attribute.includes('.')) {
         const parts = attribute.split('.');
         let value = obj;
@@ -867,7 +873,7 @@ export default {
           if (value && value.hasOwnProperty(part)) {
             value = value[part];
           } else {
-            return null; // Manejo de error si no se encuentra el atributo anidado
+            return null; 
           }
         }
 
@@ -888,7 +894,7 @@ export default {
     );
   }
 
-  // Filtro por proyecto (si project_name es el nombre del proyecto)
+ 
   if (this.project_name && typeof this.project_name === 'string') {
     const searchTerm = this.project_name.toLowerCase();
     sortedData = sortedData.filter(item =>
