@@ -61,9 +61,9 @@
             <b-button variant="primary" type="submit" block :disabled="invalid">
               Iniciar Sesion
             </b-button>
-            <b-button variant="primary" type="button" block @click="goToRegister">
+            <!-- <b-button variant="primary" type="button" block @click="goToRegister">
               Registrarse
-            </b-button>
+            </b-button> -->
           </b-form>
         </validation-observer>
       </b-card>
@@ -192,9 +192,10 @@ export default {
               })
             }
           } else {
+            console.log("ENTRE A ELSE", response.data.message)
             this.$swal({
               title: 'Error!',
-              text: response.message,
+              text: response.data.message,
               icon: 'error',
               customClass: {
                 confirmButton: 'btn btn-primary'
