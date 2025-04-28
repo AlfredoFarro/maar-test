@@ -228,7 +228,7 @@ export default {
       
       project_id: JSON.parse(localStorage.getItem('project_id')),
       name: '',
-      code: '',
+      //code: '',
       records: [],
       recordsModal: [],
       modalOpen: false,
@@ -294,7 +294,7 @@ export default {
   mounted() {
     this.filter()
     this.getSelect()
-    this.getEmpresas()
+    //this.getEmpresas()
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
     this.tableContainer = this.$el.querySelector(".table-overflow");
@@ -327,6 +327,10 @@ export default {
   },
   methods: {
     fixedElements() {
+      if (!this.trs || this.trs.length === 0) {
+        
+        return;
+      }
       if (!this.trs[0].classList.contains('b-table-empty-row')) {
         const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);
 
@@ -582,7 +586,7 @@ export default {
     },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
+      /* const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
       const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
       console.log("HLA")
       if (respProyectos.status) {
@@ -595,7 +599,7 @@ export default {
         //   }
         // }
         this.filter()
-      }
+      } */
     },
     async getEmpresas(){
         const arrayFilters = []
@@ -606,12 +610,12 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getEmpresas(url, this.$store)
+       /*  const respSedes = await SedeService.getEmpresas(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
             console.log("SEDES AAA",this.sedes)
-        }
+        } */
     },
     async getData() {
       this.showLoading = true

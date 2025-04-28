@@ -198,7 +198,7 @@ export default {
   },
   mounted() {
     this.getData()
-    this.getEmpresas()
+    /* this.getEmpresas() */
   },
   
   methods: {
@@ -263,21 +263,21 @@ export default {
       let url =
         `?limit=1000000&order=asc&sort=description`
       
-      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
+      /* const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
       
       const respRoles = await RoleUserService.getRoles('', this.$store)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
-      }
+      } */
       
-      if (respRoles.status) {
+      /* if (respRoles.status) {
         this.roles = respRoles.data.rows
       }
-      this.getEmpresas()
+      this.getEmpresas() */
       this.showLoading = false
     },
     async getEmpresas(){
-      let url = `?limit=1000000&order=asc&sort=description&filter=` + JSON.stringify([{ keyContains: 'project.id', key: 'equals', value: this.items.projectId }])
+      /* let url = `?limit=1000000&order=asc&sort=description&filter=` + JSON.stringify([{ keyContains: 'project.id', key: 'equals', value: this.items.projectId }])
       console.log("URL", url)
 
       const respSedes = await SedeService.getEmpresas(url, this.$store)
@@ -285,7 +285,7 @@ export default {
       if (respSedes.status) {
         this.sedes = respSedes.data.rows
         console.log("SEDE ASSIGN", this.sedes)
-      }
+      } */
     },
     setData(item) {
       console.log('items', item)
