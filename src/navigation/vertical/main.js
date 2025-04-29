@@ -55,6 +55,7 @@ export default [
       {
         id: "cronograma",
         title: "Registros digitales",
+        route: "registros-digitales",
       },
     ]
   },

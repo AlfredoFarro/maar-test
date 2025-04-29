@@ -34,6 +34,18 @@ export default [{
     },
   },
   {
+    path: '/registros-digitales',
+    name: 'registros-digitales',
+    component: () => import('@/views/registros-digital/index.vue'),
+    meta: {
+      pageTitle: 'Registros Digitales',
+      breadcrumb: [{
+        text: 'Registros',
+        active: true,
+      }, ],
+    },
+  },
+  {
     path: '/registros/aprobar/:id',
     name: 'registros-aprobar',
     component: () => import('@/views/registros/index2.vue'),
@@ -468,4 +480,5 @@ export default [{
       }, ],
     },
   },
+  
 ]
