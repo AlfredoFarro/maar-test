@@ -47,10 +47,12 @@ export default [
       {
         id: "cronograma",
         title: "Registros consolidados",
+        hide:true,
       },
       {
         id: "cronograma",
         title: "Registros con imágenes",
+        hide:true,
       },
       {
         id: "cronograma",

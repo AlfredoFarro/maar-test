@@ -219,6 +219,7 @@ export default {
   },
   data() {
     return {
+      proyectosList: [], 
       isEdit: false,
       isDisabled: false,
       config: {
@@ -286,6 +287,9 @@ export default {
       }));
 
       return [todosOption, ...riesgos];
+    },
+    proyectos() {
+      return this.proyectosList || []; // Asegúrate que projects es el nombre correcto
     }
   },
   methods: {
@@ -324,6 +328,9 @@ export default {
       } finally {
         this.loadingRiesgos = false;
       }
+    },
+    getProjects() {
+      return this.proyectos // Retorna el array de proyectos que ya cargas
     },
     async cargarProyectos() {
       this.loadingProyectos = true;

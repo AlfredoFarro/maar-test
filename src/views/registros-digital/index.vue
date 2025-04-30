@@ -15,6 +15,31 @@
         @saved="handleSaved"
       >
     </add-edit>
+    <b-card-body>
+    <b-row>
+        <b-col md="6" class="mb-1">
+          <label>Filtrar por Proyecto</label>
+          <v-select
+            v-model="selectedProject"
+            :options="projectOptions"
+            :reduce="project => project.id"
+            label="name"
+            placeholder="Seleccione un proyecto"
+            @input="filterTable"
+            :clearable="true"
+          ></v-select>
+        </b-col>
+        <b-col md="6" class="mb-1">
+          <label>Filtrar por DNI</label>
+          <b-form-input
+            v-model="dniFilter"
+            placeholder="Ingrese DNI"
+            @input="filterTable"
+            disabled
+          />
+        </b-col>
+      </b-row>
+    </b-card-body>
       <b-card no-body ref="tableCard">
         <div class="table-responsive">
           <b-table
@@ -106,12 +131,14 @@ import moment from 'moment'
 import Vue from 'vue'
 import Ripple from 'vue-ripple-directive'
 import addEdit from './add-edit.vue'
+import vSelect from 'vue-select'
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
 export default {
   components: {
+    vSelect,
     addEdit
   },
   directives: {
@@ -133,7 +160,10 @@ export default {
       currentPage: 1,
       showEntrie: 10,
       totalElements: 0,
-      isAdd: false
+      isAdd: false,
+      selectedProject: null,
+      dniFilter: '',
+      projectOptions: [] // Ahora se llenará con los proyectos de add-edit
     }
   },
   computed: {
@@ -146,8 +176,26 @@ export default {
   },
   mounted() {
     this.getRecords()
+    this.loadProjects()
   },
   methods: {
+    async loadProjects() {
+      try {
+        // Opción 1: Cargar proyectos directamente en el padre
+        
+
+        // Opción 2: Alternativa si prefieres usar los proyectos de add-edit
+        await this.$nextTick();
+        if (this.$refs.userAdd && this.$refs.userAdd.getProjects) {
+          const projects = await this.$refs.userAdd.getProjects();
+          console.log('Proyectos desde add-edit:', projects);
+          this.projectOptions = projects || [];
+        }
+      } catch (error) {
+        console.error('Error al cargar proyectos:', error);
+        this.projectOptions = [];
+      }
+    },
     handleSaved() {
       this.getRecords() // Recarga los datos después de guardar
     },
@@ -212,10 +260,32 @@ export default {
         }
       
         // Llama al método setData del componente add-edit
-        this.$refs.userAdd.setData(editData)
+        this.$refs.userAdd.setData(editData).then(() => {
+          // Accedemos a los proyectos del componente hijo
+          this.projectOptions = this.$refs.userAdd.proyectos || []
+        })
       })
     },
-    
+    filterTable() {
+      // Mantenemos la selección pero no filtramos
+      console.log('Proyecto seleccionado:', this.selectedProject)
+      
+      // Opcional: Mostrar el proyecto seleccionado sin filtrar
+      this.$swal({
+        title: `Proyecto seleccionado: ${this.selectedProject ? this.getProjectName(this.selectedProject) : 'Ninguno'}`,
+        text: 'La función de filtrado está desactivada',
+        icon: 'info',
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      })
+    },
+
+    getProjectName(id) {
+      const project = this.projectOptions.find(p => p.id === id)
+      return project ? project.name : 'Desconocido'
+    },
     deleteAction(data) {
       this.$swal({
         title: '¿Desea eliminar este registro?',
