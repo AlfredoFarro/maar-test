@@ -15,7 +15,9 @@
     <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
-        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nuevo' }} observación</h5>
+        <h5 class="mb-0">
+          {{ isViewMode ? 'Visualizar' : isEdit ? 'Editar' : 'Agregar nuevo' }} observación
+        </h5>
         <feather-icon
           class="ml-1 cursor-pointer"
           icon="XIcon"
@@ -37,6 +39,7 @@
                 :reduce="proyecto => proyecto.id"  
                 placeholder="Seleccione un proyecto"
                 :loading="loadingProyectos"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -50,6 +53,7 @@
                 id="nombre"
                 placeholder="Nombre completo"
                 autocomplete="off"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -63,6 +67,7 @@
                 id="dni"
                 placeholder="Número de DNI"
                 autocomplete="off"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -76,6 +81,7 @@
                 class="form-control"
                 :config="config"
                 placeholder="Seleccione fecha"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -89,6 +95,7 @@
                 id="area"
                 placeholder="Área de trabajo"
                 autocomplete="off"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -101,6 +108,7 @@
                 v-model="items.estado"
                 :options="estadoOptions"
                 name="estado"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -115,6 +123,7 @@
                 label="name"
                 :reduce="cat => cat.id"  
                 placeholder="Seleccione categorías"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -133,6 +142,8 @@
                 :loading="loadingRiesgos"
                 :selectable="option => !items.riesgos.some(r => r.id === 0) || option.id === 0"
                 @input="handleRiesgosSelection"
+                :disabled="isViewMode"
+                :class="{ 'view-mode-select': isViewMode }"
               />
               <small v-if="items.riesgos.some(r => r.id === 0)" class="text-info d-block mt-1">
                 <feather-icon icon="InfoIcon" size="14"/> Todos los riesgos están seleccionados
@@ -151,6 +162,7 @@
                 id="descripcion"
                 placeholder="Describa la observación"
                 rows="3"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
@@ -164,15 +176,16 @@
                 id="medidas"
                 placeholder="Describa las medidas correctivas"
                 rows="3"
+                :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
           </validation-provider>
 
           <!-- Form Actions -->
-          <div class="d-flex mt-4 justify-content-end">
+          <div class="d-flex mt-4 justify-content-end" v-if="!isViewMode">
             <b-button
-              :disabled="invalid"
+              :disabled="invalid || isViewMode"
               variant="primary"
               class="mr-2"
               type="submit"
@@ -215,6 +228,10 @@ export default {
     isAdd: {
       type: Boolean,
       required: true
+    },
+    isViewMode: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -384,10 +401,12 @@ export default {
             riesgos: Array.isArray(item.riesgos) ? item.riesgos : [],
             puntos: Array.isArray(item.puntos) ? item.puntos : []
           };
-          this.isEdit = true;
+          this.isEdit = !item.isViewMode; // Solo será true si no es modo visualización
+          this.isViewMode = item.isViewMode || false; // Establece el modo visualización
         } else {
           this.resetForm();
           this.isEdit = false;
+          this.isViewMode = false;
         }
 
         // Resolver la promesa después de que Vue haya actualizado la vista
@@ -477,5 +496,78 @@ export default {
 
 .text-danger {
   font-size: 0.857rem;
+}
+/* Estilos para el v-select en modo visualización */
+.view-mode-select {
+  &.vs--disabled {
+    .vs__dropdown-toggle {
+      background-color: white !important;
+      border-color: #d8d6de !important;
+      cursor: default !important;
+    }
+    
+    .vs__selected {
+      color: #6e6b7b !important;
+      background-color: #f8f8f8 !important;
+      border-color: #d8d6de !important;
+    }
+    
+    .vs__search, 
+    .vs__clear, 
+    .vs__open-indicator {
+      display: none !important;
+    }
+    
+    .vs__actions {
+      display: none !important;
+    }
+  }
+}
+
+/* Estilos para otros campos deshabilitados */
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: white !important;
+  color: #6e6b7b !important;
+  border-color: #d8d6de !important;
+  cursor: default !important;
+  opacity: 1 !important;
+}
+
+/* Estilos para radio buttons deshabilitados */
+.custom-control-input:disabled ~ .custom-control-label {
+  color: #6e6b7b !important;
+  cursor: default !important;
+}
+
+/* Estilos para textareas deshabilitadas */
+textarea:disabled {
+  background-color: white !important;
+  color: #6e6b7b !important;
+  border-color: #d8d6de !important;
+  cursor: default !important;
+  resize: none !important;
+}
+/* Estilos para flatpickr deshabilitado */
+.flatpickr-input[readonly] {
+  background-color: white !important;
+  cursor: default !important;
+}
+.view-mode-select {
+  &.vs--disabled {
+    .vs__selected {
+      padding: 0.25rem 0.5rem;
+      background-color: #005193 !important;
+      border-color: #005193 !important;
+      color: white !important;
+      border-radius: 5px;
+      margin: 2px;
+      display: inline-flex;
+    }
+    
+    .vs__deselect {
+      display: none;
+    }
+  }
 }
 </style>

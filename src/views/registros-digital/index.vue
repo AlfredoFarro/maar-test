@@ -74,6 +74,15 @@
             <template #cell(actions)="data">
               <b-button
                 size="sm"
+                @click.prevent="view(data.item)"
+                v-b-tooltip.noninteractive.hover.left="'Ver detalles'"
+                variant="flat-primary"
+                class="mr-1"
+              >
+                <feather-icon size="20" icon="EyeIcon" />
+              </b-button>
+              <b-button
+                size="sm"
                 @click.prevent="edit(data.item)"
                 v-b-tooltip.noninteractive.hover.left="'Editar'"
                 variant="flat-success"
@@ -242,40 +251,71 @@ export default {
     },
     
     edit(item) {
-  this.isAdd = true; // Abre el sidebar
-  this.$nextTick(() => {
-    const editData = {
-      id: item.id,
-      proyecto: item.project ? item.project.id : '',
-      nombre: item.worker_fullname || '',
-      dni: item.worker_id_number || '',
-      fecha: item.completed ? new Date(item.completed) : new Date(),
-      area: item.area || '',
-      estado: item.flag === 0 ? 'inseguro' : 'seguro',
-      categorias: item.category ? item.category.id : '',
-      riesgos: item.record_risk ? item.record_risk.map(r => ({
-        id: r.risk.id,
-        name: r.risk.name
-      })) : [],
-      descripcion: item.description || '',
-      medidas: item.actions || item.corrective_measures || ''
-    };
-  
-    // Verifica que la referencia y el método existan
-    if (this.$refs.userAdd && typeof this.$refs.userAdd.setData === 'function') {
-      this.$refs.userAdd.setData(editData)
-        .then(() => {
-          // Acciones después de cargar los datos
-          this.projectOptions = this.$refs.userAdd.proyectos || [];
-        })
-        .catch(error => {
-          console.error('Error al cargar datos en el formulario:', error);
-        });
-    } else {
-      console.error('Componente add-edit no está disponible');
-    }
-  });
-},
+      this.isAdd = true; // Abre el sidebar
+      this.$nextTick(() => {
+        const editData = {
+          id: item.id,
+          proyecto: item.project ? item.project.id : '',
+          nombre: item.worker_fullname || '',
+          dni: item.worker_id_number || '',
+          fecha: item.completed ? new Date(item.completed) : new Date(),
+          area: item.area || '',
+          estado: item.flag === 0 ? 'inseguro' : 'seguro',
+          categorias: item.category ? item.category.id : '',
+          riesgos: item.record_risk ? item.record_risk.map(r => ({
+            id: r.risk.id,
+            name: r.risk.name
+          })) : [],
+          descripcion: item.description || '',
+          medidas: item.actions || item.corrective_measures || ''
+        };
+      
+        // Verifica que la referencia y el método existan
+        if (this.$refs.userAdd && typeof this.$refs.userAdd.setData === 'function') {
+          this.$refs.userAdd.setData(editData)
+            .then(() => {
+              // Acciones después de cargar los datos
+              this.projectOptions = this.$refs.userAdd.proyectos || [];
+            })
+            .catch(error => {
+              console.error('Error al cargar datos en el formulario:', error);
+            });
+        } else {
+          console.error('Componente add-edit no está disponible');
+        }
+      });
+    },
+    view(item) {
+      this.isAdd = true; // Abre el sidebar
+      this.$nextTick(() => {
+        const viewData = {
+          id: item.id,
+          proyecto: item.project ? item.project.id : '',
+          nombre: item.worker_fullname || '',
+          dni: item.worker_id_number || '',
+          fecha: item.completed ? new Date(item.completed) : new Date(),
+          area: item.area || '',
+          estado: item.flag === 0 ? 'inseguro' : 'seguro',
+          categorias: item.category ? item.category.id : '',
+          riesgos: item.record_risk ? item.record_risk.map(r => ({
+            id: r.risk.id,
+            name: r.risk.name
+          })) : [],
+          descripcion: item.description || '',
+          medidas: item.actions || item.corrective_measures || '',
+          isViewMode: true // Agregamos esta bandera para modo visualización
+        };
+      
+        if (this.$refs.userAdd && typeof this.$refs.userAdd.setData === 'function') {
+          this.$refs.userAdd.setData(viewData)
+            .catch(error => {
+              console.error('Error al cargar datos para visualización:', error);
+            });
+        } else {
+          console.error('Componente add-edit no está disponible');
+        }
+      });
+    },
     filterTable() {
       // Mantenemos la selección pero no filtramos
       console.log('Proyecto seleccionado:', this.selectedProject)
@@ -403,4 +443,5 @@ export default {
     }
   }
 }
+
 </style>
