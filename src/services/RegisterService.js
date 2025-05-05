@@ -13,6 +13,10 @@ const RegisterService = {
         var resp = await VueStoreService.patch("record/"+record_id,data,store)
         return resp;
     },
+    async deleteRecord(record_id,store){
+        var resp = await VueStoreService.delete("record/"+record_id,store)
+        return resp;
+    },
 }
 
 export default RegisterService;

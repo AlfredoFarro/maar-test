@@ -28,7 +28,7 @@
       <validation-observer #default="{ invalid }" ref="refFormObserver">
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
           <!-- Proyecto -->
-          <validation-provider #default="{ errors }" name="proyecto" rules="required">
+          <validation-provider #default="{ errors }" name="proyecto" >
             <b-form-group label="Proyecto" label-for="proyecto">
               <v-select
                 v-model="items.proyecto"
@@ -43,7 +43,7 @@
           </validation-provider>
 
           <!-- Nombre y Apellidos -->
-          <validation-provider #default="{ errors }" name="nombre" rules="required">
+          <validation-provider #default="{ errors }" name="nombre" >
             <b-form-group label="Nombre y Apellidos" label-for="nombre">
               <b-form-input
                 v-model="items.nombre"
@@ -56,7 +56,7 @@
           </validation-provider>
 
           <!-- DNI -->
-          <validation-provider #default="{ errors }" name="dni" rules="required|numeric">
+          <validation-provider #default="{ errors }" name="dni" >
             <b-form-group label="DNI" label-for="dni">
               <b-form-input
                 v-model="items.dni"
@@ -69,7 +69,7 @@
           </validation-provider>
 
           <!-- Fecha -->
-          <validation-provider #default="{ errors }" name="fecha" rules="required">
+          <validation-provider #default="{ errors }" name="fecha" >
             <b-form-group label="Fecha" label-for="fecha">
               <flat-pickr
                 v-model="items.fecha"
@@ -82,7 +82,7 @@
           </validation-provider>
 
           <!-- Área -->
-          <validation-provider #default="{ errors }" name="area" rules="required">
+          <validation-provider #default="{ errors }" name="area" >
             <b-form-group label="Área" label-for="area">
               <b-form-input
                 v-model="items.area"
@@ -95,7 +95,7 @@
           </validation-provider>
 
           <!-- Estado (Seguro/Inseguro) -->
-          <validation-provider #default="{ errors }" name="estado" rules="required">
+          <validation-provider #default="{ errors }" name="estado" >
             <b-form-group label="Estado" label-for="estado">
               <b-form-radio-group
                 v-model="items.estado"
@@ -107,7 +107,7 @@
           </validation-provider>
 
           <!-- Categorías -->
-          <validation-provider #default="{ errors }" name="categorias" rules="required">
+          <validation-provider #default="{ errors }" name="categorias" >
             <b-form-group label="Categorías" label-for="categorias">
               <v-select
                 v-model="items.categorias"
@@ -121,7 +121,7 @@
           </validation-provider>
 
           <!-- Riesgos -->
-          <validation-provider #default="{ errors }" name="riesgos" rules="required">
+          <validation-provider #default="{ errors }" name="riesgos" >
             <b-form-group label="Riesgos" label-for="riesgos">
               <v-select
                 v-model="items.riesgos"
@@ -144,7 +144,7 @@
 
 
           <!-- Descripción de la observación -->
-          <validation-provider #default="{ errors }" name="descripcion" rules="required">
+          <validation-provider #default="{ errors }" name="descripcion" >
             <b-form-group label="Descripción de la observación" label-for="descripcion">
               <b-form-textarea
                 v-model="items.descripcion"
@@ -157,7 +157,7 @@
           </validation-provider>
 
           <!-- Medidas correctivas -->
-          <validation-provider #default="{ errors }" name="medidas" rules="required">
+          <validation-provider #default="{ errors }" name="medidas" >
             <b-form-group label="Medidas Correctivas" label-for="medidas">
               <b-form-textarea
                 v-model="items.medidas"
@@ -288,11 +288,16 @@ export default {
 
       return [todosOption, ...riesgos];
     },
-    proyectos() {
+    proyectos1() {
       return this.proyectosList || []; // Asegúrate que projects es el nombre correcto
     }
   },
   methods: {
+    parseDateToISO1(dateStr) {
+      // Asume formato DD/MM/YYYY
+      const [day, month, year] = dateStr.split('/');
+      return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`).toISOString();
+    },
     async cargarCategorias() {
       try {
         const response = await GroupService.getGroups('', this.$store)
@@ -372,19 +377,24 @@ export default {
       this.items.riesgos = selected;
     },
     setData(item) {
-      if (item) {
-        this.items = {
-          ...item,
-          // Asegúrate de que categorías viene como objeto {id, name} o conviértelo
-          categorias: this.categoriasCompletas.find(c => c.id === item.categoryId) || null,
-          riesgos: Array.isArray(item.riesgos) ? item.riesgos : [],
-          puntos: Array.isArray(item.puntos) ? item.puntos : []
+      return new Promise((resolve) => {
+        if (item) {
+          this.items = {
+            ...item,
+            riesgos: Array.isArray(item.riesgos) ? item.riesgos : [],
+            puntos: Array.isArray(item.puntos) ? item.puntos : []
+          };
+          this.isEdit = true;
+        } else {
+          this.resetForm();
+          this.isEdit = false;
         }
-        this.isEdit = true
-      } else {
-        this.resetForm()
-        this.isEdit = false
-      }
+
+        // Resolver la promesa después de que Vue haya actualizado la vista
+        this.$nextTick(() => {
+          resolve();
+        });
+      });
     },
     resetForm() {
       this.items = {
@@ -404,13 +414,50 @@ export default {
         this.$refs.refFormObserver.reset()
       }
     },
-    onSubmit() {
-      // Prepara los datos para enviar
+    
+    async onSubmit() {
+      this.isDisabled = true;
+        
+      try {
+        
+        // Preparar los datos para enviar en el formato que espera tu API
+        const formData = {
+          projectId: this.items.proyecto,
+          worker_fullname: this.items.nombre,
+          worker_id_number: this.items.dni,
+          completed: this.items.fecha ? this.parseDateToISO1(this.items.fecha) : null,
+          area: this.items.area,
+          flag: this.items.estado === 'seguro' ? 1 : 0,
+          categoryId: Number(this.items.categorias),
+          description: this.items.descripcion,
+          actions: this.items.medidas,
+          risks: this.items.riesgos
+          ? this.items.riesgos
+              .filter(r => r.id !== 0) // Filtra "Todos" si existe
+              .map(r => ({ id: r.id }))
+          : []
+        };
       
-      // Implementa la lógica de guardado aquí
-      this.$emit('saved', formData)
-      this.$emit('update:is-add', false)
-      this.resetForm()
+        let response;
+      
+        if (this.isEdit) {
+          // Actualizar registro existente
+          response = await RegisterService.updateRecord(this.items.id, formData, this.$store);
+        }
+      
+        if (response && response.status !== false) {
+          // Emitir evento para actualizar la lista
+          this.$emit('saved');
+          this.$emit('update:is-add', false);
+          this.resetForm();
+        } else {
+          throw new Error(response?.message || 'Error al actualizar el registro');
+        }
+      } catch (error) {
+        console.error('Error al guardar registro:', error);
+      } finally {
+        this.isDisabled = false;
+      }
     }
   }
 }

@@ -152,7 +152,7 @@ export default {
         { key: 'number', label: 'N°', sortable: true },
         { key: 'project', label: 'Proyecto', sortable: true, formatter: (value) => value.name },
         { key: 'user', label: 'Usuario', sortable: true, formatter: (value) => value.fullname},
-        { key: 'date', label: 'Fecha', sortable: true, formatter: this.formatDate },
+        { key: 'date', label: 'Fecha', sortable: true },
         { key: 'actions', label: 'Acciones' }
       ],
       allRecords: [],
@@ -202,31 +202,35 @@ export default {
     formatDate(date) {
       return moment(date).format('DD/MM/YYYY HH:mm')
     },
-    
+    async deleteData(id) {
+      this.showLoading = true;
+      try {
+        const response = await RegisterService.deleteRecord(id, this.$store);
+
+        if (response.status !== false) {
+          
+
+          // Recargar los registros después de eliminar
+          await this.getRecords();
+        } else {
+          throw new Error(response.message || 'Error al eliminar el registro');
+        }
+      } catch (error) {
+        console.error('Error al eliminar registro:', error);
+        
+      } finally {
+        this.showLoading = false;
+      }
+    },
     async getRecords() {
       this.showLoading = true
       try {
         const response = await RegisterService.getRecord('', this.$store)
-
+        
         if (response.status !== false) {
-          const originalRecords = response.data.rows || []
-        
-          // Aquí expandimos los records: uno por cada record_risk
-          const expandedRecords = []
-          originalRecords.forEach(record => {
-            if (record.record_risk && record.record_risk.length > 0) {
-              record.record_risk.forEach(risk => {
-                expandedRecords.push({
-                  ...record,
-                  single_risk: risk   // Guardamos el riesgo individual por si luego quieres mostrar algo más
-                })
-              })
-            }
-          })
-        
-          this.allRecords = expandedRecords
-          this.filteredRecords = expandedRecords
-          this.totalElements = expandedRecords.length
+          this.allRecords = response.data.rows
+          this.filteredRecords = this.recordsWithRisks
+          this.totalElements = this.filteredRecords.length
         } else {
           console.error('Error al obtener registros:', response)
         }
@@ -238,34 +242,40 @@ export default {
     },
     
     edit(item) {
-      this.isAdd = true // Abre el sidebar
-      this.$nextTick(() => {
-        // Mapea los datos del item al formato que espera el componente add-edit
-        const editData = {
-          id: item.id,
-          proyecto: item.project ? item.project.id : '',
-          nombre: item.user ? item.user.fullname : '', // Usa user.fullname
-          dni: item.user ? item.user.document : '',    // Usa user.document
-          fecha: item.completed ? new Date(item.completed) : new Date(),
-          area: item.area || '',
-          estado: item.status || 'seguro',
-          // Para categorías - busca la categoría correspondiente al categoryId
-          categoryId: item.categoryId || null, // Envía solo el ID de la categoría
-          riesgos: item.single_risk ? [{
-            id: item.single_risk.risk.id,
-            name: item.single_risk.risk.name
-          }] : [],
-          descripcion: item.description || '',
-          medidas: item.actions || item.corrective_measures || '' // Asegúrate de usar el campo correcto
-        }
-      
-        // Llama al método setData del componente add-edit
-        this.$refs.userAdd.setData(editData).then(() => {
-          // Accedemos a los proyectos del componente hijo
-          this.projectOptions = this.$refs.userAdd.proyectos || []
+  this.isAdd = true; // Abre el sidebar
+  this.$nextTick(() => {
+    const editData = {
+      id: item.id,
+      proyecto: item.project ? item.project.id : '',
+      nombre: item.worker_fullname || '',
+      dni: item.worker_id_number || '',
+      fecha: item.completed ? new Date(item.completed) : new Date(),
+      area: item.area || '',
+      estado: item.flag === 0 ? 'inseguro' : 'seguro',
+      categorias: item.category ? item.category.id : '',
+      riesgos: item.record_risk ? item.record_risk.map(r => ({
+        id: r.risk.id,
+        name: r.risk.name
+      })) : [],
+      descripcion: item.description || '',
+      medidas: item.actions || item.corrective_measures || ''
+    };
+  
+    // Verifica que la referencia y el método existan
+    if (this.$refs.userAdd && typeof this.$refs.userAdd.setData === 'function') {
+      this.$refs.userAdd.setData(editData)
+        .then(() => {
+          // Acciones después de cargar los datos
+          this.projectOptions = this.$refs.userAdd.proyectos || [];
         })
-      })
-    },
+        .catch(error => {
+          console.error('Error al cargar datos en el formulario:', error);
+        });
+    } else {
+      console.error('Componente add-edit no está disponible');
+    }
+  });
+},
     filterTable() {
       // Mantenemos la selección pero no filtramos
       console.log('Proyecto seleccionado:', this.selectedProject)
@@ -303,13 +313,7 @@ export default {
         }
       })
     },
-    
-    async deleteData(id) {
-      // Implementa tu lógica de eliminación aquí
-      console.log('Eliminar registro con ID:', id)
-      // Después de eliminar, actualiza los datos:
-      // this.getRecords()
-    },
+  
     
     cambioPagina(page) {
       this.currentPage = page
