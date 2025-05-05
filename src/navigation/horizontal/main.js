@@ -235,6 +235,13 @@ export default [
     route: 'registros-operativo-aprobar',
   },
   {
+    header: 'Registros Digitales',
+    icon: 'FolderIcon',
+    id: 'registros-digitales',
+    title: 'Registros Digitales',
+    route: 'registros-digitales',
+  },
+  {
     header: 'Formularios',
     icon: 'FolderIcon',
     id: 'formularios',
