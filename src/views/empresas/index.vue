@@ -75,7 +75,7 @@
         <b-col v-for="(item, index) in records" :key="index" cols="12" sm="6" md="4" lg="3">
           <div class="card_project d-flex flex-column mb-2">
             <div class="card_img">
-              <img :src="item.url ? apiurl + item.url : sideImg" :alt="'imagen_project_' + index" />
+              <img :src="item.url_image ? item.url_image : sideImg" :alt="'imagen_project_' + index" />
             </div>
 
             <div class="card_content px-2 py-2 d-flex flex-column">
