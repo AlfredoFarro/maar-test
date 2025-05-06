@@ -337,6 +337,18 @@ export default [{
     },
   },
   {
+    path: '/riesgos',
+    name: 'riesgos',
+    component: () => import('@/views/risks/index.vue'),
+    meta: {
+      pageTitle: 'Riesgos',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
+  {
     path: "/dashboard",
     name: "dashboard",
     component: () => import("@/views/dashboard/index.vue"),

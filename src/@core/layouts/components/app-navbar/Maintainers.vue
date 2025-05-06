@@ -103,6 +103,12 @@ export default {
         title: 'Usuarios',
         route: 'usuarios',
       },
+      {
+        icon: 'GridIcon',
+        id: 'riesgos',
+        title: 'Riesgos',
+        route: 'riesgos',
+      },
 /*       {
         icon: 'FolderIcon',
         id: 'plantilla',

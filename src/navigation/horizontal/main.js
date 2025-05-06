@@ -282,6 +282,14 @@ export default [
     hide: true,
   },
   {
+    header: 'Riesgos',
+    icon: 'FolderIcon',
+    id: 'riesgos',
+    title: 'Riesgos',
+    route: 'riesgos',
+    hide: true,
+  },
+  {
     header: 'Seleccionar Proyecto',
     icon: 'FolderIcon',
     id: 'seleccionar-proyecto',
