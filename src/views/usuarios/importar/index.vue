@@ -348,7 +348,7 @@
 <script>
 /* eslint-disable */
 import UserService from '@/services/UserService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import FormService from '@/services/FormService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
@@ -1108,7 +1108,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url2, this.$store)
       let arrayFilters = []
       arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.project_id })
       const url =

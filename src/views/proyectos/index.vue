@@ -185,7 +185,7 @@
 <script>
 /* eslint-disable */
 import SedeService from '@/services/SedeService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -582,7 +582,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc`
-      const respEmpresas = await ProjectsService.getEmpresas(url2, this.$store)
+      const respEmpresas = await EnterpriseService.getEnterprise(url2, this.$store)
       console.log("aaaaaaa",respEmpresas.data.rows)
       console.log("HLA")
       if (respEmpresas.status) {

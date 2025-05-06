@@ -446,7 +446,7 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { FormWizard, TabContent } from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import vSelect from 'vue-select'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import UserService from '@/services/UserService'
 import home from '@/views/home.vue'
 import VueBus from 'vue-bus';
@@ -694,7 +694,7 @@ export default {
 
         if (success) {
           let resp = ''
-          resp = await ProjectsService.saveProject(data, this.$store)
+          resp = await EnterpriseService.saveEnterprise(data, this.$store)
           
           console.log('datos', data)
           console.log('resp', resp)

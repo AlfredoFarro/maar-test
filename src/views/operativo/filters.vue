@@ -50,7 +50,7 @@ import { BootstrapVue } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { required } from '@validations'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import vSelect from 'vue-select'
 Vue.use(BootstrapVue)
 export default {
@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     async getProjects() {
-      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise('', this.$store)
       console.log('respProyectos', respProyectos)
       if (respProyectos.status) {
         this.records = respProyectos.data.rows

@@ -180,7 +180,7 @@
 /* eslint-disable */
 import SedeService from '@/services/SedeService'
 import GroupService from '@/services/GroupService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -294,7 +294,7 @@ export default {
   mounted() {
     this.filter()
     this.getSelect()
-    //this.getEmpresas()
+    //this.getEnterprise()
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
     this.tableContainer = this.$el.querySelector(".table-overflow");
@@ -587,7 +587,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       /* const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url2, this.$store)
       console.log("HLA")
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
@@ -601,7 +601,7 @@ export default {
         this.filter()
       } */
     },
-    async getEmpresas(){
+    async getEnterprise(){
         const arrayFilters = []
         this.sede = null
         if (this.project_id != null && this.project_id != '') {
@@ -610,7 +610,7 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-       /*  const respSedes = await SedeService.getEmpresas(url, this.$store)
+       /*  const respSedes = await SedeService.getEnterprise(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows

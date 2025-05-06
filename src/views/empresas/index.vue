@@ -205,7 +205,7 @@ import filters from './filters.vue'
 import { BootstrapVue, BootstrapVueIcons, VBTooltip } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import addEdit from './add-edit.vue'
 
 Vue.use(BootstrapVue)
@@ -291,7 +291,7 @@ export default {
       const url =
         `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
         JSON.stringify(this.arrayFilters)
-      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url, this.$store)
       console.log('respProyectos', respProyectos)
       if (respProyectos.status) {
         this.records = respProyectos.data.rows
@@ -336,7 +336,7 @@ export default {
     },
     async deleteData(id) {
       console.log('id', id)
-      const resp = await ProjectsService.deleteProject(id, this.$store)
+      const resp = await EnterpriseService.deleteEnterprise(id, this.$store)
       if (resp.status) {
         this.currentPage = 1
         this.$swal({

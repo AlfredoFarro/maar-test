@@ -506,7 +506,7 @@ export default {
     consultItems(){
       console.log("CONSULTANDO ITEMS", this.items.sedeCode)
     },
-    async getEmpresas(){
+    async getEnterprise(){
         const arrayFilters = []
         this.items.sedeCode = null
         console.log("PROJECT IDddd", this.projectId)
@@ -517,7 +517,7 @@ export default {
         `?limit=10000&filter=` +
         JSON.stringify(arrayFilters)
         console.log("URL SEDES",url)
-        const respSedes = await SedeService.getEmpresas(url, this.$store)
+        const respSedes = await SedeService.getEnterprise(url, this.$store)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
             console.log("SEDES",this.sedes)

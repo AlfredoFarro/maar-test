@@ -498,7 +498,7 @@
 import TravelService from '@/services/TravelService'
 import ActivityService from '@/services/ActivityService'
 import SedeService from '@/services/SedeService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import UserService from '@/services/UserService'
 import FormService from '@/services/FormService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
@@ -785,7 +785,7 @@ export default {
   mounted() {
     this.filter()
     this.getSelect()
-    this.getEmpresas()
+    this.getEnterprise()
 
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
@@ -842,7 +842,7 @@ export default {
           })
         }
     },
-    async getEmpresas(){
+    async getEnterprise(){
         const arrayFilters = []
         this.items.sedeId = null
         if (this.project_id != null && this.project_id != '') {
@@ -851,7 +851,7 @@ export default {
         const url =
         `?limit=10000&order=asc&sort=description&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getEmpresas(url, this.$store)
+        const respSedes = await SedeService.getEnterprise(url, this.$store)
         console.log("URL sedes", url)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
@@ -1347,7 +1347,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url2, this.$store)
       console.log("PROYECTOS", respProyectos)
       let arrayFilters = []
       arrayFilters.push({ keyContains: 'role.description', key: 'equals', value: 'piloto' })

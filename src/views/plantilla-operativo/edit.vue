@@ -26,7 +26,7 @@
                                             :reduce="(proyectos) => proyectos.id"
                                             placeholder="Proyecto"
                                             v-model="items.project_id"
-                                            @input="getEmpresas(), getGroupsCodes()"
+                                            @input="getEnterprise(), getGroupsCodes()"
                                             class="select-obra"
                                         >
                                             <template v-slot:selected-option="option">
@@ -315,7 +315,7 @@ import OperateService from '@/services/OperateService'
 import GroupService from '@/services/GroupService'
 import SedeService from '@/services/SedeService'
 import FormService from '@/services/FormService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -403,9 +403,9 @@ export default {
     },
     methods: {
         async getData(){
-            this.getEmpresas()
+            this.getEnterprise()
             this.getFormularios()
-            this.getEmpresas()
+            this.getEnterprise()
             await this.setData()
             await this.getGroupsCodes()
         },
@@ -551,10 +551,10 @@ export default {
             this.selectedRow[this.selectedField] = data;
             this.modalOpen = false;
         },
-        async getEmpresas(){
+        async getEnterprise(){
             const user = JSON.parse(localStorage.getItem('userData'))
             const url2 = `?limit=100000&order=asc&sort=code`
-            const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
+            const respProyectos = await EnterpriseService.getEnterprise(url2, this.$store)
             if (respProyectos.status) {
                 this.proyectos = respProyectos.data.rows
                 console.log("PROYECTOS",this.proyectos)
@@ -569,7 +569,7 @@ export default {
                 console.log("FORMULARIOS",this.formularios)
             }
         },
-        async getEmpresas(){
+        async getEnterprise(){
             const arrayFilters = []
             if (this.items.project_id != null && this.items.project_id != '') {
                 arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.items.project_id })
@@ -577,7 +577,7 @@ export default {
             const url =
             `?limit=10000&order=asc&sort=description&filter=` +
             JSON.stringify(arrayFilters)
-            const respSedes = await SedeService.getEmpresas(url, this.$store)
+            const respSedes = await SedeService.getEnterprise(url, this.$store)
             if (respSedes.status) {
                 this.sedes = respSedes.data.rows
                 console.log("SEDES",this.sedes)

@@ -1,30 +1,13 @@
 <template>
   <!-- eslint-disable -->
-  <b-sidebar
-    id="add-proyecto"
-    :visible="isAdd"
-    bg-variant="white"
-    sidebar-class="sidebar-lg"
-    shadow
-    backdrop
-    no-header
-    right
-    no-close-on-backdrop
-    @change="(val) => $emit('update:is-add', val)"
-  >
+  <b-sidebar id="add-proyecto" :visible="isAdd" bg-variant="white" sidebar-class="sidebar-lg" shadow backdrop no-header
+    right no-close-on-backdrop @change="(val) => $emit('update:is-add', val)">
     <template #default="{ hide }">
       <!-- Header -->
-      <div
-        class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1"
-      >
+      <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nueva' }} empresa</h5>
 
-        <feather-icon
-          class="ml-1 cursor-pointer"
-          icon="XIcon"
-          size="16"
-          @click=";[hide(), resetForm()]"
-        />
+        <feather-icon class="ml-1 cursor-pointer" icon="XIcon" size="16" @click=";[hide(), resetForm()]" />
       </div>
 
       <!-- BODY -->
@@ -32,57 +15,41 @@
         <!-- Form -->
 
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
-          
+
           <validation-provider #default="{ errors }" name="ruc" rules="requeridoE">
             <b-form-group label="RUC" label-for="ruc">
-              <b-form-input
-                v-model="items.ruc"
-                id="ruc"
-                placeholder="RUC"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
+              <b-form-input v-model="items.ruc" id="ruc" placeholder="RUC" autocomplete="off" />
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+                }}</small>
             </b-form-group>
           </validation-provider>
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
             <b-form-group label="Nombre de la Empresa" label-for="name">
-              <b-form-input
-                v-model="items.name"
-                id="name"
-                placeholder="Nombre de la Empresa"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
+              <b-form-input v-model="items.name" id="name" placeholder="Nombre de la Empresa" autocomplete="off" />
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+                }}</small>
             </b-form-group>
           </validation-provider>
-          
+
+          <validation-provider #default="{ errors }" name="image" rules="">
+            <b-form-group label="Imagen de la Empresa" label-for="image">
+              <b-form-file v-model="items.image" id="image" placeholder="Seleccionar archivo..."
+                accept="image/*"></b-form-file>
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+                }}</small>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Form Actions -->
           <div class="d-flex mt-2 justify-content-end">
-            <b-button
-              :disabled="invalid"
-              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-              variant="primary"
-              class="mr-2"
-              type="submit"
-            >
+            <b-button :disabled="invalid" v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mr-2"
+              type="submit">
               <b-spinner v-if="isDisabled" small />
               <span v-if="isDisabled" class="px-1">guardando...</span>
               <span v-else>{{ isEdit ? 'Actualizar' : 'Agregar' }}</span>
             </b-button>
-            <b-button
-              v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-              type="button"
-              variant="outline-secondary"
-              @click=";[hide(), resetForm()]"
-            >
+            <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="button" variant="outline-secondary"
+              @click=";[hide(), resetForm()]">
               Cancel
             </b-button>
           </div>
@@ -106,7 +73,7 @@ import flatPickr from 'vue-flatpickr-component'
 import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
 import TravelService from '@/services/TravelService'
 import UserService from '@/services/UserService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import moment from 'moment'
 Vue.use(BootstrapVue)
 export default {
@@ -144,7 +111,7 @@ export default {
       tabIndex: 0,
       records: [],
       proyectos: [],
-      
+
       config: {
         plugins: [
           ShortcutButtonsPlugin({
@@ -202,8 +169,8 @@ export default {
       leadTime: '',
       project_id: this.$parent.$parent.project_id,
       items: {
-          ruc: '',
-          name: '',
+        ruc: '',
+        name: '',
       },
       proyecto_id: null,
       temp: {},
@@ -213,10 +180,10 @@ export default {
   mounted() {
     this.getData()
   },
-  
+
   methods: {
     validDate(fecha) {
-     
+
       if (fecha != null) {
         const year = new Date(fecha).getFullYear()
         if (year <= 1970) {
@@ -265,20 +232,20 @@ export default {
         }
       }
     },
-    async getData(id=null) {
+    async getData(id = null) {
       this.showLoading = true
       let url =
         `?filter=` + JSON.stringify([{ keyContains: 'project_id', key: 'equals', value: id }])
-      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise('', this.$store)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
       }
-      
+
       this.showLoading = false
     },
     setData(item) {
       console.log('items', item)
-      
+
       if (item) {
         console.log('items add-edit', item)
         this.temp = item
@@ -306,54 +273,60 @@ export default {
         name: '',
       }
     },
-    async onSubmit(data) {
-      console.log('data', data)
-      this.$refs.refFormObserver.validate().then(async (success) => {
-        this.showLoading = true
-        console.log('data TO SAVE', data)
-        if (success) {
-          let resp = ''
-          console.log('data TO SAVE', data)
+async onSubmit() {
+  this.$refs.refFormObserver.validate().then(async (success) => {
+    this.showLoading = true;
+    if (success) {
+      const formData = new FormData();
+      formData.append('name', this.items.name);
+      formData.append('ruc', this.items.ruc);
 
-          if (this.isEdit == false) {
-            resp = await ProjectsService.saveProject(data, this.$store)
-          } else {
-            console.log("PROYECTO ID ANTES DE UPDATE", this.proyecto_id)
-            resp = await ProjectsService.updateProject(this.proyecto_id, data, this.$store)
-            console.log("UPDATEADO")
-          }
-          console.log('resp', resp)
-          if (resp.status) {
-            this.$swal({
-              title: this.isEdit == true ? 'Actualizado' : 'Registrado',
-              text: 'Los datos han sido ' + (this.isEdit == true ? 'actualizado.' : 'registrado.'),
-              icon: 'success',
-              customClass: {
-                confirmButton: 'btn btn-primary'
-              },
-              buttonsStyling: false
-            })
-            this.$parent.$parent.getData()
-            this.$emit('update:is-add', false)
-            this.resetForm()
-          } else {
-            this.$swal({
-              title: 'Error!',
-              text: 
-                  'Ocurrió un error al ' +
-                  (this.isEdit == true ? 'actualizar' : 'registrar') +
-                  ' los datos del proyecto.',
-              icon: 'error',
-              customClass: {
-                confirmButton: 'btn btn-primary'
-              },
-              buttonsStyling: false
-            })
-          }
-        }
-        this.showLoading = false
-      })
+      // Agregar la imagen si se ha seleccionado un archivo
+      if (this.items.image) {
+        formData.append('image', this.items.image);
+      }
+
+      let resp = '';
+
+      if (!this.isEdit) {
+        resp = await EnterpriseService.saveEnteprise(formData, this.$store); // Enviar FormData
+      } else {
+        formData.append('_method', 'PATCH'); // Para simular el método PATCH en algunos backends
+        resp = await EnterpriseService.updateEnterprise(this.proyecto_id, formData, this.$store); // Enviar FormData
+      }
+
+      console.log('resp', resp);
+      if (resp.status) {
+        this.$swal({
+          title: this.isEdit ? 'Actualizado' : 'Registrado',
+          text: 'Los datos han sido ' + (this.isEdit ? 'actualizado.' : 'registrado.'),
+          icon: 'success',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        });
+        this.$parent.$parent.getData();
+        this.$emit('update:is-add', false);
+        this.resetForm();
+      } else {
+        this.$swal({
+          title: 'Error!',
+          text:
+            'Ocurrió un error al ' +
+            (this.isEdit ? 'actualizar' : 'registrar') +
+            ' los datos del proyecto.',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        });
+      }
     }
+    this.showLoading = false;
+  });
+}
   }
 }
 </script>

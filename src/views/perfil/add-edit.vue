@@ -124,7 +124,7 @@ import flatPickr from 'vue-flatpickr-component'
 import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
 import TravelService from '@/services/TravelService'
 import UserService from '@/services/UserService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import RoleUserService from '@/services/RoleUserService'
 import moment from 'moment'
 Vue.use(BootstrapVue)
@@ -295,7 +295,7 @@ export default {
       this.showLoading = true
       let url =
         `?order=asc&sort=description`
-      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url, this.$store)
       console.log('respProyectos', respProyectos)
       const respRoles = await RoleUserService.getRoles('', this.$store)
       if (respProyectos.status) {

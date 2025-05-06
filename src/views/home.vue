@@ -93,7 +93,7 @@ import Vue from 'vue'
 import { BootstrapVue, BootstrapVueIcons, VBTooltip } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import { getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 import router from '@/router/index'
 import VueBus from 'vue-bus';
@@ -173,7 +173,7 @@ export default {
       const url =
         `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
         JSON.stringify(this.arrayFilters)
-      const respProyectos = await ProjectsService.getEmpresas(url, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url, this.$store)
      
       if (respProyectos.status) {
         this.records = respProyectos.data.rows

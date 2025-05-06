@@ -205,7 +205,7 @@
 import SedeService from '@/services/SedeService'
 import TemplateService from '@/services/TemplateService'
 import UserService from '@/services/UserService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -322,7 +322,7 @@ export default {
     });
   },
   mounted() {
-    this.getEmpresas()
+    this.getEnterprise()
     this.getSelect()
     this.filter()
 
@@ -677,7 +677,7 @@ export default {
         JSON.stringify(arrayFilters)
       const respUsers = await UserService.getUsers(url, this.$store)
       //LLAMAR SERVICIO GET SEDE
-      const respSedes = await SedeService.getEmpresas(url2, this.$store)
+      const respSedes = await SedeService.getEnterprise(url2, this.$store)
       if (respUsers.status) {
         this.usuarios = respUsers.data.rows
         console.log('usuarios', this.usuarios)
@@ -689,9 +689,9 @@ export default {
       
       this.filter()
     },
-    async getEmpresas() {
+    async getEnterprise() {
       const url2 = `?limit=100000&order=asc&sort=code`
-      const resp = await ProjectsService.getEmpresas(url2, this.$store)
+      const resp = await EnterpriseService.getEnterprise(url2, this.$store)
       if (resp.status) {
         this.proyectos = resp.data.rows
       }

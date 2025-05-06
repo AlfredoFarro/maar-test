@@ -50,7 +50,7 @@ import TemplateService from '@/services/TemplateService'
 import GroupService from '@/services/GroupService'
 import SedeService from '@/services/SedeService'
 import FormService from '@/services/FormService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -352,9 +352,9 @@ export default {
             this.selectedRow[this.selectedField] = data;
             this.modalOpen = false;
         },
-        async getEmpresas(){
+        async getEnterprise(){
             const user = JSON.parse(localStorage.getItem('userData'))
-            const respProyectos = await ProjectsService.getEmpresas('', this.$store)
+            const respProyectos = await EnterpriseService.getEnterprise('', this.$store)
             if (respProyectos.status) {
                 this.proyectos = respProyectos.data.rows
                 console.log("PROYECTOS",this.proyectos)
@@ -367,7 +367,7 @@ export default {
                 console.log("FORMULARIOS",this.formularios)
             }
         },
-        async getEmpresas(){
+        async getEnterprise(){
             const arrayFilters = []
             this.items.sede = null
             if (this.items.project_id != null && this.items.project_id != '') {
@@ -376,7 +376,7 @@ export default {
             const url =
             `?limit=10000&filter=` +
             JSON.stringify(arrayFilters)
-            const respSedes = await SedeService.getEmpresas(url, this.$store)
+            const respSedes = await SedeService.getEnterprise(url, this.$store)
             if (respSedes.status) {
                 this.sedes = respSedes.data.rows
                 console.log("SEDES",this.sedes)

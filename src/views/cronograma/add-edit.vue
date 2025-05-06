@@ -238,7 +238,7 @@ import flatPickr from 'vue-flatpickr-component'
 import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
 import SedeService from '@/services/SedeService'
 import TravelService from '@/services/TravelService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import UserService from '@/services/UserService'
 
 import moment from 'moment'
@@ -401,7 +401,7 @@ export default {
       console.log("GET DATA", id)
       this.getPilots()
       this.getProjects()
-      this.getEmpresas()
+      this.getEnterprise()
       if(id){
         this.items.projectId = id
       }
@@ -425,11 +425,11 @@ export default {
       console.log('PILOTOOOOOS', this.pilots)
     },
     async getProjects() {
-      const respProyectos = await ProjectsService.getEmpresas('', this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise('', this.$store)
       this.proyectos = respProyectos.data.rows
       console.log('PROYECTOS', this.proyectos)
     },
-    async getEmpresas(){
+    async getEnterprise(){
         const arrayFilters = []
         this.items.sedeId = null
         if (this.items.projectId != null && this.items.projectId != '') {
@@ -438,7 +438,7 @@ export default {
         const url =
         `?limit=10000&filter=` +
         JSON.stringify(arrayFilters)
-        const respSedes = await SedeService.getEmpresas(url, this.$store)
+        const respSedes = await SedeService.getEnterprise(url, this.$store)
         if (respSedes.status) {
             this.sedes = respSedes.data.rows
             console.log("SEDES",this.sedes)

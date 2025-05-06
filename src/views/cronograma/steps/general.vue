@@ -218,7 +218,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
   import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
   import SedeService from '@/services/SedeService'
   import TravelService from '@/services/TravelService'
-  import ProjectsService from '@/services/ProjectsService'
+  import EnterpriseService from '@/services/EnterpriseService'
   import UserService from '@/services/UserService'
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -347,7 +347,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
         },
         async getSelects(){
             console.log("GET SELECT")
-            this.getEmpresas()
+            this.getEnterprise()
             this.getPilots()
             this.getProjects()
             this.$emit('cambiar-valor', this.items.projectId)
@@ -370,11 +370,11 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
             console.log('PILOTOOOOOS', this.pilots)
         },
         async getProjects() {
-            const respProyectos = await ProjectsService.getEmpresas('', this.$store)
+            const respProyectos = await EnterpriseService.getEnterprise('', this.$store)
             this.proyectos = respProyectos.data.rows
             console.log('PROYECTOS', this.proyectos)
         },
-        async getEmpresas(){
+        async getEnterprise(){
             const arrayFilters = []
             this.items.sedeId = null
             if (this.items.projectId != null && this.items.projectId != '') {
@@ -384,7 +384,7 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
             `?limit=10000&filter=` +
             JSON.stringify(arrayFilters)
             console.log("URL SEDES",url)
-            const respSedes = await SedeService.getEmpresas(url, this.$store)
+            const respSedes = await SedeService.getEnterprise(url, this.$store)
             if (respSedes.status) {
                 this.sedes = respSedes.data.rows
                 console.log("SEDES",this.sedes)

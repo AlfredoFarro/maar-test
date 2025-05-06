@@ -338,7 +338,7 @@
 <script>
 /* eslint-disable */
 import FormService from '@/services/FormService'
-import ProjectsService from '@/services/ProjectsService'
+import EnterpriseService from '@/services/EnterpriseService'
 import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
 import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
 import { required } from '@validations'
@@ -937,7 +937,7 @@ export default {
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&page=${this.currentPage}&order=${this.order}&sort=${this.sort}`
-      const respProyectos = await ProjectsService.getEmpresas(url2, this.$store)
+      const respProyectos = await EnterpriseService.getEnterprise(url2, this.$store)
       console.log("PROYECTOS", respProyectos)
       if (respProyectos.status) {
         this.proyectos = respProyectos.data.rows
