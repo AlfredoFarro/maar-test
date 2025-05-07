@@ -34,7 +34,7 @@
           <validation-provider #default="{ errors }" name="image" rules="">
             <b-form-group v-if="!isEdit" label="Imagen de la Empresa" label-for="image">
               <p v-if="isEdit">Modo Edición</p>
-              <p v-else>Modo Agregar</p>
+              <p v-else></p>
               <b-form-file v-model="items.image" id="image" placeholder="Seleccionar archivo..."
                 accept="image/*"></b-form-file>
               <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
