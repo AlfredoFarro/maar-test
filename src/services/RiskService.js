@@ -14,7 +14,7 @@ const RiskService = {
         var resp = await VueStoreService.delete("risk/"+risk_id,store)
         return resp;
     },
-    async saveRecord(data,store){
+    async saveRisk(data,store){
         var resp = await VueStoreService.post("risk",data,store)
         return resp;
     },

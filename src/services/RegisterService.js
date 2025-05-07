@@ -17,6 +17,10 @@ const RegisterService = {
         var resp = await VueStoreService.delete("record/"+record_id,store)
         return resp;
     },
+    async saveRecord(data,store){
+        var resp = await VueStoreService.post("record",data,store)
+        return resp;
+    },
 }
 
 export default RegisterService;

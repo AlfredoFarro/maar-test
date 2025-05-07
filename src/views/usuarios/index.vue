@@ -831,38 +831,38 @@ export default {
       this.showLoading = false
     },
     async getAllData() {
-  this.showLoading = true;
-  const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);
-  
-  try {
-    const resp = await UserService.getUsers(url, this.$store);
-    console.log('resp TRAVELS', resp);
+      this.showLoading = true;
+      const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);
 
-    if (resp.status) {
+      try {
+        const resp = await UserService.getUsers(url, this.$store);
+        console.log('resp TRAVELS', resp);
       
-      this.allData = [...resp.data.rows]; 
-      
-      
-      this.getSortedData("id", 'desc');
-      
-      
-      this.records = this.allDataSorted[0] ? [...this.allDataSorted[0]] : [];
-      
-      this.totalElements = resp.data.responseFilter.total_rows;
-      
-      
-      this.$nextTick(() => {
-        if (this.$refs.selectableTable) {
-          this.$refs.selectableTable.refresh();
+        if (resp.status) {
+
+          this.allData = [...resp.data.rows]; 
+
+
+          this.getSortedData("id", 'desc');
+
+
+          this.records = this.allDataSorted[0] ? [...this.allDataSorted[0]] : [];
+
+          this.totalElements = resp.data.responseFilter.total_rows;
+
+
+          this.$nextTick(() => {
+            if (this.$refs.selectableTable) {
+              this.$refs.selectableTable.refresh();
+            }
+          });
         }
-      });
-    }
-  } catch (error) {
-    console.error('Error en getAllData:', error);
-  } finally {
-    this.showLoading = false;
-  }
-},
+      } catch (error) {
+        console.error('Error en getAllData:', error);
+      } finally {
+        this.showLoading = false;
+      }
+    },
     getAttributeValue(obj, attribute) {
     
       if (attribute.includes('.')) {
@@ -888,20 +888,20 @@ export default {
     getSortedData(sortBy, sortOrder) {
       let sortedData = [...this.allData];
       if (this.searchName && this.searchName !== '') {
-    const searchTerm = this.searchName.toLowerCase();
-    sortedData = sortedData.filter(item =>
-      item.fullname && item.fullname.toLowerCase().includes(searchTerm)
-    );
-  }
-
- 
-  if (this.project_name && typeof this.project_name === 'string') {
-    const searchTerm = this.project_name.toLowerCase();
-    sortedData = sortedData.filter(item =>
-      item.project_user && item.project_user.some(p => 
-        p.project && p.project.name.toLowerCase().includes(searchTerm))
-    );
-  }
+        const searchTerm = this.searchName.toLowerCase();
+        sortedData = sortedData.filter(item =>
+          item.fullname && item.fullname.toLowerCase().includes(searchTerm)
+        );
+      }
+    
+    
+      if (this.project_name && typeof this.project_name === 'string') {
+        const searchTerm = this.project_name.toLowerCase();
+        sortedData = sortedData.filter(item =>
+          item.project_user && item.project_user.some(p => 
+            p.project && p.project.name.toLowerCase().includes(searchTerm))
+        );
+      }
       sortedData.sort((a, b) => {
         const aValue = this.getAttributeValue(a, sortBy);
         const bValue = this.getAttributeValue(b, sortBy);

@@ -116,21 +116,20 @@ export default {
 
         const response = this.isEdit 
           ? await RiskService.updateRisk(this.risk.id, { name: this.risk.name }, this.$store)
-          : await RiskService.saveRecord({ name: this.risk.name }, this.$store);
+          : await RiskService.saveRisk({ name: this.risk.name }, this.$store);
       
         const res = response;
         console.log("respuesta", res);
       
         if (res.status === true) {
-          this.$bvToast.toast(res.message || 'Operación exitosa', {
+          /* this.$bvToast.toast(res.message || 'Operación exitosa', {
             title: 'Éxito',
             variant: 'success',
             solid: true
-          });
+          }); */
         
-          this.$emit('update:is-add', false);
-          this.$emit('refreshTable')  // Emite evento al componente padre
-          this.$emit('close')   
+          this.$parent.$parent.getAllData()
+          this.$emit('update:is-add', false)     
           
         
           this.resetForm();
@@ -140,11 +139,11 @@ export default {
         }
       } catch (error) {
         console.error('Error en handleSubmit:', error);
-        this.$bvToast.toast(error.message || 'Error al procesar la solicitud', {
+        /* this.$bvToast.toast(error.message || 'Error al procesar la solicitud', {
           title: 'Error',
           variant: 'danger',
           solid: true
-        });
+        }); */
       } finally {
         this.isSubmitting = false;
       }

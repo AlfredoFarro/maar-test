@@ -466,8 +466,8 @@ export default {
       
         if (response && response.status !== false) {
           // Emitir evento para actualizar la lista
-          this.$emit('saved');
-          this.$emit('update:is-add', false);
+          this.$parent.$parent.getAllData()
+          this.$emit('update:is-add', false)
           this.resetForm();
         } else {
           throw new Error(response?.message || 'Error al actualizar el registro');
