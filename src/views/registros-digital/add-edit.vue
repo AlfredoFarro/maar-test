@@ -291,19 +291,13 @@ export default {
   },
   computed: {
     riesgoOptionsWithAll() {
-      // Asegurarse de que riesgoOptions esté definido
-      if (!this.riesgoOptions) return [];
+      if (!this.riesgoOptions || this.riesgoOptions.length === 0) return [];
 
-      // Crear opción "Todos" con misma estructura que otros riesgos
-      const todosOption = {id: 0, name: 'Todos'};
-
-      // Asegurarse de que cada riesgo tenga la estructura correcta
-      const riesgos = this.riesgoOptions.map(item => ({
-        id: item.id,
-        name: item.name
-      }));
-
-      return [todosOption, ...riesgos];
+      // Solo mostrar opción "Todos" si no está en modo visualización
+      if (!this.isViewMode) {
+        return [{id: 0, name: 'Todos'}, ...this.riesgoOptions];
+      }
+      return this.riesgoOptions;
     },
     proyectos1() {
       return this.proyectosList || []; // Asegúrate que projects es el nombre correcto
@@ -335,7 +329,7 @@ export default {
     async cargarRiesgos() {
       this.loadingRiesgos = true;
       try {
-        const response = await RegisterService.getRisk('', this.$store);
+        const response = await RegisterService.getRisk(`?limit=10000&filter=`, this.$store);
         console.log('Respuesta de riesgos:', response); // Esto muestra que response.data.rows existe
 
         // Corregimos la validación de la respuesta
@@ -370,49 +364,49 @@ export default {
       }
     },
     handleRiesgosSelection(selected) {
-      // Verificar si se está seleccionando "Todos" (id: 0)
-      const isSelectingAll = selected.some(item => item.id === 0);
-
-      // Verificar si ya tenía "Todos" seleccionado
-      const hadAllSelected = this.items.riesgos.some(item => item.id === 0);
-
-      // Si se selecciona "Todos" (ya sea que antes tenía o no)
-      if (isSelectingAll) {
-        // Limpiar toda selección anterior y dejar solo "Todos"
-        this.items.riesgos = selected.filter(item => item.id === 0);
-        return;
-      }
-    
-      // Si estaba seleccionado "Todos" y ahora se quita
-      if (hadAllSelected && !isSelectingAll) {
-        // Permitir la nueva selección (sin "Todos")
+      // Verificar si se seleccionó "Todos"
+      const allSelected = selected.some(item => item.id === 0);
+        
+      if (allSelected) {
+        // Si seleccionó "Todos", reemplazar con la opción "Todos" solamente
+        this.items.riesgos = [{ id: 0, name: 'Todos' }];
+      } else {
+        // Si no, mantener la selección normal
         this.items.riesgos = selected;
-        return;
       }
-    
-      // En cualquier otro caso, actualizar la selección normalmente
-      this.items.riesgos = selected;
     },
-    setData(item) {
-      return new Promise((resolve) => {
+    async setData(item) {
+      return new Promise(async (resolve) => {
+        // Asegurarse de que los riesgos están cargados
+        if (this.riesgoOptions.length === 0) {
+          await this.cargarRiesgos();
+        }
+      
         if (item) {
+          // Verificar si tiene todos los riesgos
+          const itemRiskIds = item.riesgos ? item.riesgos.map(r => r.id) : [];
+          const allRiskIds = this.riesgoOptions.map(r => r.id);
+          const hasAllRisks = allRiskIds.every(id => itemRiskIds.includes(id));
+
           this.items = {
             ...item,
-            riesgos: Array.isArray(item.riesgos) ? item.riesgos : [],
+            riesgos: hasAllRisks 
+              ? [{ id: 0, name: 'Todos' }] // Mostrar solo "Todos" si tiene todos los riesgos
+              : Array.isArray(item.riesgos) 
+                ? item.riesgos 
+                : [],
             puntos: Array.isArray(item.puntos) ? item.puntos : []
           };
-          this.isEdit = !item.isViewMode; // Solo será true si no es modo visualización
-          this.isViewMode = item.isViewMode || false; // Establece el modo visualización
+
+          this.isEdit = !item.isViewMode;
+          this.isViewMode = item.isViewMode || false;
         } else {
           this.resetForm();
           this.isEdit = false;
           this.isViewMode = false;
         }
-
-        // Resolver la promesa después de que Vue haya actualizado la vista
-        this.$nextTick(() => {
-          resolve();
-        });
+      
+        this.$nextTick(() => resolve());
       });
     },
     resetForm() {
@@ -436,10 +430,13 @@ export default {
     
     async onSubmit() {
       this.isDisabled = true;
-        
+
       try {
-        
-        // Preparar los datos para enviar en el formato que espera tu API
+        // Preparar los riesgos - si tiene "Todos" seleccionado, enviar todos los IDs
+        const selectedRisks = this.items.riesgos.some(r => r.id === 0)
+          ? this.riesgoOptions.map(r => ({ id: r.id })) // Enviar todos los riesgos
+          : this.items.riesgos.map(r => ({ id: r.id })); // Enviar solo los seleccionados
+
         const formData = {
           projectId: this.items.proyecto,
           worker_fullname: this.items.nombre,
@@ -450,30 +447,36 @@ export default {
           categoryId: Number(this.items.categorias),
           description: this.items.descripcion,
           actions: this.items.medidas,
-          risks: this.items.riesgos
-          ? this.items.riesgos
-              .filter(r => r.id !== 0) // Filtra "Todos" si existe
-              .map(r => ({ id: r.id }))
-          : []
+          risks: selectedRisks
         };
       
         let response;
       
         if (this.isEdit) {
-          // Actualizar registro existente
           response = await RegisterService.updateRecord(this.items.id, formData, this.$store);
+        } else {
+          response = await RegisterService.createRecord(formData, this.$store);
         }
       
         if (response && response.status !== false) {
-          // Emitir evento para actualizar la lista
-          this.$parent.$parent.getAllData()
-          this.$emit('update:is-add', false)
+          this.$emit('update:is-add', false);
           this.resetForm();
+          this.$parent.$parent.getAllData();
+          this.$swal({
+            title: 'Éxito',
+            text: this.isEdit ? 'Registro actualizado' : 'Registro creado',
+            icon: 'success'
+          });
         } else {
-          throw new Error(response?.message || 'Error al actualizar el registro');
+          throw new Error(response?.message || 'Error al guardar');
         }
       } catch (error) {
-        console.error('Error al guardar registro:', error);
+        console.error('Error:', error);
+        this.$swal({
+          title: 'Error',
+          text: error.message || 'Ocurrió un error',
+          icon: 'error'
+        });
       } finally {
         this.isDisabled = false;
       }
