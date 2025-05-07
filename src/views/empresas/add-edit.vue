@@ -20,19 +20,21 @@
             <b-form-group label="RUC" label-for="ruc">
               <b-form-input v-model="items.ruc" id="ruc" placeholder="RUC" autocomplete="off" />
               <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
-                }}</small>
+              }}</small>
             </b-form-group>
           </validation-provider>
           <validation-provider #default="{ errors }" name="name" rules="requeridoE">
             <b-form-group label="Nombre de la Empresa" label-for="name">
               <b-form-input v-model="items.name" id="name" placeholder="Nombre de la Empresa" autocomplete="off" />
               <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
-                }}</small>
+              }}</small>
             </b-form-group>
           </validation-provider>
 
           <validation-provider #default="{ errors }" name="image" rules="">
-            <b-form-group label="Imagen de la Empresa" label-for="image">
+            <b-form-group v-if="!isEdit" label="Imagen de la Empresa" label-for="image">
+              <p v-if="isEdit">Modo Edición</p>
+              <p v-else>Modo Agregar</p>
               <b-form-file v-model="items.image" id="image" placeholder="Seleccionar archivo..."
                 accept="image/*"></b-form-file>
               <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
@@ -273,60 +275,54 @@ export default {
         name: '',
       }
     },
-async onSubmit() {
-  this.$refs.refFormObserver.validate().then(async (success) => {
-    this.showLoading = true;
-    if (success) {
-      const formData = new FormData();
-      formData.append('name', this.items.name);
-      formData.append('ruc', this.items.ruc);
+    async onSubmit(data) {
+      console.log('data', data)
+      this.$refs.refFormObserver.validate().then(async (success) => {
+        this.showLoading = true
+        console.log('data TO SAVE', data)
+        if (success) {
+          let resp = ''
+          console.log('data TO SAVE', data)
 
-      // Agregar la imagen si se ha seleccionado un archivo
-      if (this.items.image) {
-        formData.append('image', this.items.image);
-      }
-
-      let resp = '';
-
-      if (!this.isEdit) {
-        resp = await EnterpriseService.saveEnteprise(formData, this.$store); // Enviar FormData
-      } else {
-        formData.append('_method', 'PATCH'); // Para simular el método PATCH en algunos backends
-        resp = await EnterpriseService.updateEnterprise(this.proyecto_id, formData, this.$store); // Enviar FormData
-      }
-
-      console.log('resp', resp);
-      if (resp.status) {
-        this.$swal({
-          title: this.isEdit ? 'Actualizado' : 'Registrado',
-          text: 'Los datos han sido ' + (this.isEdit ? 'actualizado.' : 'registrado.'),
-          icon: 'success',
-          customClass: {
-            confirmButton: 'btn btn-primary',
-          },
-          buttonsStyling: false,
-        });
-        this.$parent.$parent.getData();
-        this.$emit('update:is-add', false);
-        this.resetForm();
-      } else {
-        this.$swal({
-          title: 'Error!',
-          text:
-            'Ocurrió un error al ' +
-            (this.isEdit ? 'actualizar' : 'registrar') +
-            ' los datos del proyecto.',
-          icon: 'error',
-          customClass: {
-            confirmButton: 'btn btn-primary',
-          },
-          buttonsStyling: false,
-        });
-      }
+          if (this.isEdit == false) {
+            resp = await EnterpriseService.saveEnterprise(data, this.$store)
+          } else {
+            console.log("PROYECTO ID ANTES DE UPDATE", this.proyecto_id)
+            resp = await EnterpriseService.updateEnterprise(this.proyecto_id, data, this.$store)
+            console.log("UPDATEADO")
+          }
+          console.log('resp', resp)
+          if (resp.status) {
+            this.$swal({
+              title: this.isEdit == true ? 'Actualizado' : 'Registrado',
+              text: 'Los datos han sido ' + (this.isEdit == true ? 'actualizado.' : 'registrado.'),
+              icon: 'success',
+              customClass: {
+                confirmButton: 'btn btn-primary'
+              },
+              buttonsStyling: false
+            })
+            this.$parent.$parent.getData()
+            this.$emit('update:is-add', false)
+            this.resetForm()
+          } else {
+            this.$swal({
+              title: 'Error!',
+              text:
+                'Ocurrió un error al ' +
+                (this.isEdit == true ? 'actualizar' : 'registrar') +
+                ' los datos del proyecto.',
+              icon: 'error',
+              customClass: {
+                confirmButton: 'btn btn-primary'
+              },
+              buttonsStyling: false
+            })
+          }
+        }
+        this.showLoading = false
+      })
     }
-    this.showLoading = false;
-  });
-}
   }
 }
 </script>

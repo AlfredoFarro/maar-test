@@ -17,14 +17,10 @@ const EnterpriseService = {
         var resp = await VueStoreService.get( "enterprise/"+enterprise_id,store)
         return resp;
     },
-    async updateEnterprise(enterprise_id, formData, store) { // Recibe FormData
-        var resp = await VueStoreService.patch("enterprise/" + enterprise_id, formData, store, {
-          headers: {
-            'Content-Type': 'multipart/form-data', // Asegúrate de enviar el encabezado correcto
-          },
-        });
+    async updateEnterprise(enterprise_id,data,store){
+        var resp = await VueStoreService.patch("enterprise/"+enterprise_id,data,store)
         return resp;
-      },
+    },
     async deleteEnterprise(enterprise_id,store){
         var resp = await VueStoreService.delete("enterprise/"+enterprise_id,store)
         return resp;
