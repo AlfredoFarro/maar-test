@@ -54,8 +54,31 @@
               </b-form-group>
               </div>   
             </b-col> 
-            
-            <b-col md="6" lg="2" class="d-flex">              
+            <b-col lg="3" class="col-xxl">
+              <b-form-group label="Fecha Rango Inicio" label-for="dateInit" class="mr-2">
+                <flat-pickr
+                  id="dateInit"
+                  v-model="dateInit"
+                  class="form-control"
+                  :config="configDateInit"
+                  @on-change="filter()"
+                  @on-close="close()"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col lg="3" class="col-xxl">
+              <b-form-group label="Fecha Rango Fin" label-for="dateEnd" class="mr-2">
+                <flat-pickr
+                  id="dateEnd"
+                  v-model="dateEnd"
+                  class="form-control"
+                  :config="configDateInit"
+                  @on-change="filter()"
+                  @on-close="close()"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6" lg="3" class="d-flex">              
               <div
                 class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
               >
@@ -201,6 +224,7 @@
   import filters from './filters.vue'
   import addEdit from './add-edit.vue'
   import RegisterService from '@/services/RegisterService'
+  import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
   const APIURL = process.env.APIURLFILE
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
@@ -277,6 +301,75 @@
         tableHead: null,
         ths: null,
         trs: null,
+        configDateInit: {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "Y-m-d",
+        placeholder: "YYYY-MM-DD",
+        disableMobile: true,
+        plugins: [
+          ShortcutButtonsPlugin({
+            theme: 'dark',
+            button: [{ label: 'Hoy' }],
+            onClick(index, fp) {
+              let date = index ? new Date(Date.now() + 24 * index * 60 * 60 * 1000) : new Date()
+              fp.setDate(date)
+              fp.close()
+              fp.clear()
+            }
+          }),
+          ShortcutButtonsPlugin({
+            theme: 'dark',
+            button: [{ label: 'Limpiar' }],
+            onClick(index, fp) {
+              console.log("FPP",fp)
+              console.log("index",index)
+              fp.setDate(null)
+              fp.close()
+              fp.clear()
+            }
+          })
+        ],
+        locale: {
+          firstDayOfWeek: 1,
+          weekdays: {
+            shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+          },
+          months: {
+            shorthand: [
+              'Ene',
+              'Feb',
+              'Mar',
+              'Abr',
+              'May',
+              'Jun',
+              'Jul',
+              'Ago',
+              'Sep',
+              'Оct',
+              'Nov',
+              'Dic'
+            ],
+            longhand: [
+              'Enero',
+              'Febrero',
+              'Мarzo',
+              'Abril',
+              'Mayo',
+              'Junio',
+              'Julio',
+              'Agosto',
+              'Septiembre',
+              'Octubre',
+              'Noviembre',
+              'Diciembre'
+            ]
+          }
+        }
+      },
+      dateInit: null,
+      dateEnd: null,
       }
     },
     components: {
@@ -337,6 +430,9 @@
       window.removeEventListener("resize", this.fixedElements);
     },
     methods: {
+      close(){
+        console.log("close")
+      },
       formatDate(date) {
         return moment(date).format('DD/MM/YYYY HH:mm')
       },
@@ -543,7 +639,25 @@
           this.arrayFilters.push({ keyContains: 'worker_id_number', key: 'contains', value: this.dniFilter })
         }
         
+        if(this.dateInit != null && this.dateInit != ''){
+          const startOfDay = new Date(this.dateInit);
+          const endOfDay = new Date(this.dateInit);
+          
+          // Sumar un día al endOfDay para abarcar todo el día actual
+          endOfDay.setDate(endOfDay.getDate() + 1);
+          
+          this.arrayFilters.push({ keyContains: 'completed', key: 'gte', value: startOfDay });
+        }
+        if(this.dateEnd != null && this.dateEnd != ''){
+          const startOfDay = new Date(this.dateEnd);
+          const endOfDay = new Date(this.dateEnd);
+          
+          // Sumar un día al endOfDay para abarcar todo el día actual
+          endOfDay.setDate(endOfDay.getDate() + 1);
         
+          this.arrayFilters.push({ keyContains: 'completed', key: 'lte', value: endOfDay });
+        }
+        console.log("FILTROS", this.arrayFilters)
         this.getAllData()
       },
       cambioPagina(e) {
