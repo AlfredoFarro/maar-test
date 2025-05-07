@@ -246,8 +246,8 @@
         fields: [
           { key: 'number', label: 'N°', sortable: false, visible: true, thStyle: { width: '50px' } },
           { key: 'project', label: 'Proyecto', sortable: false, visible: true, thStyle: { width: '200px' } },
-          { key: 'user', label: 'Usuario', sortable: false, visible: true, thStyle: { width: '200px' } },
-          { key: 'date', label: 'Fecha', sortable: false, visible: true, thStyle: { width: '150px' } },
+          { key: 'user', label: 'Trabajador', sortable: false, visible: true, thStyle: { width: '200px' } },
+          { key: 'date', label: 'Fecha y Hora', sortable: false, visible: true, thStyle: { width: '150px' } },
           { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '120px' } }
         ],
         form: {
