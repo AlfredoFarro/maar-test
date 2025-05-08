@@ -5,7 +5,7 @@ const EnterpriseService = {
         var resp = await VueStoreService.get("enterprise"+filter, store)      
         return resp;
     },
-    async saveEnteprise(formData, store) { // Recibe FormData
+    async saveEnterprise(formData, store) { // Recibe FormData
         var resp = await VueStoreService.post("enterprise", formData, store, {
           headers: {
             'Content-Type': 'multipart/form-data', // Asegúrate de enviar el encabezado correcto
