@@ -142,6 +142,15 @@
               <template #cell(actions)="data">
                 <b-button
                   size="sm"
+                  v-b-tooltip.noninteractive.hover.left="'Ver fotos'"
+                  @click="showPhotos(data.item)"
+                  variant="flat-info"
+                  class="mr-1"
+                >
+                  <feather-icon size="20" icon="ImageIcon" />
+                </b-button>
+                <b-button
+                  size="sm"
                   @click.prevent="view(data.item)"
                   v-b-tooltip.noninteractive.hover.left="'Ver detalles'"
                   variant="flat-primary"
@@ -219,6 +228,42 @@
           </div>
         </b-card>
       </b-overlay>
+      <b-modal 
+        v-if="showPhotoModal"
+        id="modal-fotos" 
+        size="lg" 
+        title="Fotos del Registro" 
+        hide-footer
+        centered
+        @hidden="showPhotoModal = false"
+      >
+        <carousel ref="carousel" :per-page="1" :navigate-to="0">
+          <slide v-if="currentItem.url_front">
+            <div v-if="!frontLoaded" class="text-center py-5">
+              <b-spinner variant="primary"></b-spinner>
+            </div>
+            <img 
+              :src="currentItem.url_front" 
+              class="img-fluid d-block mx-auto"
+              style="max-height: 500px;"
+              @load="frontLoaded = true"
+              v-show="frontLoaded"
+            >
+          </slide>
+          <slide v-if="currentItem.url_back">
+            <div v-if="!backLoaded" class="text-center py-5">
+              <b-spinner variant="primary"></b-spinner>
+            </div>
+            <img 
+              :src="currentItem.url_back" 
+              class="img-fluid d-block mx-auto"
+              style="max-height: 500px;"
+              @load="backLoaded = true"
+              v-show="backLoaded"
+            >
+          </slide>
+        </carousel>
+      </b-modal>
     </div>
   </template>
   
@@ -240,6 +285,7 @@
   import addEdit from './add-edit.vue'
   import RegisterService from '@/services/RegisterService'
   import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
+  import { Carousel, Slide } from 'vue-carousel';
   const APIURL = process.env.APIURLFILE
   Vue.use(BootstrapVue)
   Vue.use(BootstrapVueIcons)
@@ -284,6 +330,9 @@
           enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
         proyecto: '',
         dni: '',
+        showPhotoModal: false,
+        frontLoaded: false,
+        backLoaded: false,
         records: [],
         enterpriseSelect: '',
         projectOptions: [],
@@ -396,6 +445,8 @@
       ValidationProvider,
       ValidationObserver,
       AppTimelineItem,
+      Carousel,
+      Slide,
   },
     computed: {
       visibleFields() {
@@ -445,6 +496,21 @@
       window.removeEventListener("resize", this.fixedElements);
     },
     methods: {
+      showPhotos(item) {
+        this.frontLoaded = false;
+        this.backLoaded = false;
+        this.currentItem = item;
+        this.showPhotoModal = true;
+
+        this.$nextTick(() => {
+          this.$bvModal.show('modal-fotos');
+          if (this.$refs.carousel) {
+            setTimeout(() => {
+              this.$refs.carousel.computeCarouselWidth();
+            }, 100);
+          }
+        });
+      },
       close(){
         console.log("close")
       },
@@ -1117,6 +1183,19 @@
         }
       }
     }
+  }
+  /* Estilos para el carrusel */
+  .VueCarousel-dot-container {
+    margin-top: 10px !important;
+  }
+
+  .VueCarousel-dot {
+    margin-top: 0 !important;
+  }
+
+  .img-fluid {
+    max-width: 100%;
+    height: auto;
   }
   </style>
   
