@@ -282,11 +282,11 @@ export default [
     hide: true,
   },
   {
-    header: 'Riesgos',
+    header: 'Observaciones',
     icon: 'FolderIcon',
-    id: 'riesgos',
-    title: 'Riesgos',
-    route: 'riesgos',
+    id: 'observaciones',
+    title: 'Observaciones',
+    route: 'observaciones',
     hide: true,
   },
   {

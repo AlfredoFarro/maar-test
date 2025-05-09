@@ -131,7 +131,7 @@
 
           <!-- Riesgos -->
           <validation-provider #default="{ errors }" name="riesgos" >
-            <b-form-group label="Riesgos" label-for="riesgos">
+            <b-form-group label="Observaciones" label-for="riesgos">
               <v-select
                 v-model="items.riesgos"
                 :options="riesgoOptionsWithAll"

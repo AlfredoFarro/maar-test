@@ -105,9 +105,9 @@ export default {
       },
       {
         icon: 'GridIcon',
-        id: 'riesgos',
-        title: 'Riesgos',
-        route: 'riesgos',
+        id: 'observaciones',
+        title: 'Observaciones',
+        route: 'observaciones',
       },
 /*       {
         icon: 'FolderIcon',

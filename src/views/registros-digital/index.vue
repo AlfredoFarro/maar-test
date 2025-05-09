@@ -78,17 +78,32 @@
                 />
               </b-form-group>
             </b-col>
-            <b-col md="6" lg="3" class="d-flex">              
+            <!-- <b-col md="6" lg="3" class="d-flex">              
               <div
                 class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
               >
-                <!-- <b-button
+                <b-button
                   class="mr-2"
                   variant="primary"
                   @click="isAdd = true"
                 >
                   <span class="text-nowrap"> <feather-icon icon="PlusCircleIcon" /> Agregar </span>
-                </b-button> -->
+                </b-button>
+              </div>
+            </b-col> -->
+            <b-col md="6" lg="3" class="d-flex">              
+              <div
+                class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
+              >
+                <b-button
+                  class="mr-2"
+                  variant="primary"
+                  @click="downloadExcel"
+                >
+                  <span class="text-nowrap"> 
+                    <feather-icon icon="FileTextIcon" /> Exportar Excel 
+                  </span>
+                </b-button>
               </div>
             </b-col>
           </b-row>
@@ -98,7 +113,7 @@
           <div class="table-overflow">
             <b-table
               class="position-relative"
-              empty-text="No existen registros con riesgos asociados"
+              empty-text="No existen registros con observaciones asociadas"
               :fields="visibleFields"
               :hover="true"
               :items="records"
@@ -784,6 +799,14 @@
           }
         }
         this.showLoading = false;
+      },
+      async downloadExcel() {
+        this.showLoading = true;
+        const url =`?limit=10000&filter=` +JSON.stringify(this.arrayFilters)
+        
+        window.open(`${APIURL}/record/excel${url}`, '_blank');
+        this.showLoading = false;
+        
       },
       getAttributeValue(obj, attribute) {
       // Si el atributo contiene un punto, es un atributo anidado

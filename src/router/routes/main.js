@@ -337,11 +337,11 @@ export default [{
     },
   },
   {
-    path: '/riesgos',
-    name: 'riesgos',
+    path: '/observaciones',
+    name: 'observaciones',
     component: () => import('@/views/risks/index.vue'),
     meta: {
-      pageTitle: 'Riesgos',
+      pageTitle: 'Observaciones',
       breadcrumb: [{
         text: 'Listar',
         active: true,

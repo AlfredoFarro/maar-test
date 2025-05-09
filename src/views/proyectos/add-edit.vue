@@ -98,6 +98,21 @@
               >
             </b-form-group>
           </validation-provider>
+          <validation-provider #default="{ errors }" name="radius" rules="requeridoE">
+            <b-form-group label="Radio" label-for="radius">
+              <b-form-input
+                v-model="items.radius"
+                id="radius"
+                placeholder="Radio"
+                autocomplete="off"
+              />
+              <small
+                class="text-danger alert"
+                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
+                >{{ errors[0] }}</small
+              >
+            </b-form-group>
+          </validation-provider>
           <!-- Form Actions -->
           <div class="d-flex mt-2 justify-content-end">
             <b-button
@@ -241,6 +256,7 @@ export default {
           enterpriseId: null,
           longitude:'',
           latitude:'',
+          radius: '',
       },
       project_id: null,
       temp: {},
@@ -333,6 +349,7 @@ export default {
         this.items.name = item.name
         this.items.latitude = item.latitude
         this.items.longitude = item.longitude
+        this.items.radius = item.radius
         this.isEdit = true
       } else {
         this.temp = {}
@@ -341,6 +358,7 @@ export default {
           enterpriseId: this.$parent.$parent.enterpriseId,
           longitude: '',
           latitude: '',
+          radius: '',
         }
         this.project_id = null  
         console.log("ITEMS SETEADOS", this.items)
@@ -356,6 +374,7 @@ export default {
         enterpriseId: null,
         longitude: '',
         latitude: '',
+        radius: '',
       }
       this.project_id = null
     },

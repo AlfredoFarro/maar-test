@@ -21,6 +21,12 @@ const RegisterService = {
         var resp = await VueStoreService.post("record",data,store)
         return resp;
     },
+    async downloadExcelRecords(queryString, store) {
+        const response = await VueStoreService.get("record/excel" + queryString, store, {
+            responseType: 'blob'
+        });
+        return response;
+    }
 }
 
 export default RegisterService;

@@ -74,7 +74,7 @@ export const getUserAcessPermissions = (role) => {
     
     case "administrador":
       permissions = [
-        "riesgos",
+        "observaciones",
         "registros-digitales",
         "dashboard",
         "categorias",

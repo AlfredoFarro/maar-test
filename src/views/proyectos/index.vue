@@ -223,19 +223,21 @@ export default {
         { key: 'name', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '135px' } },
         { key: 'latitude', label: 'Latitud', sortable: false, visible: true, thStyle: { width: '140px' } },
         { key: 'longitude', label: 'Longitud', sortable: false, visible: true, thStyle: { width: '140px' } },
-
+        { key: 'radius', label: 'Radio', sortable: false, visible: true, thStyle: { width: '140px' } },
       ],
       form: {
           name: '',
           latitude: '',
           longitude: '',
           enterpriseId: null,
+          radius: '',
         },
       
         enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
       name: '',
       latitude: '',
       longitude: '',
+      radius: '',
       records: [],
       enterpriseSelect: '',
       empresas: [],
@@ -414,6 +416,7 @@ export default {
         this.form.latitude = item.latitude
         this.form.longitude = item.longitude
         this.form.enterpriseId = item.enterprise.id
+        this.form.radius = item.radius
         console.log('this.form', this.form)
         this.isAdd = true
         this.$refs.sedeAdd.setData(this.form)
