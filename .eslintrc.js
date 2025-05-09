@@ -7,7 +7,7 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint',
   },
-  ignorePatterns: ['*.vue','dist/', 'node_modules/', '*.config.js'],
+  ignorePatterns: ['*.vue','dist/', 'node_modules/', '*.config.js','*.js'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',

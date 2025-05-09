@@ -173,6 +173,7 @@ export default {
       items: {
         ruc: '',
         name: '',
+        image:null,
       },
       proyecto_id: null,
       temp: {},
@@ -255,12 +256,14 @@ export default {
         console.log("PROYECTO ID", this.proyecto_id)
         this.items.ruc = item.ruc
         this.items.name = item.name
+        this.items.image = null; // ✅ Si estás editando y no cambias la imagen, se mantendrá la URL del backend
         this.isEdit = true
       } else {
         this.temp = {}
         this.items = {
           ruc: '',
           name: '',
+          image: null, // ✅ Aseguramos que al crear, la imagen esté inicializada
         }
         console.log("project id", this.items)
         this.isEdit = false
@@ -273,55 +276,68 @@ export default {
       this.items = {
         ruc: '',
         name: '',
+        image: null, // ✅ Resetear también la imagen
+
       }
     },
-    async onSubmit(data) {
-      console.log('data', data)
-      this.$refs.refFormObserver.validate().then(async (success) => {
-        this.showLoading = true
-        console.log('data TO SAVE', data)
-        if (success) {
-          let resp = ''
-          console.log('data TO SAVE', data)
+    async onSubmit() {
+  this.$refs.refFormObserver.validate().then(async (success) => {
+    this.showLoading = true;
+    if (success) {
+      const formData = new FormData();
+      formData.append('ruc', this.items.ruc);
+      formData.append('name', this.items.name);
 
-          if (this.isEdit == false) {
-            resp = await EnterpriseService.saveEnterprise(data, this.$store)
-          } else {
-            console.log("PROYECTO ID ANTES DE UPDATE", this.proyecto_id)
-            resp = await EnterpriseService.updateEnterprise(this.proyecto_id, data, this.$store)
-            console.log("UPDATEADO")
-          }
-          console.log('resp', resp)
-          if (resp.status) {
-            this.$swal({
-              title: this.isEdit == true ? 'Actualizado' : 'Registrado',
-              text: 'Los datos han sido ' + (this.isEdit == true ? 'actualizado.' : 'registrado.'),
-              icon: 'success',
-              customClass: {
-                confirmButton: 'btn btn-primary'
-              },
-              buttonsStyling: false
-            })
-            this.$parent.$parent.getData()
-            this.$emit('update:is-add', false)
-            this.resetForm()
-          } else {
-            this.$swal({
-              title: 'Error!',
-              text:
-                'Ocurrió un error al ' +
-                (this.isEdit == true ? 'actualizar' : 'registrar') +
-                ' los datos del proyecto.',
-              icon: 'error',
-              customClass: {
-                confirmButton: 'btn btn-primary'
-              },
-              buttonsStyling: false
-            })
-          }
-        }
-        this.showLoading = false
-      })
+      // ✅ Adjunta la imagen al FormData con el nombre de campo 'image'
+      if (this.items.image) {
+        formData.append('image', this.items.image);
+      }
+
+      let resp = '';
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      if (!this.isEdit) {
+        resp = await EnterpriseService.saveEnterprise(formData, this.$store, config);
+      } else {
+        formData.append('_method', 'PUT'); // O PATCH si tu backend lo requiere para la edición
+        resp = await EnterpriseService.updateEnterprise(this.proyecto_id, formData, this.$store, config);
+      }
+
+      if (resp.status) {
+        this.$swal({
+          title: this.isEdit ? 'Actualizado' : 'Registrado',
+          text: 'Los datos han sido ' + (this.isEdit ? 'actualizado.' : 'registrado.'),
+          icon: 'success',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        });
+        this.$parent.$parent.getData();
+        this.$emit('update:is-add', false);
+        this.resetForm();
+      } else {
+        this.$swal({
+          title: 'Error!',
+          text:
+            'Ocurrió un error al ' +
+            (this.isEdit ? 'actualizar' : 'registrar') +
+            ' los datos de la empresa.',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        });
+      }
+    }
+    this.showLoading = false
+  })
     }
   }
 }

@@ -74,7 +74,7 @@ export const getUserAcessPermissions = (role) => {
     
     case "administrador":
       permissions = [
-        "observaciones",
+        "riesgos",
         "registros-digitales",
         "dashboard",
         "categorias",
@@ -119,8 +119,14 @@ export const getUserAcessPermissions = (role) => {
         'plantilla-operativo-editar',
       ];
       break;
-    case "supervisor":
+    case "jefe de proyectos":
       permissions = [
+        "riesgos",
+        "registros-digitales",
+        "dashboard",
+        "categorias",
+        "empresas",
+        "proyectos",
         "cronograma",
         "cronograma-registro",
         "cronograma-editar",
@@ -138,10 +144,12 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
-        "aprobaciones",
+        /* "aprobaciones",
         "aprobaciones-actividad",
-        "aprobaciones-operativo",
+        "aprobaciones-operativo", */
         "seleccionar-proyecto",
+        "importar",
+        "importar-actividad",
         'formularios',
         'sedes',
         'proyectos',

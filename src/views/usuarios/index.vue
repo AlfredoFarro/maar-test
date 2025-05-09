@@ -31,8 +31,8 @@
                     v-model="selectedProject"
                     @input="handleProjectChange"
                     class="select-obra"
-                    :disabled="user_role != 'administrador'"
-                  >
+                    :disabled="user_role !== 'jefe de proyectos' && user_role !== 'administrador'"
+                    >
                     <template v-slot:option="option">
                        {{ option.name }} 
                     </template>
@@ -395,7 +395,7 @@ export default {
       order: 'desc',
       userData: JSON.parse(localStorage.getItem('userData')),
       user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['administrador', 'gestor'],
+      rolesAllowed: ['jefe de proyectos', 'gestor', 'administrador'],
       isAdd: false,
       selectedRecords: {
         arrayId: []
@@ -1075,7 +1075,7 @@ export default {
       this.statusFilter = ''
       this.project_id = null
       var arrayFilter = []
-      if (this.user_role != 'administrador') {
+      if (this.user_role != 'jefe de proyectos' && this.user_role != 'administrador') {
         const proyects = []
         const estados = []
         for (let index = 0; index < this.estados.length; index++) {

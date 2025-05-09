@@ -13,6 +13,10 @@ const UserService = {
         var resp = await VueStoreService.post("confirm",data,store)
         return resp;
     },
+    async getAssignedProjects(user_id,store){
+        var resp = await VueStoreService.get("user/assigned-projects/"+user_id,store)
+        return resp;
+    },
     async registerU(data,store){
         var resp = await VueStoreService.post("user/register",data,store)
         return resp;

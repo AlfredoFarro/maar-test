@@ -1,30 +1,13 @@
 <template>
   <!-- eslint-disable -->
-  <b-sidebar
-    id="add-crono"
-    :visible="isAdd"
-    bg-variant="white"
-    sidebar-class="sidebar-lg"
-    shadow
-    backdrop
-    no-header
-    right
-    no-close-on-backdrop
-    @change="(val) => $emit('update:is-add', val)"
-  >
+  <b-sidebar id="add-crono" :visible="isAdd" bg-variant="white" sidebar-class="sidebar-lg" shadow backdrop no-header
+    right no-close-on-backdrop @change="(val) => $emit('update:is-add', val)">
     <template #default="{ hide }">
       <!-- Header -->
-      <div
-        class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1"
-      >
+      <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar nuevo' }} usuario</h5>
 
-        <feather-icon
-          class="ml-1 cursor-pointer"
-          icon="XIcon"
-          size="16"
-          @click=";[hide(), resetForm()]"
-        />
+        <feather-icon class="ml-1 cursor-pointer" icon="XIcon" size="16" @click=";[hide(), resetForm()]" />
       </div>
 
       <!-- BODY -->
@@ -32,59 +15,29 @@
         <!-- Form -->
 
         <b-form class="p-2" @submit.prevent="onSubmit(items)">
-          
+
 
           <validation-provider #default="{ errors }" name="fullname" rules="requeridoE">
             <b-form-group label="Nombre Completo" label-for="fullname">
-              <b-form-input
-                v-model="items.fullname"
-                id="fullname"
-                placeholder="Nombre"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
+              <b-form-input v-model="items.fullname" id="fullname" placeholder="Nombre" autocomplete="off" />
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+              }}</small>
             </b-form-group>
           </validation-provider>
           <validation-provider #default="{ errors }" name="document" rules="requeridoE">
             <b-form-group label="Nro Documento" label-for="document">
-              <b-form-input
-                v-model="items.document"
-                id="document"
-                placeholder="Nro Documento"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-                >{{ errors[0] }}</small
-              >
+              <b-form-input v-model="items.document" id="document" placeholder="Nro Documento" autocomplete="off" />
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+              }}</small>
             </b-form-group>
           </validation-provider>
-          <validation-provider
-            #default="{ errors }"
-            name="email"
-            rules="requeridoE|correo"
-          >
+          <validation-provider #default="{ errors }" name="email" rules="requeridoE|correo">
             <b-form-group label="Correo" label-for="email">
-              <b-form-input
-                id="email"
-                trim
-                :class="errors.length > 0 ? 'is-invalid' : null"
-                placeholder="Correo"
-                v-model="items.email"
-                autocomplete="off"
-              />
-              <small
-                class="text-danger alert"
-                :style="{
-                  height: (errors.length > 0 ? 20 : 0) + 'px',
-                }"
-                >{{ errors[0] }}</small
-              >
+              <b-form-input id="email" trim :class="errors.length > 0 ? 'is-invalid' : null" placeholder="Correo"
+                v-model="items.email" autocomplete="off" />
+              <small class="text-danger alert" :style="{
+                height: (errors.length > 0 ? 20 : 0) + 'px',
+              }">{{ errors[0] }}</small>
             </b-form-group>
           </validation-provider>
           <b-form-group v-if="isEdit">
@@ -93,21 +46,10 @@
             </div>
 
             <b-input-group class="input-group-merge">
-              <b-form-input
-                id="password"
-                trim
-                v-model="items.password"
-                :type="passwordFieldType"
-                name="login-password"
-                autocomplete="off"
-                placeholder="Contraseña"
-              />
+              <b-form-input id="password" trim v-model="items.password" :type="passwordFieldType" name="login-password"
+                autocomplete="off" placeholder="Contraseña" />
               <b-input-group-append is-text>
-                <feather-icon
-                  class="cursor-pointer"
-                  :icon="passwordToggleIcon"
-                  @click="togglePasswordVisibility"
-                />
+                <feather-icon class="cursor-pointer" :icon="passwordToggleIcon" @click="togglePasswordVisibility" />
               </b-input-group-append>
             </b-input-group>
           </b-form-group>
@@ -116,40 +58,18 @@
             <div class="d-flex justify-content-between">
               <label for="password">Contraseña</label>
             </div>
-            <validation-provider
-              #default="{ errors }"
-              name="password"
-              rules="requeridoE"
-            >
-              <b-input-group
-                class="input-group-merge"
-                :class="errors.length > 0 ? 'is-invalid' : null"
-              >
-                <b-form-input
-                  id="password"
-                  trim
-                  v-model="items.password"
-                  :type="passwordFieldType"
-                  :class="errors.length > 0 ? 'is-invalid' : null"
-                  name="login-password"
-                  autocomplete="off"
-                  placeholder="Contraseña"
-                />
+            <validation-provider #default="{ errors }" name="password" rules="requeridoE">
+              <b-input-group class="input-group-merge" :class="errors.length > 0 ? 'is-invalid' : null">
+                <b-form-input id="password" trim v-model="items.password" :type="passwordFieldType"
+                  :class="errors.length > 0 ? 'is-invalid' : null" name="login-password" autocomplete="off"
+                  placeholder="Contraseña" />
                 <b-input-group-append is-text>
-                  <feather-icon
-                    class="cursor-pointer"
-                    :icon="passwordToggleIcon"
-                    @click="togglePasswordVisibility"
-                  />
+                  <feather-icon class="cursor-pointer" :icon="passwordToggleIcon" @click="togglePasswordVisibility" />
                 </b-input-group-append>
               </b-input-group>
-              <small
-                class="text-danger alert"
-                :style="{
-                  height: (errors.length > 0 ? 20 : 0) + 'px',
-                }"
-                >{{ errors[0] }}</small
-              >
+              <small class="text-danger alert" :style="{
+                height: (errors.length > 0 ? 20 : 0) + 'px',
+              }">{{ errors[0] }}</small>
             </validation-provider>
           </b-form-group>
 
@@ -158,13 +78,8 @@
             <label for="mail_enabled">Puede enviar correos</label>
             <div class="d-flex align-items-center">
               <span class="mr-1">No</span>
-              <b-form-checkbox
-                id="mail_enabled"
-                v-model="items.flagMsg"
-                name="mail_enabled"
-                class="custom-control-primary"
-                switch
-              />
+              <b-form-checkbox id="mail_enabled" v-model="items.flagMsg" name="mail_enabled"
+                class="custom-control-primary" switch />
               <span class="ml-1">Sí</span>
             </div>
           </b-form-group>
@@ -174,13 +89,8 @@
             <label for="active">Esta Activo</label>
             <div class="d-flex align-items-center">
               <span class="mr-1">No</span>
-              <b-form-checkbox
-                id="active"
-                v-model="items.isActive"
-                name="active"
-                class="custom-control-primary"
-                switch
-              />
+              <b-form-checkbox id="active" v-model="items.isActive" name="active" class="custom-control-primary"
+                switch />
               <span class="ml-1">Sí</span>
             </div>
           </b-form-group>
@@ -190,74 +100,36 @@
             <label for="web_access">Puede acceder a la web</label>
             <div class="d-flex align-items-center">
               <span class="mr-1">No</span>
-              <b-form-checkbox
-                id="web_access"
-                v-model="items.isAccessWeb"
-                name="web_access"
-                class="custom-control-primary"
-                switch
-              />
+              <b-form-checkbox id="web_access" v-model="items.isAccessWeb" name="web_access"
+                class="custom-control-primary" switch />
               <span class="ml-1">Sí</span>
             </div>
           </b-form-group>
           <validation-provider #default="{ errors }" name="rol" rules="requeridoE">
             <b-form-group label="Rol" label-for="role">
-              <v-select
-                v-model="items.roleId"
-                :options="roles"
-                label="name"
-                :reduce="role => role.id"
-                placeholder="Seleccione un rol"
-                input-id="role"
-                @input="onRoleChange"
-                :class="{'is-invalid': errors.length > 0}"
-              />
-              <small
-                class="text-danger alert"
-                :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }"
-              >{{ errors[0] }}</small>
+              <v-select v-model="items.roleId" :options="roles" label="name" :reduce="role => role.id"
+                placeholder="Seleccione un rol" input-id="role" @input="onRoleChange"
+                :class="{ 'is-invalid': errors.length > 0 }" />
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+              }}</small>
             </b-form-group>
           </validation-provider>
-        
+
           <b-form-group v-if="items.roleId === 2" label="Proyectos" label-for="projects">
-            <v-select
-              v-model="items.projects"
-              :options="proyectos"
-              :value="items.projects"
-              label="name"
-              :reduce="project => project.id"
-              :multiple="true"
-              :clearable="true"
-              placeholder="Seleccione proyecto(s)"
-              input-id="projects"
-              key="projects-selector"
-
-            />
+            <v-select v-model="items.projects" :options="filteredProyectos" :value="items.projects" label="name"
+              :reduce="project => project.id" :multiple="true" :clearable="true" placeholder="Seleccione proyecto(s)"
+              input-id="projects" key="projects-selector" />
           </b-form-group>
-          
-          
-          
-
-          
 
           <div class="d-flex mt-2 justify-content-end">
-            <b-button
-              :disabled="invalid"
-              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-              variant="primary"
-              class="mr-2"
-              type="submit"
-            >
+            <b-button :disabled="invalid" v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mr-2"
+              type="submit">
               <b-spinner v-if="isDisabled" small />
               <span v-if="isDisabled" class="px-1">guardando...</span>
               <span v-else>{{ isEdit ? 'Actualizar' : 'Agregar' }}</span>
             </b-button>
-            <b-button
-              v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-              type="button"
-              variant="outline-secondary"
-              @click=";[hide(), resetForm()]"
-            >
+            <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="button" variant="outline-secondary"
+              @click=";[hide(), resetForm()]">
               Cancel
             </b-button>
           </div>
@@ -307,6 +179,17 @@ export default {
     passwordToggleIcon() {
       return this.passwordFieldType === "password" ? "EyeIcon" : "EyeOffIcon";
     },
+    filteredProyectos() {
+      // Si el rol es Jefe de Proyectos (roleId === 2), filtrar por proyectos asignados
+      if (this.userData.role.id === 2) {
+        return this.proyectos.filter((project) =>
+          this.assignedProjects.includes(project.id)
+        );
+      } else {
+        return this.proyectos;
+      }
+      // En cualquier otro caso, mostrar todos los proyectos
+    }
   },
   mixins: [togglePasswordVisibility],
   data() {
@@ -321,6 +204,7 @@ export default {
       tabIndex: 0,
       records: [],
       proyectos: [],
+      assignedProjects: [], // IDs de los proyectos asignados al usuario actual
       positions: [],
       grupos: [],
       roles: [],
@@ -338,7 +222,7 @@ export default {
           name: 'Baja'
         }
       ],
-      types:[
+      types: [
         {
           text: 'DNI',
           value: 'DNI'
@@ -406,15 +290,15 @@ export default {
       project_id: this.$parent.$parent.project_id,
       roles: [],
       items: {
-          document: '',
-          email: '',
-          password: '',
-          fullname: '',
-          flagMsg: null,
-          isActive: null,
-          isAccessWeb: null,
-          roleId: null,
-          projects: [],
+        document: '',
+        email: '',
+        password: '',
+        fullname: '',
+        flagMsg: null,
+        isActive: null,
+        isAccessWeb: null,
+        roleId: null,
+        projects: [],
       },
       user_id: null,
       temp: {},
@@ -422,18 +306,22 @@ export default {
     }
   },
   mounted() {
+    console.log("Valor de userData:", this.userData); // Verifica si userData está definido
+
     this.getData()
+    console.log(this.userData.role.id)
+    this.getAssignedProjects();
     this.loadRoles();
   },
-  
+
   methods: {
     async loadRoles() {
       try {
         const response = await UserService.getRoles('', this.$store);
         if (response.status) {
           this.roles = response.data.rows.map(role => ({
-            id: role.id, 
-            name: role.code 
+            id: role.id,
+            name: role.code
           }));
 
         }
@@ -461,12 +349,12 @@ export default {
         this.items.projects = [];
       }
     },
-    async getSelect(){
+    async getSelect() {
       this.items.groupId = []
       this.getGroups()
     },
     validDate(fecha) {
-     
+
       if (fecha != null) {
         const year = new Date(fecha).getFullYear()
         if (year <= 1970) {
@@ -478,11 +366,11 @@ export default {
       return ''
     },
     async getPilots() {
-      let resp = await UserService.getPilots('',this.$store)
+      let resp = await UserService.getPilots('', this.$store)
       this.pilots = resp.data
       console.log('PILOTOOOOOS', this.pilots)
     },
-    
+
     diferenDate(fecha, val) {
       if (fecha != null) {
         if (val == 1) {
@@ -520,10 +408,10 @@ export default {
         }
       }
     },
-    async getData(id=null) {
+    async getData(id = null) {
       this.showLoading = true
       const urlOrder =
-        `?limit=1000000&order=asc&sort=description`	
+        `?limit=1000000&order=asc&sort=description`
       const respProyectos = await SedeService.getProyectos('', this.$store)
       console.log('respProyectos', respProyectos)
       //const respRoles = await RoleUserService.getRoles(urlOrder, this.$store)
@@ -543,7 +431,7 @@ export default {
       this.getGroups()
       this.showLoading = false
     },
-    async getGroups(){
+    async getGroups() {
       const url = `?limit=1000000&order=asc&sort=description&filter=` + JSON.stringify([{ keyContains: 'project.id', key: 'equals', value: this.items.projectId }])
       console.log('url', url)
       const respGrupos = await GroupService.getGroups(url, this.$store)
@@ -557,14 +445,14 @@ export default {
         console.log('Datos recibidos para edición:', items);
         this.temp = items;
         this.user_id = items.id;
-      
+
         // Verifica si project_user existe y tiene datos
-        const userProjects = items.project_user && Array.isArray(items.project_user) 
+        const userProjects = items.project_user && Array.isArray(items.project_user)
           ? items.project_user.map(pu => pu?.project?.id).filter(id => id !== undefined)
           : [];
-      
+
         console.log('Proyectos del usuario:', userProjects);
-      
+
         // Asigna los valores manteniendo la reactividad
         this.items = {
           document: items.document || '',
@@ -577,9 +465,9 @@ export default {
           roleId: items.role?.id || null,
           projects: userProjects
         };
-      
+
         this.isEdit = true;
-      
+
         // Forzar actualización después de que los datos estén listos
         this.$nextTick(() => {
           this.$forceUpdate();
@@ -593,15 +481,15 @@ export default {
       console.log("RESET")
       this.isEdit = false
       this.items = {
-          document: '',
-          email: '',
-          password: '',
-          fullname: '',
-          flagMsg: null,
-          isActive: null,
-          isAccessWeb: null,
-          roleId: null,
-          projects: []
+        document: '',
+        email: '',
+        password: '',
+        fullname: '',
+        flagMsg: null,
+        isActive: null,
+        isAccessWeb: null,
+        roleId: null,
+        projects: []
       }
     },
     async onSubmit(data) {
@@ -611,9 +499,9 @@ export default {
       formData.isActive = this.items.isActive ? 1 : 0;
       formData.flagMsg = this.items.flagMsg ? 1 : 0;
 
-      formData.projects = this.items.roleId === 2 
-      ? (Array.isArray(this.items.projects) ? this.items.projects : [])
-      : [] 
+      formData.projects = this.items.roleId === 2
+        ? (Array.isArray(this.items.projects) ? this.items.projects : [])
+        : []
 
       console.log('data1', formData)
       this.$refs.refFormObserver.validate().then(async (success) => {
@@ -655,8 +543,8 @@ export default {
               text: resp.data.message
                 ? resp.data.message
                 : 'Ocurrió un error al ' +
-                  (this.isEdit == true ? 'actualizar' : 'registrar') +
-                  ' los datos del formulario.',
+                (this.isEdit == true ? 'actualizar' : 'registrar') +
+                ' los datos del formulario.',
               icon: 'error',
               customClass: {
                 confirmButton: 'btn btn-primary'
@@ -667,7 +555,19 @@ export default {
         }
         this.showLoading = false
       })
-    }
+    },
+    async getAssignedProjects() {
+      try {
+        const response = await UserService.getAssignedProjects(this.userData.id, this.$store); // <-- Aquí pasas `this.$store`
+        console.log("Respuesta del backend para proyectos asignados:", response);
+        if (response.status) {
+          this.assignedProjects = response.data.projects.map((project) => project.id);
+          console.log("Proyectos asignados:", this.assignedProjects);
+        }
+      } catch (error) {
+        console.error("Error obteniendo los proyectos asignados:", error);
+      }
+    },
   }
 }
 </script>
