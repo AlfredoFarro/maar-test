@@ -6,6 +6,11 @@
       <h4 class="text-gray-700">Registros x Proyecto</h4>
       <canvas id="projectsChart"></canvas>
     </div>
+    <!-- Mapa Leaflet -->
+    <div class="card p-4 mt-4">
+      <h4 class="font-semibold text-gray-900">Ubicaciones</h4>
+      <div id="map" style="height: 300px;"></div>
+    </div>
 
     <!-- Tarjetas -->
     <div class="card-row">
@@ -73,7 +78,22 @@
 
 <script>
 import Chart from 'chart.js/auto'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
+// Importa los íconos explícitamente
+import icon from 'leaflet/dist/images/marker-icon.png'
+import shadow from 'leaflet/dist/images/marker-shadow.png'
+
+// Arregla el problema del path de los íconos
+delete L.Icon.Default.prototype._getIconUrl
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: icon,
+  iconUrl: icon,
+  shadowUrl: shadow,
+})
+import 'leaflet/dist/leaflet.css'
 export default {
   data() {
     return {
@@ -102,8 +122,22 @@ export default {
   mounted() {
     this.renderProjectsChart()
     this.renderRiskChart()
+    this.initMap()
   },
   methods: {
+    initMap() {
+      const map = L.map('map').setView([-12.0464, -77.0428], 6) // Centro: Lima, Perú
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map)
+
+      // Ejemplo: agregar marcador
+      L.marker([-12.0464, -77.0428])
+        .addTo(map)
+        .bindPopup('Lima - Proyecto Principal')
+        .openPopup()
+    },
     renderProjectsChart() {
       const ctx = document.getElementById('projectsChart')
       new Chart(ctx, {
@@ -293,5 +327,11 @@ span {
 .card h4:last-of-type {
   font-weight: normal; /* Normal para el segundo título (Registros x Proyecto) */
   margin-top: 4px; /* Un poco de separación entre los títulos */
+}
+#map {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  margin-top: 1rem;
 }
 </style>
