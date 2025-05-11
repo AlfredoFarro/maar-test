@@ -32,9 +32,7 @@
           </validation-provider>
 
           <validation-provider #default="{ errors }" name="image" rules="">
-            <b-form-group v-if="!isEdit" label="Imagen de la Empresa" label-for="image">
-              <p v-if="isEdit">Modo Edición</p>
-              <p v-else></p>
+            <b-form-group  label="Imagen de la Empresa" label-for="image">
               <b-form-file v-model="items.image" id="image" placeholder="Seleccionar archivo..."
                 accept="image/*"></b-form-file>
               <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
@@ -304,7 +302,7 @@ export default {
       if (!this.isEdit) {
         resp = await EnterpriseService.saveEnterprise(formData, this.$store, config);
       } else {
-        formData.append('_method', 'PUT'); // O PATCH si tu backend lo requiere para la edición
+        /* formData.append('_method', 'PUT'); // O PATCH si tu backend lo requiere para la edición */
         resp = await EnterpriseService.updateEnterprise(this.proyecto_id, formData, this.$store, config);
       }
 
