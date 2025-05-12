@@ -6,14 +6,14 @@
         <b-row>
           <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
             <div class="w-100 mb-1 mb-lg-0 mt-02">
-              <b-form-group label="Empresa" label-for="enterprise" class="mr-2">
+              <b-form-group label="Proyecto" label-for="enterprise" class="mr-2">
                 <v-select
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                   :options="empresas"
                   label="ruc"
                   input-id="enterprise"
                   :reduce="(empresas) => empresas.id"
-                  placeholder="Empresa"
+                  placeholder="Proyecto"
                   v-model="enterprise_id"
                   @input="filter()"
                   class="select-obra"
@@ -289,16 +289,8 @@ export default {
         options: {
           cutout: '70%',
           plugins: {
-            legend: { display: false },
-            datalabels: {
-              font: {
-                size: 14,
-              },
-              formatter: (value, context) => {
-                const label = context.chart.data.labels[context.dataIndex];
-                return `${label}\n${value}%`;
-              }
-            }
+            legend: { display: true },
+            
           }
         }
       })
