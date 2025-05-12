@@ -1,6 +1,70 @@
 <template>
   <div class="dashboard-container p-4">
     <!-- Gráfico de Proyectos -->
+    <b-card ref="filterContent" no-body class="sticky">
+      <b-card-body>
+        <b-row>
+          <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
+            <div class="w-100 mb-1 mb-lg-0 mt-02">
+              <b-form-group label="Empresa" label-for="enterprise" class="mr-2">
+                <v-select
+                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                  :options="empresas"
+                  label="ruc"
+                  input-id="enterprise"
+                  :reduce="(empresas) => empresas.id"
+                  placeholder="Empresa"
+                  v-model="enterprise_id"
+                  @input="filter()"
+                  class="select-obra"
+                  :disabled="user_role != 'administrador'"
+                >
+                  <template v-slot:selected-option="option">
+                    {{ option.name }} - {{ option.ruc }}
+                  </template>
+                  <template slot="option" slot-scope="option">
+                    {{ option.name }} - {{ option.ruc }}
+                  </template>
+                </v-select>
+              </b-form-group>
+            </div>
+          </b-col>
+          <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
+            <div class="w-100">
+              <b-form-group label="Nombre" label-for="name" class="mr-2">
+                <b-form-input
+                  type="text"
+                  label="name"
+                  id="name"
+                  placeholder="Nombre"
+                  v-model="name"
+                  @input="filter()"
+                  class="select-obra"
+                  autocomplete="off"
+                >
+                </b-form-input>
+              </b-form-group>
+            </div>   
+          </b-col> 
+          
+          <b-col md="6" lg="2" class="d-flex">              
+            <div
+              class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
+            >
+           
+            <b-button
+                class="mr-2"
+                variant="primary"
+                :disabled="!rolesAllowed.includes(user_role)"
+                @click="addSede()"
+              >
+                <span class="text-nowrap"> <feather-icon icon="PlusCircleIcon" /> Agregar </span>
+              </b-button>
+            </div>
+          </b-col>
+        </b-row>
+      </b-card-body>
+    </b-card>
     <div class="card p-4">
       <h4 class="font-semibold text-gray-900">Proyectos</h4>
       <h4 class="text-gray-700">Registros x Proyecto</h4>
@@ -76,11 +140,14 @@
 import Chart from 'chart.js/auto'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 // Importa los íconos explícitamente
 import icon from 'leaflet/dist/images/marker-icon.png'
 import shadow from 'leaflet/dist/images/marker-shadow.png'
 import DashboardService from '@/services/DashboardService'
+import vSelect from 'vue-select'
+Chart.register(ChartDataLabels)
+
 // Arregla el problema del path de los íconos
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -116,7 +183,25 @@ export default {
         { bg: '#ffebee', color: '#e53935' }, // rojo
       ],
       starColors: ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6'],
+      filters: {
+        fechaInicio: null,
+        fechaFin: null,
+        estado: null,
+      },
+      estadosOptions: [
+        { label: 'Activo', value: 'activo' },
+        { label: 'Inactivo', value: 'inactivo' },
+        { label: 'En progreso', value: 'en_progreso' },
+      ],
+      rolesAllowed: ['administrador', 'supervisor'], // Ajusta según necesites
+      user_role: 'administrador', // Esto deberías obtenerlo de tu store o auth
+      empresas: [],
+      enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
+      name: '',
     }
+  },
+  components: {
+      vSelect,
   },
   mounted() {
     this.loadProjectChartData();
@@ -125,6 +210,10 @@ export default {
     this.initMap()
   },
   methods: {
+    filter() {
+      // Este método se implementará más adelante
+      console.log('Filtrando...', this.filters);
+    },
     async loadProjectChartData() {
       try {
         const serviceCallResponse = await DashboardService.getRegistrosPorProyectoChartData();
@@ -200,7 +289,16 @@ export default {
         options: {
           cutout: '70%',
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            datalabels: {
+              font: {
+                size: 14,
+              },
+              formatter: (value, context) => {
+                const label = context.chart.data.labels[context.dataIndex];
+                return `${label}\n${value}%`;
+              }
+            }
           }
         }
       })
@@ -218,6 +316,10 @@ export default {
   >.card {
     flex: 1 1 0;
     min-width: 0; // evita que se rompa el layout
+  }
+  > .categorias {
+    flex: 0 0 auto; // Solo ocupa lo necesario
+    width: auto; // Deja que crezca según su contenido
   }
 }
 
@@ -247,7 +349,7 @@ li {
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #4b5563;
 }
 
@@ -263,9 +365,6 @@ span {
 
 .categorias {
   ul {
-    padding: 0;
-    margin: 0;
-
     .categoria-item {
       display: flex;
       align-items: center;
@@ -304,7 +403,7 @@ span {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: #4b5563;
       }
@@ -320,12 +419,12 @@ span {
       .nombre {
         font-weight: 600;
         color: #111827;
-        font-size: 14px;
+        font-size: 16px;
         margin-bottom: 2px;
       }
 
       .registros {
-        font-size: 12px;
+        font-size: 14px;
         color: #6b7280;
       }
     }
@@ -333,7 +432,7 @@ span {
 }
 
 .card h4 {
-  font-size: 1rem;
+  font-size: 1.125rem;
   color: #111827;
   /* Color para ambos h4 */
   margin: 0;
@@ -354,7 +453,7 @@ span {
 
 #map {
   width: 100%;
-  height: 300px;
+  height: 700px!important;
   border-radius: 12px;
   margin-top: 1rem;
 }

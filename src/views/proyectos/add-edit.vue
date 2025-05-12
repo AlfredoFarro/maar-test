@@ -72,6 +72,8 @@
               <b-form-input
                 v-model="items.latitude"
                 id="latitude"
+                type="number"
+                step="any"
                 placeholder="Latitud"
                 autocomplete="off"
               />
@@ -88,6 +90,8 @@
               <b-form-input
                 v-model="items.longitude"
                 id="longitude"
+                type="number"
+                step="any"
                 placeholder="Longitud"
                 autocomplete="off"
               />
@@ -103,6 +107,8 @@
               <b-form-input
                 v-model="items.radius"
                 id="radius"
+                type="number"
+                step="any"
                 placeholder="Radio"
                 autocomplete="off"
               />

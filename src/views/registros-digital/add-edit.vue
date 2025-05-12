@@ -181,7 +181,7 @@
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
           </validation-provider>
-          <validation-provider #default="{ errors }" name="image" rules="">
+          <validation-provider #default="{ errors }" name="image" rules="" v-if="!isViewMode">
             <b-form-group  label="Imagen Frontal" label-for="image">
               <b-form-file v-model="items.url_front" id="image" placeholder="Seleccionar archivo..."
                 accept="image/*"></b-form-file>
@@ -189,7 +189,7 @@
                 }}</small>
             </b-form-group>
           </validation-provider>
-          <validation-provider #default="{ errors }" name="image" rules="">
+          <validation-provider #default="{ errors }" name="image" rules="" v-if="!isViewMode">
             <b-form-group  label="Imagen Trasera" label-for="image2">
               <b-form-file v-model="items.url_back" id="image2" placeholder="Seleccionar archivo..."
                 accept="image/*"></b-form-file>
