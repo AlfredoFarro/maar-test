@@ -18,11 +18,7 @@
       <div class="card p-4 h-full">
         <h4 class="mb-2 font-semibold text-gray-900 text-base">Tipo de Hallazgos</h4>
         <ul>
-          <li
-            v-for="(item, index) in hallazgos"
-            :key="index"
-            class="mb-1 flex justify-between text-sm text-gray-700"
-          >
+          <li v-for="(item, index) in hallazgos" :key="index" class="mb-1 flex justify-between text-sm text-gray-700">
             <span>{{ item.tipo }}</span>
             <span>{{ item.cantidad }}</span>
           </li>
@@ -40,31 +36,19 @@
       <div class="card p-4 categorias h-full">
         <h4 class="mb-4 font-semibold text-gray-900 text-base">Categorías</h4>
         <ul class="space-y-4">
-          <li
-            v-for="(cat, index) in categorias"
-            :key="index"
-            class="categoria-item"
-          >
+          <li v-for="(cat, index) in categorias" :key="index" class="categoria-item">
             <div class="progress-circle">
               <svg viewBox="0 0 36 36">
-                <path
-                  class="circle-bg"
-                  d="M18 2.0845
+                <path class="circle-bg" d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                  class="circle"
-                  :stroke="cat.color"
-                  :stroke-dasharray="`${cat.porcentaje}, 100`"
-                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle" :stroke="cat.color" :stroke-dasharray="`${cat.porcentaje}, 100`" d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
+                    a 15.9155 15.9155 0 0 1 0 -31.831" />
               </svg>
               <span class="percentage">{{ cat.porcentaje }}%</span>
             </div>
-          
+
             <div class="info">
               <div class="nombre">{{ cat.nombre }}</div>
               <div class="registros">{{ cat.registros }} registros</div>
@@ -84,7 +68,7 @@ import 'leaflet/dist/leaflet.css'
 // Importa los íconos explícitamente
 import icon from 'leaflet/dist/images/marker-icon.png'
 import shadow from 'leaflet/dist/images/marker-shadow.png'
-
+import DashboardService from '@/services/DashboardService'
 // Arregla el problema del path de los íconos
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -97,6 +81,8 @@ import 'leaflet/dist/leaflet.css'
 export default {
   data() {
     return {
+      projectChartInstance: null,
+      projectChartConfigData: { labels: [], datasets: [{ label: 'Registros', data: [], backgroundColor: '#c0bfff', borderRadius: 5 }] },
       hallazgos: [
         { tipo: 'Capacitación / Instrucción', cantidad: 120 },
         { tipo: 'Herramientas y equipos', cantidad: 50 },
@@ -120,11 +106,26 @@ export default {
     }
   },
   mounted() {
+    this.loadProjectChartData();
     this.renderProjectsChart()
     this.renderRiskChart()
     this.initMap()
   },
   methods: {
+    async loadProjectChartData() {
+      try {
+        const serviceCallResponse = await DashboardService.getRegistrosPorProyectoChartData();
+        if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
+          this.projectChartConfigData = serviceCallResponse.data;
+        } else {
+          this.projectChartConfigData = { labels: [], datasets: [{ label: 'Registros', data: [], backgroundColor: '#c0bfff', borderRadius: 5 }] };
+        }
+      } catch (error) {
+        this.projectChartConfigData = { labels: [], datasets: [{ label: 'Registros', data: [], backgroundColor: '#c0bfff', borderRadius: 5 }] };
+      }
+      this.renderProjectsChart();
+    },
+
     initMap() {
       const map = L.map('map').setView([-12.0464, -77.0428], 6) // Centro: Lima, Perú
 
@@ -139,24 +140,22 @@ export default {
         .openPopup()
     },
     renderProjectsChart() {
-      const ctx = document.getElementById('projectsChart')
-      new Chart(ctx, {
+      const ctx = document.getElementById('projectsChart');
+      if (!ctx) {
+        return;
+      }
+
+      if (this.projectChartInstance) {
+        this.projectChartInstance.destroy();
+      }
+
+      if (!this.projectChartConfigData || !this.projectChartConfigData.labels || !this.projectChartConfigData.datasets) {
+        return;
+      }
+
+      this.projectChartInstance = new Chart(ctx, {
         type: 'bar',
-        data: {
-          labels: [
-            'FE Y ALEGRIA 23', 'FE Y ALEGRIA 24', 'QUELLAVECO', 'REPUBLICA DEL ECUADOR',
-            'JORGE BASADRE', 'STELLA MARIS', 'PERUANO CANADIENSE', 'IE 2025', 'UDE / DSG',
-          ],
-          datasets: [{
-            label: 'Registros',
-            data: [28000, 10000, 45000, 38000, 15000, 30000, 35000, 30000, 8000],
-            backgroundColor: [
-              '#c0bfff', '#c0bfff', '#7d6bff', '#c0bfff', '#c0bfff',
-              '#c0bfff', '#c0bfff', '#c0bfff', '#c0bfff',
-            ],
-            borderRadius: 5
-          }]
-        },
+        data: this.projectChartConfigData,
         options: {
           responsive: true,
           plugins: {
@@ -171,7 +170,7 @@ export default {
             }
           }
         }
-      })
+      });
     },
     renderRiskChart() {
       const ctx = document.getElementById('riskChart')
@@ -203,11 +202,12 @@ export default {
   gap: 1rem; // espacio entre las tarjetas
   justify-content: space-between;
 
-  > .card {
+  >.card {
     flex: 1 1 0;
     min-width: 0; // evita que se rompa el layout
   }
 }
+
 .card {
   background: white;
   border-radius: 12px;
@@ -247,6 +247,7 @@ span {
 .card.bg-white {
   background-color: #f9fafb;
 }
+
 .categorias {
   ul {
     padding: 0;
@@ -255,7 +256,8 @@ span {
     .categoria-item {
       display: flex;
       align-items: center;
-      justify-content: flex-start; /* Ajustar a flex-start para que estén pegados al gráfico */
+      justify-content: flex-start;
+      /* Ajustar a flex-start para que estén pegados al gráfico */
     }
 
     .progress-circle {
@@ -272,7 +274,7 @@ span {
 
         .circle-bg {
           fill: none;
-          stroke: #e5e7eb; 
+          stroke: #e5e7eb;
           stroke-width: 4;
         }
 
@@ -291,7 +293,7 @@ span {
         transform: translate(-50%, -50%);
         font-size: 12px;
         font-weight: 600;
-        color: #4b5563; 
+        color: #4b5563;
       }
     }
 
@@ -299,35 +301,44 @@ span {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin-top: 0; /* Evitar que haya más espacio encima del texto */
+      margin-top: 0;
+
+      /* Evitar que haya más espacio encima del texto */
       .nombre {
         font-weight: 600;
-        color: #111827; 
+        color: #111827;
         font-size: 14px;
         margin-bottom: 2px;
       }
 
       .registros {
         font-size: 12px;
-        color: #6b7280; 
+        color: #6b7280;
       }
     }
   }
 }
+
 .card h4 {
   font-size: 1rem;
-  color: #111827; /* Color para ambos h4 */
-  margin: 0; /* Elimina márgenes innecesarios */
+  color: #111827;
+  /* Color para ambos h4 */
+  margin: 0;
+  /* Elimina márgenes innecesarios */
 }
 
 .card h4:first-of-type {
-  font-weight: 600; /* Negrita solo para el primer título (Proyectos) */
+  font-weight: 600;
+  /* Negrita solo para el primer título (Proyectos) */
 }
 
 .card h4:last-of-type {
-  font-weight: normal; /* Normal para el segundo título (Registros x Proyecto) */
-  margin-top: 4px; /* Un poco de separación entre los títulos */
+  font-weight: normal;
+  /* Normal para el segundo título (Registros x Proyecto) */
+  margin-top: 4px;
+  /* Un poco de separación entre los títulos */
 }
+
 #map {
   width: 100%;
   height: 300px;
