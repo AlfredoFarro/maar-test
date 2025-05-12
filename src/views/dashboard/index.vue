@@ -18,8 +18,20 @@
       <div class="card p-4 h-full">
         <h4 class="mb-2 font-semibold text-gray-900 text-base">Tipo de Hallazgos</h4>
         <ul>
-          <li v-for="(item, index) in hallazgos" :key="index" class="mb-1 flex justify-between text-sm text-gray-700">
-            <span>{{ item.tipo }}</span>
+          <li
+            v-for="(item, index) in hallazgos"
+            :key="index"
+            class="mb-1 flex items-center justify-between text-sm text-gray-700"
+          >
+            <div class="flex items-center">
+              <span
+                class="inline-block mr-2"
+                :style="{ color: starColors[index % starColors.length],
+                  fontSize: '1.5rem' // o '2rem', etc.
+                 }"
+              >★</span>
+              <span>{{ item.tipo }}</span>
+            </div>
             <span>{{ item.cantidad }}</span>
           </li>
         </ul>
@@ -102,7 +114,8 @@ export default {
         { bg: '#e0f2f1', color: '#26a69a' }, // teal
         { bg: '#fff3e0', color: '#fb8c00' }, // naranja
         { bg: '#ffebee', color: '#e53935' }, // rojo
-      ]
+      ],
+      starColors: ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6'],
     }
   },
   mounted() {
