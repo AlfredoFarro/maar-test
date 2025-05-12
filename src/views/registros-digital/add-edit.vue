@@ -181,7 +181,22 @@
               <small class="text-danger">{{ errors[0] }}</small>
             </b-form-group>
           </validation-provider>
-
+          <validation-provider #default="{ errors }" name="image" rules="">
+            <b-form-group  label="Imagen Frontal" label-for="image">
+              <b-form-file v-model="items.url_front" id="image" placeholder="Seleccionar archivo..."
+                accept="image/*"></b-form-file>
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+                }}</small>
+            </b-form-group>
+          </validation-provider>
+          <validation-provider #default="{ errors }" name="image" rules="">
+            <b-form-group  label="Imagen Trasera" label-for="image2">
+              <b-form-file v-model="items.url_back" id="image2" placeholder="Seleccionar archivo..."
+                accept="image/*"></b-form-file>
+              <small class="text-danger alert" :style="{ height: (errors.length > 0 ? 20 : 0) + 'px' }">{{ errors[0]
+                }}</small>
+            </b-form-group>
+          </validation-provider>
           <!-- Form Actions -->
           <div class="d-flex mt-4 justify-content-end" v-if="!isViewMode">
             <b-button
@@ -280,7 +295,9 @@ export default {
         riesgos: [],
         puntos: [],
         descripcion: '',
-        medidas: ''
+        medidas: '',
+        url_front:null,
+        url_back:null,
       }
     }
   },
@@ -375,13 +392,13 @@ export default {
         this.items.riesgos = selected;
       }
     },
-    async setData(item) {
+    setData(item) {
       return new Promise(async (resolve) => {
         // Asegurarse de que los riesgos están cargados
         if (this.riesgoOptions.length === 0) {
           await this.cargarRiesgos();
         }
-      
+        
         if (item) {
           // Verificar si tiene todos los riesgos
           const itemRiskIds = item.riesgos ? item.riesgos.map(r => r.id) : [];
@@ -395,7 +412,9 @@ export default {
               : Array.isArray(item.riesgos) 
                 ? item.riesgos 
                 : [],
-            puntos: Array.isArray(item.puntos) ? item.puntos : []
+            puntos: Array.isArray(item.puntos) ? item.puntos : [],
+            url_front: null,
+            url_back: null,
           };
 
           this.isEdit = !item.isViewMode;
@@ -421,7 +440,9 @@ export default {
         riesgos: [],
         puntos: [],
         descripcion: '',
-        medidas: ''
+        medidas: '',
+        url_front:null,
+        url_back:null,
       }
       if (this.$refs.refFormObserver) {
         this.$refs.refFormObserver.reset()
@@ -432,43 +453,68 @@ export default {
       this.isDisabled = true;
 
       try {
-        // Preparar los riesgos - si tiene "Todos" seleccionado, enviar todos los IDs
+        // Preparar los riesgos (manteniendo tu lógica actual)
         const selectedRisks = this.items.riesgos.some(r => r.id === 0)
-          ? this.riesgoOptions.map(r => ({ id: r.id })) // Enviar todos los riesgos
-          : this.items.riesgos.map(r => ({ id: r.id })); // Enviar solo los seleccionados
+          ? this.riesgoOptions.map(r => ({ id: r.id }))
+          : this.items.riesgos.map(r => ({ id: r.id }));
+      
+        // Crear FormData para manejar las imágenes
+        const formData = new FormData();
 
-        const formData = {
-          projectId: this.items.proyecto,
-          worker_fullname: this.items.nombre,
-          worker_id_number: this.items.dni,
-          completed: this.items.fecha ? this.parseDateToISO1(this.items.fecha) : null,
-          area: this.items.area,
-          flag: this.items.estado === 'seguro' ? 1 : 0,
-          categoryId: Number(this.items.categorias),
-          description: this.items.descripcion,
-          actions: this.items.medidas,
-          risks: selectedRisks
+        // Agrega todos tus campos existentes al FormData
+        formData.append('projectId', this.items.proyecto);
+        formData.append('worker_fullname', this.items.nombre);
+        formData.append('worker_id_number', this.items.dni);
+        formData.append('completed', this.items.fecha ? this.parseDateToISO1(this.items.fecha) : null);
+        formData.append('area', this.items.area);
+        formData.append('flag', this.items.estado === 'seguro' ? 1 : 0);
+        formData.append('categoryId', Number(this.items.categorias));
+        formData.append('description', this.items.descripcion);
+        formData.append('actions', this.items.medidas);
+        formData.append('risks',selectedRisks);
+
+        // Agrega las imágenes si están presentes
+        if (this.items.url_front) {
+          formData.append('files', this.items.url_front);
+        }
+        if (this.items.url_back) {
+          formData.append('files', this.items.url_back);
+        }
+
+        
+      
+        // Configuración para FormData
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         };
       
         let response;
-      
         if (this.isEdit) {
-          response = await RegisterService.updateRecord(this.items.id, formData, this.$store);
+          response = await RegisterService.updateRecord(this.items.id, formData, this.$store, config);
         } else {
-          response = await RegisterService.createRecord(formData, this.$store);
+          response = await RegisterService.createRecord(formData, this.$store, config);
         }
       
         if (response && response.status !== false) {
+          // En lugar de emitir un evento, llamamos directamente al método del padre
+           this.$parent.$parent.currentPage = 1; // <--- Cambio clave 1
+      
+          // Actualizar los datos
+          this.$parent.$parent.getAllData(); // <--- Esto ya lo tienes
+
           this.$emit('update:is-add', false);
           this.resetForm();
-          this.$parent.$parent.getAllData();
+
           this.$swal({
             title: 'Éxito',
-            text: this.isEdit ? 'Registro actualizado' : 'Registro creado',
+            text: this.isEdit ? 'Registro actualizado correctamente' : 'Registro creado',
             icon: 'success'
+          }).then(() => {
+            // Forzar recarga si es necesario
+            this.$forceUpdate();
           });
-        } else {
-          throw new Error(response?.message || 'Error al guardar');
         }
       } catch (error) {
         console.error('Error:', error);

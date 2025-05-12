@@ -617,7 +617,9 @@
         this.form.isViewMode = false;
         console.log('this.form', this.form)
         this.isAdd = true
-        this.$refs.sedeAdd.setData(this.form)
+        this.$nextTick(() => {
+          this.$refs.sedeAdd.setData(this.form);
+        });
       },
       view(item) {
         console.log('item', item)
