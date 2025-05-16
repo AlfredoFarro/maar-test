@@ -455,8 +455,9 @@ export default {
       try {
         // Preparar los riesgos (manteniendo tu lógica actual)
         const selectedRisks = this.items.riesgos.some(r => r.id === 0)
-          ? this.riesgoOptions.map(r => ({ id: r.id }))
-          : this.items.riesgos.map(r => ({ id: r.id }));
+          ? this.riesgoOptions.map(r => r.id)  // Devuelve solo el ID (número)
+          : this.items.riesgos.map(r => r.id); // Devuelve solo el ID (número)
+
       
         // Crear FormData para manejar las imágenes
         const formData = new FormData();
@@ -471,7 +472,7 @@ export default {
         formData.append('categoryId', Number(this.items.categorias));
         formData.append('description', this.items.descripcion);
         formData.append('actions', this.items.medidas);
-        formData.append('risks',selectedRisks);
+        formData.append('risks', JSON.stringify(selectedRisks));
 
         // Agrega las imágenes si están presentes
         if (this.items.url_front) {
