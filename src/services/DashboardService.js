@@ -19,6 +19,10 @@ const DashboardService = {
     const resp = await VueStoreService.get('dashboard/categoriaschart', store);
     return resp;
   },
+  async getProjectLocations() { // Nuevo método para Categorías
+    const resp = await VueStoreService.get('dashboard/projectlocations', store);
+    return resp;
+  },
 };
 
 

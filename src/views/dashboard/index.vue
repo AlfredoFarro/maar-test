@@ -1,3 +1,4 @@
+
 <template>
   <div class="dashboard-container p-4">
     <!-- Gráfico de Proyectos -->
@@ -169,17 +170,20 @@ export default {
   components: {
     vSelect,
   },
-  mounted() {
-    this.loadProjectChartData();
 
-    this.loadHallazgosData()
+  mounted() {
+  
+    this.loadProjectLocations(); // Llama al método para cargar ubicaciones
+  
+    this.loadProjectChartData();
+    this.loadHallazgosData();
     this.loadRiskChartData();
     this.loadCategoriasData();
-
-    this.renderProjectsChart()
-    this.renderRiskChart()
-    this.initMap()
+    this.renderProjectsChart();
+    this.renderRiskChart();
+    this.initMap();
   },
+  
   methods: {
     filter() {
       // Este método se implementará más adelante
@@ -235,18 +239,35 @@ export default {
         this.categorias = [];
       }
     },
+    async loadProjectLocations() {
+      try {
+        const response = await DashboardService.getProjectLocations();
+        if (response && response.status === true && response.data) {
+          this.addMarkersToMap(response.data);
+        } else {
+          console.error('Error al obtener las ubicaciones de los proyectos:', response.message);
+        }
+      } catch (error) {
+        console.error('Error al cargar las ubicaciones de los proyectos:', error);
+      }
+    },
     initMap() {
-      const map = L.map('map').setView([-12.0464, -77.0428], 6) // Centro: Lima, Perú
+      this.map = L.map('map').setView([-12.0464, -77.0428], 6); // Centro inicial: Lima, Perú
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map)
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(this.map);
+    },
+    addMarkersToMap(locations) {
+      if (!this.map) return;
 
-      // Ejemplo: agregar marcador
-      L.marker([-12.0464, -77.0428])
-        .addTo(map)
-        .bindPopup('Lima - Proyecto Principal')
-        .openPopup()
+      locations.forEach(location => {
+        if (location.latitude && location.longitude) {
+          L.marker([location.latitude, location.longitude])
+            .addTo(this.map)
+            .bindPopup(`<strong>${location.name}</strong>`);
+        }
+      });
     },
     renderProjectsChart() {
       const ctx = document.getElementById('projectsChart');
