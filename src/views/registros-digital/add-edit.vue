@@ -105,9 +105,9 @@
           <validation-provider #default="{ errors }" name="estado" >
             <b-form-group label="Estado" label-for="estado">
               <b-form-radio-group
-                v-model="items.estado"
+                v-model="items.type"
                 :options="estadoOptions"
-                name="estado"
+                name="type"
                 :disabled="isViewMode"
               />
               <small class="text-danger">{{ errors[0] }}</small>
@@ -269,8 +269,8 @@ export default {
         }
       },
       estadoOptions: [
-        { text: 'Seguro', value: 'seguro' },
-        { text: 'Inseguro', value: 'inseguro' }
+        { text: 'Seguro', value: 'Seguro' },
+        { text: 'Inseguro', value: 'Inseguro' }
       ],
       categoriaOptions: [
         'Medio Ambiente',
@@ -290,7 +290,7 @@ export default {
         dni: '',
         fecha: new Date(),
         area: '',
-        estado: 'seguro',
+        type: 'Seguro',
         categorias: [],
         riesgos: [],
         puntos: [],
@@ -404,9 +404,10 @@ export default {
           const itemRiskIds = item.riesgos ? item.riesgos.map(r => r.id) : [];
           const allRiskIds = this.riesgoOptions.map(r => r.id);
           const hasAllRisks = allRiskIds.every(id => itemRiskIds.includes(id));
-
+          
           this.items = {
             ...item,
+            
             riesgos: hasAllRisks 
               ? [{ id: 0, name: 'Todos' }] // Mostrar solo "Todos" si tiene todos los riesgos
               : Array.isArray(item.riesgos) 
@@ -435,7 +436,7 @@ export default {
         dni: '',
         fecha: new Date(),
         area: '',
-        estado: 'seguro',
+        type: 'Seguro',
         categorias: [],
         riesgos: [],
         puntos: [],
@@ -458,7 +459,7 @@ export default {
           ? this.riesgoOptions.map(r => r.id)  // Devuelve solo el ID (número)
           : this.items.riesgos.map(r => r.id); // Devuelve solo el ID (número)
 
-      
+        
         // Crear FormData para manejar las imágenes
         const formData = new FormData();
 
@@ -468,7 +469,7 @@ export default {
         formData.append('worker_id_number', this.items.dni);
         formData.append('completed', this.items.fecha ? this.parseDateToISO1(this.items.fecha) : null);
         formData.append('area', this.items.area);
-        formData.append('flag', this.items.estado === 'seguro' ? 1 : 0);
+        formData.append('type', this.items.type);  // Añadir esta línea
         formData.append('categoryId', Number(this.items.categorias));
         formData.append('description', this.items.descripcion);
         formData.append('actions', this.items.medidas);

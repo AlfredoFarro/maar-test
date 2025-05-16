@@ -318,7 +318,7 @@
           dni: '',
           fecha: new Date(),
           area: '',
-          estado: '',
+          type: '',
           categorias: '',
           riesgos: [], // array de objetos con id y name
           descripcion: '',
@@ -604,7 +604,7 @@
         this.form.dni = item.worker_id_number || '';
         this.form.fecha = item.completed ? new Date(item.completed) : new Date();
         this.form.area = item.area || '';
-        this.form.estado = item.flag === 0 ? 'inseguro' : 'seguro';
+        this.form.type = item.type ? item.type : 'Seguro';
         this.form.categorias = item.category ? item.category.id : '';
         this.form.riesgos = item.record_risk
           ? item.record_risk.map(r => ({
@@ -629,7 +629,7 @@
         this.form.dni = item.worker_id_number || '';
         this.form.fecha = item.completed ? new Date(item.completed) : new Date();
         this.form.area = item.area || '';
-        this.form.estado = item.flag === 0 ? 'inseguro' : 'seguro';
+        this.form.type = item.type ? item.type : 'Seguro';
         this.form.categorias = item.category ? item.category.id : '';
         this.form.riesgos = item.record_risk
           ? item.record_risk.map(r => ({
