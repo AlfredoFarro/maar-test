@@ -74,6 +74,7 @@ export const getUserAcessPermissions = (role) => {
     
     case "administrador":
       permissions = [
+        "disciplinas",
         "observaciones",
         "registros-digitales",
         "dashboard",
@@ -121,6 +122,7 @@ export const getUserAcessPermissions = (role) => {
       break;
     case "jefe de proyectos":
       permissions = [
+        "disciplinas",
         "observaciones",
         "registros-digitales",
         "dashboard",

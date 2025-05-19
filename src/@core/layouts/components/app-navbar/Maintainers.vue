@@ -109,6 +109,12 @@ export default {
         title: 'Observaciones',
         route: 'observaciones',
       },
+      {
+        icon: 'GridIcon',
+        id: 'disciplinas',
+        title: 'Disciplinas',
+        route: 'disciplinas',
+      },
 /*       {
         icon: 'FolderIcon',
         id: 'plantilla',

@@ -290,6 +290,14 @@ export default [
     hide: true,
   },
   {
+    header: 'Disciplinas',
+    icon: 'FolderIcon',
+    id: 'disciplinas',
+    title: 'Disciplinas',
+    route: 'disciplinas',
+    hide: true,
+  },
+  {
     header: 'Seleccionar Proyecto',
     icon: 'FolderIcon',
     id: 'seleccionar-proyecto',

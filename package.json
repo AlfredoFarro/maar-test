@@ -37,6 +37,7 @@
     "image-conversion": "^2.1.1",
     "jsonwebtoken": "8.5.1",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "moment-timezone": "^0.5.43",
     "portal-vue": "2.1.7",
     "postcss-rtl": "1.7.3",

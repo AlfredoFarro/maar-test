@@ -120,6 +120,8 @@ import icon from 'leaflet/dist/images/marker-icon.png'
 import shadow from 'leaflet/dist/images/marker-shadow.png'
 import DashboardService from '@/services/DashboardService'
 import vSelect from 'vue-select'
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 Chart.register(ChartDataLabels)
 
 // Arregla el problema del path de los íconos
@@ -261,13 +263,19 @@ export default {
     addMarkersToMap(locations) {
       if (!this.map) return;
 
+      // Crea el grupo de clusters
+      const markers = L.markerClusterGroup();
+
       locations.forEach(location => {
         if (location.latitude && location.longitude) {
-          L.marker([location.latitude, location.longitude])
-            .addTo(this.map)
-            .bindPopup(`<strong>${location.name}</strong>`);
+          const marker = L.marker([location.latitude, location.longitude]);
+          // Si deseas mostrar más información al hacer clic:
+          marker.bindPopup(`<strong>${location.latitude},${location.longitude}</strong>`);
+          markers.addLayer(marker);
         }
       });
+    
+      this.map.addLayer(markers);
     },
     renderProjectsChart() {
       const ctx = document.getElementById('projectsChart');

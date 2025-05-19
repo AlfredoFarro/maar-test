@@ -349,6 +349,18 @@ export default [{
     },
   },
   {
+    path: '/disciplinas',
+    name: 'disciplinas',
+    component: () => import('@/views/disciplinas/index.vue'),
+    meta: {
+      pageTitle: 'Disciplinas',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
+  {
     path: "/dashboard",
     name: "dashboard",
     component: () => import("@/views/dashboard/index.vue"),
