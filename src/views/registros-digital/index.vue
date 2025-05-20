@@ -323,7 +323,8 @@
           riesgos: [], // array de objetos con id y name
           descripcion: '',
           medidas: '',
-          isViewMode: false
+          isViewMode: false,
+          disciplina: ''
         },
         dniFilter: '',
         selectedProject: null,
@@ -614,6 +615,9 @@
           : [];
         this.form.descripcion = item.description || '';
         this.form.medidas = item.actions || item.corrective_measures || '';
+        this.form.disciplina = item.record_discipline && item.record_discipline.length > 0 
+        ? item.record_discipline[0].discipline.id 
+        : '';
         this.form.isViewMode = false;
         console.log('this.form', this.form)
         this.isAdd = true
@@ -639,6 +643,9 @@
           : [];
         this.form.descripcion = item.description || '';
         this.form.medidas = item.actions || item.corrective_measures || '';
+        this.form.disciplina = item.record_discipline && item.record_discipline.length > 0 
+        ? item.record_discipline[0].discipline.id 
+        : '';
         this.form.isViewMode = true;
         console.log('this.form', this.form)
         this.isAdd = true

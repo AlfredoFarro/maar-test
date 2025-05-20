@@ -101,6 +101,21 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Disciplina -->
+          <validation-provider #default="{ errors }" name="disciplina">
+            <b-form-group label="Disciplina" label-for="disciplina">
+              <v-select
+                v-model="items.disciplina"
+                :options="disciplinasOptions"
+                label="name"
+                :reduce="disc => disc.id"
+                placeholder="Seleccione una disciplina"
+                :disabled="isViewMode"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Estado (Seguro/Inseguro) -->
           <validation-provider #default="{ errors }" name="estado" >
             <b-form-group label="Estado" label-for="estado">
@@ -230,6 +245,7 @@ import flatPickr from 'vue-flatpickr-component'
 import 'flatpickr/dist/flatpickr.css'
 import SedeService from '@/services/SedeService'
 import RegisterService from '@/services/RegisterService'
+import DisciplineService from '@/services/DisciplineService'
 import GroupService from '@/services/GroupService' 
 
 export default {
@@ -283,6 +299,7 @@ export default {
       proyectos: [], 
       loadingProyectos: false, 
       riesgoOptions: [], 
+      disciplinasOptions: [], 
       loadingRiesgos: false,
       items: {
         proyecto: '',
@@ -298,6 +315,7 @@ export default {
         medidas: '',
         url_front:null,
         url_back:null,
+        disciplina: '',
       }
     }
   },
@@ -305,6 +323,7 @@ export default {
     this.cargarProyectos();
     this.cargarRiesgos();
     this.cargarCategorias();
+    this.cargarDisciplinas();
   },
   computed: {
     riesgoOptionsWithAll() {
@@ -362,6 +381,25 @@ export default {
         this.loadingRiesgos = false;
       }
     },
+    async cargarDisciplinas() {
+      this.loadingRiesgos = true;
+      try {
+        const response = await DisciplineService.getDiscipline(`?limit=10000&filter=`, this.$store);
+        console.log('Respuesta de riesgos:', response); // Esto muestra que response.data.rows existe
+
+        // Corregimos la validación de la respuesta
+        if (response && response.data && response.data.rows) {
+          this.disciplinasOptions = response.data.rows;
+          console.log('Riesgos cargados:', this.disciplinasOptions); // Verificamos los datos cargados
+        } else {
+          console.error('Error: La estructura de la respuesta no es la esperada', response);
+        }
+      } catch (error) {
+        console.error('Error al cargar riesgos:', error);
+      } finally {
+        this.loadingRiesgos = false;
+      }
+    },
     getProjects() {
       return this.proyectos // Retorna el array de proyectos que ya cargas
     },
@@ -398,7 +436,9 @@ export default {
         if (this.riesgoOptions.length === 0) {
           await this.cargarRiesgos();
         }
-        
+        if (this.disciplinasOptions.length === 0) {
+          await this.cargarDisciplinas();
+        }
         if (item) {
           // Verificar si tiene todos los riesgos
           const itemRiskIds = item.riesgos ? item.riesgos.map(r => r.id) : [];
@@ -416,6 +456,7 @@ export default {
             puntos: Array.isArray(item.puntos) ? item.puntos : [],
             url_front: null,
             url_back: null,
+            disciplina: item.disciplina || '' // Asegúrate de incluir la disciplina
           };
 
           this.isEdit = !item.isViewMode;
@@ -459,7 +500,7 @@ export default {
           ? this.riesgoOptions.map(r => r.id)  // Devuelve solo el ID (número)
           : this.items.riesgos.map(r => r.id); // Devuelve solo el ID (número)
 
-        
+        const selectedDisciplines = this.items.disciplina ? [this.items.disciplina] : [];
         // Crear FormData para manejar las imágenes
         const formData = new FormData();
 
@@ -474,7 +515,7 @@ export default {
         formData.append('description', this.items.descripcion);
         formData.append('actions', this.items.medidas);
         formData.append('risks', JSON.stringify(selectedRisks));
-
+        formData.append('disciplines', JSON.stringify(selectedDisciplines)); // Añadir disciplinas
         // Agrega las imágenes si están presentes
         if (this.items.url_front) {
           formData.append('files', this.items.url_front);
