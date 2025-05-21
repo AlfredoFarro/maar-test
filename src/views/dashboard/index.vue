@@ -28,6 +28,30 @@
               </b-form-group>
             </div>
           </b-col>
+          <b-col lg="3" class="col-xxl">
+            <b-form-group label="Fecha Rango Inicio" label-for="dateInit" class="mr-2">
+              <flat-pickr
+                id="dateInit"
+                v-model="dateInit"
+                class="form-control"
+                :config="configDateInit"
+                @on-change="filter()"
+                @on-close="close()"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col lg="3" class="col-xxl">
+            <b-form-group label="Fecha Rango Fin" label-for="dateEnd" class="mr-2">
+              <flat-pickr
+                id="dateEnd"
+                v-model="dateEnd"
+                class="form-control"
+                :config="configDateInit"
+                @on-change="filter()"
+                @on-close="close()"
+              />
+            </b-form-group>
+          </b-col>
         </b-row>
       </b-card-body>
     </b-card>
@@ -102,7 +126,6 @@ import SedeService from '@/services/SedeService'
 import filters from './filters.vue'
 import Chart from 'chart.js/auto'
 import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 // Importa los íconos explícitamente
 import icon from 'leaflet/dist/images/marker-icon.png'
@@ -111,6 +134,10 @@ import DashboardService from '@/services/DashboardService'
 import vSelect from 'vue-select'
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import flatPickr from 'vue-flatpickr-component'
+import ShortcutButtonsPlugin from 'shortcut-buttons-flatpickr'
+import { BootstrapVue, BootstrapVueIcons, VBTooltip } from 'bootstrap-vue'
+import Ripple from 'vue-ripple-directive'
 Chart.register(ChartDataLabels)
 
 // Arregla el problema del path de los íconos
@@ -123,6 +150,10 @@ L.Icon.Default.mergeOptions({
 })
 import 'leaflet/dist/leaflet.css'
 export default {
+  directives: {
+    'b-tooltip': VBTooltip,
+    Ripple
+  },
   data() {
     return {
       projectChartInstance: null,
@@ -155,11 +186,81 @@ export default {
       name: '',
       selectedProject: null,
       arrayFilters: [],
+      configDateInit: {
+        dateFormat: "Y-m-d",
+        /* altInput: true, */
+        altFormat: "Y-m-d",
+        placeholder: "YYYY-MM-DD",
+        disableMobile: true,
+        plugins: [
+          ShortcutButtonsPlugin({
+            theme: 'dark',
+            button: [{ label: 'Hoy' }],
+            onClick(index, fp) {
+              let date = index ? new Date(Date.now() + 24 * index * 60 * 60 * 1000) : new Date()
+              fp.setDate(date)
+              fp.close()
+              fp.clear()
+            }
+          }),
+          ShortcutButtonsPlugin({
+            theme: 'dark',
+            button: [{ label: 'Limpiar' }],
+            onClick(index, fp) {
+              console.log("FPP",fp)
+              console.log("index",index)
+              fp.setDate(null)
+              fp.close()
+              fp.clear()
+            }
+          })
+        ],
+        locale: {
+          firstDayOfWeek: 1,
+          weekdays: {
+            shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+          },
+          months: {
+            shorthand: [
+              'Ene',
+              'Feb',
+              'Mar',
+              'Abr',
+              'May',
+              'Jun',
+              'Jul',
+              'Ago',
+              'Sep',
+              'Оct',
+              'Nov',
+              'Dic'
+            ],
+            longhand: [
+              'Enero',
+              'Febrero',
+              'Мarzo',
+              'Abril',
+              'Mayo',
+              'Junio',
+              'Julio',
+              'Agosto',
+              'Septiembre',
+              'Octubre',
+              'Noviembre',
+              'Diciembre'
+            ]
+          }
+        }
+      },
+      dateInit: null,
+      dateEnd: null,
     }
   },
   components: {
     vSelect,
     filters,
+    flatPickr,
   },
 
   mounted() {
@@ -177,6 +278,9 @@ export default {
   },
   
   methods: {
+    close(){
+      console.log("close")
+    },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&order=asc`
@@ -194,6 +298,24 @@ export default {
       
       if (this.selectedProject != null && this.selectedProject != '') {
         this.arrayFilters.push({ keyContains: 'id', key: 'equals', value: this.selectedProject })
+      }
+      if(this.dateInit != null && this.dateInit != ''){
+        const startOfDay = new Date(this.dateInit);
+        const endOfDay = new Date(this.dateInit);
+        
+        // Sumar un día al endOfDay para abarcar todo el día actual
+        endOfDay.setDate(endOfDay.getDate() + 1);
+        
+        this.arrayFilters.push({ keyContains: 'created_at', key: 'gte', value: startOfDay });
+      }
+      if(this.dateEnd != null && this.dateEnd != ''){
+        const startOfDay = new Date(this.dateEnd);
+        const endOfDay = new Date(this.dateEnd);
+        
+        // Sumar un día al endOfDay para abarcar todo el día actual
+        endOfDay.setDate(endOfDay.getDate() + 1);
+      
+        this.arrayFilters.push({ keyContains: 'created_at', key: 'lte', value: endOfDay });
       }
       console.log("FILTROS", this.arrayFilters)
       this.loadProjectChartData()
@@ -346,6 +468,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
+@import '@core/scss/vue/libs/vue-flatpicker.scss';
+
 .card-row {
   display: flex;
   gap: 1rem; // espacio entre las tarjetas
@@ -496,4 +621,5 @@ span {
   border-radius: 12px;
   margin-top: 1rem;
 }
+
 </style>
