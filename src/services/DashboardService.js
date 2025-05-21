@@ -3,8 +3,8 @@ import VueStoreService from './VueStoreService';
 import store from '@/store';
 
 const DashboardService = {
-  async getRegistrosPorProyectoChartData() {
-    const resp = await VueStoreService.get('dashboard/registrosporproyecto', store);
+  async getRegistrosPorProyectoChartData(filter,store2) {
+    const resp = await VueStoreService.get('dashboard/registrosporproyecto' +filter, store2);
     return resp;
   },
   async getTipoHallazgosData() {

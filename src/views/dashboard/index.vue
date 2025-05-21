@@ -7,38 +7,25 @@
         <b-row>
           <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
             <div class="w-100 mb-1 mb-lg-0 mt-02">
-              <b-form-group label="Proyecto" label-for="enterprise" class="mr-2">
-                <v-select :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'" :options="empresas" label="ruc"
-                  input-id="enterprise" :reduce="(empresas) => empresas.id" placeholder="Proyecto"
-                  v-model="enterprise_id" @input="filter()" class="select-obra"
-                  :disabled="user_role != 'administrador'">
+              <b-form-group label="Proyecto" label-for="project" class="mr-2">
+                <v-select
+                  v-model="selectedProject"
+                  :options="projectOptions"
+                  :reduce="project => project.id"
+                  label="name"
+                  placeholder="Seleccione un proyecto"
+                  @input="filter()"
+                  :clearable="true"
+                  class="select-obra"
+                >
                   <template v-slot:selected-option="option">
-                    {{ option.name }} - {{ option.ruc }}
+                    {{ option.name }} 
                   </template>
                   <template slot="option" slot-scope="option">
-                    {{ option.name }} - {{ option.ruc }}
+                    {{ option.name }} 
                   </template>
                 </v-select>
               </b-form-group>
-            </div>
-          </b-col>
-          <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
-            <div class="w-100">
-              <b-form-group label="Nombre" label-for="name" class="mr-2">
-                <b-form-input type="text" label="name" id="name" placeholder="Nombre" v-model="name" @input="filter()"
-                  class="select-obra" autocomplete="off">
-                </b-form-input>
-              </b-form-group>
-            </div>
-          </b-col>
-
-          <b-col md="6" lg="2" class="d-flex">
-            <div
-              class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02">
-
-              <b-button class="mr-2" variant="primary" :disabled="!rolesAllowed.includes(user_role)" @click="addSede()">
-                <span class="text-nowrap"> <feather-icon icon="PlusCircleIcon" /> Agregar </span>
-              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -111,6 +98,8 @@
 </template>
 
 <script>
+import SedeService from '@/services/SedeService'
+import filters from './filters.vue'
 import Chart from 'chart.js/auto'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -162,19 +151,20 @@ export default {
         { label: 'Inactivo', value: 'inactivo' },
         { label: 'En progreso', value: 'en_progreso' },
       ],
-      rolesAllowed: ['administrador', 'supervisor'], // Ajusta según necesites
-      user_role: 'administrador', // Esto deberías obtenerlo de tu store o auth
-      empresas: [],
-      enterprise_id: JSON.parse(localStorage.getItem('enterprise_id')),
+      projectOptions: [],
       name: '',
+      selectedProject: null,
+      arrayFilters: [],
     }
   },
   components: {
     vSelect,
+    filters,
   },
 
   mounted() {
-  
+    this.filter()
+    this.getSelect();
     this.loadProjectLocations(); // Llama al método para cargar ubicaciones
   
     this.loadProjectChartData();
@@ -187,13 +177,33 @@ export default {
   },
   
   methods: {
+    async getSelect() {
+      const user = JSON.parse(localStorage.getItem('userData'))
+      const url2 = `?limit=100000&order=asc`
+      const respEmpresas = await SedeService.getProyectos(url2, this.$store)
+      console.log("aaaaaaa",respEmpresas.data.rows)
+      console.log("HLA")
+      if (respEmpresas.status) {
+        this.projectOptions = respEmpresas.data.rows
+        this.filter()
+      }
+    },
     filter() {
-      // Este método se implementará más adelante
-      console.log('Filtrando...', this.filters);
+      this.arrayFilters = []
+      console.log("FILTROS")
+      
+      if (this.selectedProject != null && this.selectedProject != '') {
+        this.arrayFilters.push({ keyContains: 'id', key: 'equals', value: this.selectedProject })
+      }
+      console.log("FILTROS", this.arrayFilters)
+      this.loadProjectChartData()
     },
     async loadProjectChartData() {
+      const url =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters)
       try {
-        const serviceCallResponse = await DashboardService.getRegistrosPorProyectoChartData();
+        const serviceCallResponse = await DashboardService.getRegistrosPorProyectoChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
           this.projectChartConfigData = serviceCallResponse.data;
         } else {
