@@ -1,4 +1,3 @@
-
 <template>
   <div class="dashboard-container p-4">
     <!-- Gráfico de Proyectos -->
@@ -8,21 +7,14 @@
           <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
             <div class="w-100 mb-1 mb-lg-0 mt-02">
               <b-form-group label="Proyecto" label-for="project" class="mr-2">
-                <v-select
-                  v-model="selectedProject"
-                  :options="projectOptions"
-                  :reduce="project => project.id"
-                  label="name"
-                  placeholder="Seleccione un proyecto"
-                  @input="filter()"
-                  :clearable="true"
-                  class="select-obra"
-                >
+                <v-select v-model="selectedProject" :options="projectOptions" :reduce="project => project.id"
+                  label="name" placeholder="Seleccione un proyecto" @input="filter()" :clearable="true"
+                  class="select-obra">
                   <template v-slot:selected-option="option">
-                    {{ option.name }} 
+                    {{ option.name }}
                   </template>
                   <template slot="option" slot-scope="option">
-                    {{ option.name }} 
+                    {{ option.name }}
                   </template>
                 </v-select>
               </b-form-group>
@@ -30,26 +22,14 @@
           </b-col>
           <b-col lg="3" class="col-xxl">
             <b-form-group label="Fecha Rango Inicio" label-for="dateInit" class="mr-2">
-              <flat-pickr
-                id="dateInit"
-                v-model="dateInit"
-                class="form-control"
-                :config="configDateInit"
-                @on-change="filter()"
-                @on-close="close()"
-              />
+              <flat-pickr id="dateInit" v-model="dateInit" class="form-control" :config="configDateInit"
+                @on-change="filter()" @on-close="close()" />
             </b-form-group>
           </b-col>
           <b-col lg="3" class="col-xxl">
             <b-form-group label="Fecha Rango Fin" label-for="dateEnd" class="mr-2">
-              <flat-pickr
-                id="dateEnd"
-                v-model="dateEnd"
-                class="form-control"
-                :config="configDateInit"
-                @on-change="filter()"
-                @on-close="close()"
-              />
+              <flat-pickr id="dateEnd" v-model="dateEnd" class="form-control" :config="configDateInit"
+                @on-change="filter()" @on-close="close()" />
             </b-form-group>
           </b-col>
         </b-row>
@@ -163,7 +143,7 @@ export default {
       riskChartConfigData: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
       hallazgos: [],
       categorias: [],
-      
+
       colores: [
         { bg: '#f3e8ff', color: '#8b5cf6' }, // morado
         { bg: '#e0f7fa', color: '#00acc1' }, // cyan
@@ -207,8 +187,8 @@ export default {
             theme: 'dark',
             button: [{ label: 'Limpiar' }],
             onClick(index, fp) {
-              console.log("FPP",fp)
-              console.log("index",index)
+              console.log("FPP", fp)
+              console.log("index", index)
               fp.setDate(null)
               fp.close()
               fp.clear()
@@ -267,7 +247,7 @@ export default {
     this.filter()
     this.getSelect();
     this.loadProjectLocations(); // Llama al método para cargar ubicaciones
-  
+
     this.loadProjectChartData();
     this.loadHallazgosData();
     this.loadRiskChartData();
@@ -276,16 +256,16 @@ export default {
     this.renderRiskChart();
     this.initMap();
   },
-  
+
   methods: {
-    close(){
+    close() {
       console.log("close")
     },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
       const url2 = `?limit=100000&order=asc`
       const respEmpresas = await SedeService.getProyectos(url2, this.$store)
-      console.log("aaaaaaa",respEmpresas.data.rows)
+      console.log("aaaaaaa", respEmpresas.data.rows)
       console.log("HLA")
       if (respEmpresas.status) {
         this.projectOptions = respEmpresas.data.rows
@@ -295,26 +275,26 @@ export default {
     filter() {
       this.arrayFilters = []
       console.log("FILTROS")
-      
+
       if (this.selectedProject != null && this.selectedProject != '') {
         this.arrayFilters.push({ keyContains: 'id', key: 'equals', value: this.selectedProject })
       }
-      if(this.dateInit != null && this.dateInit != ''){
+      if (this.dateInit != null && this.dateInit != '') {
         const startOfDay = new Date(this.dateInit);
         const endOfDay = new Date(this.dateInit);
-        
+
         // Sumar un día al endOfDay para abarcar todo el día actual
         endOfDay.setDate(endOfDay.getDate() + 1);
-        
+
         this.arrayFilters.push({ keyContains: 'created_at', key: 'gte', value: startOfDay });
       }
-      if(this.dateEnd != null && this.dateEnd != ''){
+      if (this.dateEnd != null && this.dateEnd != '') {
         const startOfDay = new Date(this.dateEnd);
         const endOfDay = new Date(this.dateEnd);
-        
+
         // Sumar un día al endOfDay para abarcar todo el día actual
         endOfDay.setDate(endOfDay.getDate() + 1);
-      
+
         this.arrayFilters.push({ keyContains: 'created_at', key: 'lte', value: endOfDay });
       }
       console.log("FILTROS", this.arrayFilters)
@@ -326,8 +306,8 @@ export default {
     },
     async loadProjectChartData() {
       const url =
-          `?limit=10000&filter=` +
-          JSON.stringify(this.arrayFilters)
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
       try {
         const serviceCallResponse = await DashboardService.getRegistrosPorProyectoChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
@@ -342,8 +322,8 @@ export default {
     },
     async loadHallazgosData() {
       const url =
-          `?limit=10000&filter=` +
-          JSON.stringify(this.arrayFilters)
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
       try {
         const serviceCallResponse = await DashboardService.getTipoHallazgosData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
@@ -357,9 +337,15 @@ export default {
       }
     },
     async loadRiskChartData() {
+      this.arrayFilters = []
+      console.log("FILTROS")
+
+      if (this.selectedProject != null && this.selectedProject != '') {
+        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
+      }
       const url =
-          `?limit=10000&filter=` +
-          JSON.stringify(this.arrayFilters)
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
       try {
         const serviceCallResponse = await DashboardService.getNivelDeRiesgoChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
@@ -371,9 +357,15 @@ export default {
       }
     },
     async loadCategoriasData() {
+      this.arrayFilters = []
+      console.log("FILTROS")
+
+      if (this.selectedProject != null && this.selectedProject != '') {
+        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
+      }
       const url =
-          `?limit=10000&filter=` +
-          JSON.stringify(this.arrayFilters)
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
       try {
         const serviceCallResponse = await DashboardService.getCategoriasChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
@@ -388,8 +380,8 @@ export default {
     },
     async loadProjectLocations() {
       const url =
-          `?limit=10000&filter=` +
-          JSON.stringify(this.arrayFilters)
+        `?limit=10000&filter=` +
+        JSON.stringify(this.arrayFilters)
       try {
         const response = await DashboardService.getProjectLocations(url, this.$store);
         if (response && response.status === true && response.data) {
@@ -422,7 +414,7 @@ export default {
           markers.addLayer(marker);
         }
       });
-    
+
       this.map.addLayer(markers);
     },
     renderProjectsChart() {
@@ -637,5 +629,4 @@ span {
   border-radius: 12px;
   margin-top: 1rem;
 }
-
 </style>
