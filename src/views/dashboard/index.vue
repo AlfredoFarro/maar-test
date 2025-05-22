@@ -319,6 +319,10 @@ export default {
       }
       console.log("FILTROS", this.arrayFilters)
       this.loadProjectChartData()
+      this.loadHallazgosData()
+      this.loadRiskChartData()
+      this.loadCategoriasData()
+      this.loadProjectLocations()
     },
     async loadProjectChartData() {
       const url =
@@ -337,8 +341,11 @@ export default {
       this.renderProjectsChart();
     },
     async loadHallazgosData() {
+      const url =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters)
       try {
-        const serviceCallResponse = await DashboardService.getTipoHallazgosData();
+        const serviceCallResponse = await DashboardService.getTipoHallazgosData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
           this.hallazgos = serviceCallResponse.data.hallazgos;
         } else {
@@ -350,8 +357,11 @@ export default {
       }
     },
     async loadRiskChartData() {
+      const url =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters)
       try {
-        const serviceCallResponse = await DashboardService.getNivelDeRiesgoChartData();
+        const serviceCallResponse = await DashboardService.getNivelDeRiesgoChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
           this.riskChartConfigData = serviceCallResponse.data;
           this.renderRiskChart();
@@ -361,8 +371,11 @@ export default {
       }
     },
     async loadCategoriasData() {
+      const url =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters)
       try {
-        const serviceCallResponse = await DashboardService.getCategoriasChartData();
+        const serviceCallResponse = await DashboardService.getCategoriasChartData(url, this.$store);
         if (serviceCallResponse && serviceCallResponse.status === true && serviceCallResponse.data) {
           this.categorias = serviceCallResponse.data; // Asignar los datos dinámicos
         } else {
@@ -374,8 +387,11 @@ export default {
       }
     },
     async loadProjectLocations() {
+      const url =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters)
       try {
-        const response = await DashboardService.getProjectLocations();
+        const response = await DashboardService.getProjectLocations(url, this.$store);
         if (response && response.status === true && response.data) {
           this.addMarkersToMap(response.data);
         } else {

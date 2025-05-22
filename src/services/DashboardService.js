@@ -7,20 +7,20 @@ const DashboardService = {
     const resp = await VueStoreService.get('dashboard/registrosporproyecto' +filter, store2);
     return resp;
   },
-  async getTipoHallazgosData() {
-    const resp = await VueStoreService.get('dashboard/tipohallazgos', store);
+  async getTipoHallazgosData(filter,store2) {
+    const resp = await VueStoreService.get('dashboard/tipohallazgos'+filter, store2);
     return resp;
   },
-  async getNivelDeRiesgoChartData() {
-    const resp = await VueStoreService.get('dashboard/nivelderiesgo', store);
+  async getNivelDeRiesgoChartData(filter,store2) {
+    const resp = await VueStoreService.get('dashboard/nivelderiesgo'+filter, store2);
     return resp;
   },
-  async getCategoriasChartData() { // Nuevo método para Categorías
-    const resp = await VueStoreService.get('dashboard/categoriaschart', store);
+  async getCategoriasChartData(filter,store2) { // Nuevo método para Categorías
+    const resp = await VueStoreService.get('dashboard/categoriaschart'+filter, store2);
     return resp;
   },
-  async getProjectLocations() { // Nuevo método para Categorías
-    const resp = await VueStoreService.get('dashboard/projectlocations', store);
+  async getProjectLocations(filter,store2) { // Nuevo método para Categorías
+    const resp = await VueStoreService.get('dashboard/recordlocations'+filter, store2);
     return resp;
   },
 };
