@@ -321,6 +321,9 @@ export default {
       this.renderProjectsChart();
     },
     async loadHallazgosData() {
+      this.arrayFilters = []
+      console.log("FILTROS")
+
       const url =
         `?limit=10000&filter=` +
         JSON.stringify(this.arrayFilters)
@@ -379,6 +382,12 @@ export default {
       }
     },
     async loadProjectLocations() {
+      this.arrayFilters = []
+      console.log("FILTROS")
+
+      if (this.selectedProject != null && this.selectedProject != '') {
+        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
+      }
       const url =
         `?limit=10000&filter=` +
         JSON.stringify(this.arrayFilters)
