@@ -305,6 +305,31 @@ export default {
       this.loadProjectLocations()
     },
     async loadProjectChartData() {
+                  this.arrayFilters = []
+      console.log("FILTROS")
+
+      if (this.selectedProject != null && this.selectedProject != '') {
+        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
+      }
+      if (this.dateInit != null && this.dateInit != '') {
+        const startOfDay = new Date(this.dateInit);
+        const endOfDay = new Date(this.dateInit);
+
+        // Sumar un día al endOfDay para abarcar todo el día actual
+        endOfDay.setDate(endOfDay.getDate() + 1);
+
+        this.arrayFilters.push({ keyContains: 'created_at', key: 'gte', value: startOfDay });
+      }
+      if (this.dateEnd != null && this.dateEnd != '') {
+        const startOfDay = new Date(this.dateEnd);
+        const endOfDay = new Date(this.dateEnd);
+
+        // Sumar un día al endOfDay para abarcar todo el día actual
+        endOfDay.setDate(endOfDay.getDate() + 1);
+
+        this.arrayFilters.push({ keyContains: 'created_at', key: 'lte', value: endOfDay });
+      }
+      
       const url =
         `?limit=10000&filter=` +
         JSON.stringify(this.arrayFilters)
