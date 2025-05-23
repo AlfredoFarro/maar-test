@@ -277,7 +277,7 @@ export default {
       console.log("FILTROS")
 
       if (this.selectedProject != null && this.selectedProject != '') {
-        this.arrayFilters.push({ keyContains: 'id', key: 'equals', value: this.selectedProject })
+        this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
       }
       if (this.dateInit != null && this.dateInit != '') {
         const startOfDay = new Date(this.dateInit);
