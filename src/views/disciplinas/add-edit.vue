@@ -15,7 +15,7 @@
     <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
-        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar' }} riesgo</h5>
+        <h5 class="mb-0">{{ isEdit ? 'Editar' : 'Agregar' }} disciplina</h5>
         <feather-icon class="ml-1 cursor-pointer" icon="XIcon" size="16" @click="hide(); resetForm()"/>
       </div>
 
@@ -25,7 +25,7 @@
           
           <!-- Campo Nombre -->
           <validation-provider #default="{ errors }" name="Nombre" rules="required">
-            <b-form-group label="Nombre del riesgo" label-for="name">
+            <b-form-group label="Nombre de la Disciplina" label-for="name">
               <b-form-input
                 v-model="discipline.name"
                 id="name"
