@@ -319,11 +319,19 @@ export default {
       try {
         const response = await UserService.getRoles('', this.$store);
         if (response.status) {
-          this.roles = response.data.rows.map(role => ({
+          const allRoles = response.data.rows.map(role => ({
             id: role.id,
             name: role.code
           }));
-
+        
+          // Si es Jefe de Proyecto (rol 2) y está en modo AGREGAR (no edición), ocultar Admin (1)
+          if (this.userData.role.id === 2 && !this.isEdit) {
+            this.roles = allRoles.filter(role => role.id !== 1);
+          } 
+          // En cualquier otro caso, mostrar todos los roles (incluyendo Admin)
+          else {
+            this.roles = allRoles;
+          }
         }
       } catch (error) {
         console.error('Error cargando roles:', error);
@@ -467,7 +475,8 @@ export default {
         };
 
         this.isEdit = true;
-
+        // Recargamos los roles para que incluya el admin en modo edición
+        this.loadRoles();
         // Forzar actualización después de que los datos estén listos
         this.$nextTick(() => {
           this.$forceUpdate();
@@ -491,6 +500,7 @@ export default {
         roleId: null,
         projects: []
       }
+      this.loadRoles();
     },
     async onSubmit(data) {
       console.log('data1', data)

@@ -120,7 +120,7 @@ export const getUserAcessPermissions = (role) => {
         'plantilla-operativo-editar',
       ];
       break;
-    case "jefe de proyectos":
+    case "Jefe de Proyecto":
       permissions = [
         "disciplinas",
         "observaciones",
@@ -168,8 +168,15 @@ export const getUserAcessPermissions = (role) => {
         'plantilla-operativo-editar',
       ];
       break;
-    case "gestor":
+    case "Colaborador":
       permissions = [
+        "disciplinas",
+        "observaciones",
+        "registros-digitales",
+        "dashboard",
+        "categorias",
+        "empresas",
+        "proyectos",
         "cronograma",
         "cronograma-registro",
         "cronograma-editar",
