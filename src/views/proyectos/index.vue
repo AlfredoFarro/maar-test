@@ -94,6 +94,18 @@
             show-empty                     
             @sort-changed="sortChanged"
           >
+          <template #cell(isActive)="data">
+            <div class="d-flex align-items-center">
+              <span class="mr-2">{{ data.item.isActive ? 'Activo' : 'Inactivo' }}</span>
+              <b-form-checkbox
+                switch
+                v-model="data.item.isActive"
+                :value="1"
+                :unchecked-value="0"
+                @change="changeStatus1(data.item)"
+              />
+            </div>
+          </template>
             <!-- Column: Actions -->
         
             <template #cell(row)="data">
@@ -224,6 +236,7 @@ export default {
         { key: 'latitude', label: 'Latitud', sortable: false, visible: true, thStyle: { width: '140px' } },
         { key: 'longitude', label: 'Longitud', sortable: false, visible: true, thStyle: { width: '140px' } },
         { key: 'radius', label: 'Radio', sortable: false, visible: true, thStyle: { width: '140px' } },
+        { key: 'isActive', label: 'Estado', sortable: false, visible: true, thStyle: { width: '120px' } },
       ],
       form: {
           name: '',
@@ -330,6 +343,55 @@ export default {
     window.removeEventListener("resize", this.fixedElements);
   },
   methods: {
+    async changeStatus1(item) {
+      console.log("cambio estado")
+      try {
+        this.showLoading = true;
+
+        // Guarda el estado anterior para revertir en caso de error
+        const previousStatus = item.isActive;
+
+        // Construye el objeto de actualización correctamente
+        const updateData = {
+          isActive: item.isActive ? 1 : 0, // Asegúrate de que sea 1/0 (o true/false según el backend)
+        };
+
+        // Llama al servicio de actualización
+        const resp = await SedeService.updateSede(item.id, updateData, this.$store);
+
+        if (resp.status) {
+          this.$swal({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'El estado ha sido actualizado correctamente',
+            customClass: { confirmButton: 'btn btn-success' },
+          });
+          // No necesitas llamar a getAllData() si solo cambias el estado
+          // item.isActive ya está actualizado por el v-model
+        } else {
+          // Revierte el cambio si falla
+          item.isActive = previousStatus;
+          this.$swal({
+            icon: 'error',
+            title: 'Error',
+            text: resp.data.message || 'No se pudo actualizar el estado',
+            customClass: { confirmButton: 'btn btn-success' },
+          });
+        }
+      } catch (error) {
+        console.error('Error al cambiar estado:', error);
+        // Revierte el cambio si hay un error
+        item.isActive = !item.isActive;
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al cambiar el estado',
+          customClass: { confirmButton: 'btn btn-success' },
+        });
+      } finally {
+        this.showLoading = false;
+      }
+    },
     fixedElements() {
       if (!this.trs[0].classList.contains('b-table-empty-row')) {
         const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);

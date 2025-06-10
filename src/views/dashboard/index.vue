@@ -263,7 +263,7 @@ export default {
     },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const url2 = `?limit=100000&order=asc`
+      const url2 = `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]`
       const respEmpresas = await SedeService.getProyectos(url2, this.$store)
       console.log("aaaaaaa", respEmpresas.data.rows)
       console.log("HLA")

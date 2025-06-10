@@ -81,6 +81,19 @@
             <div class="card_content px-2 py-2 d-flex flex-column">
               <span class="card_content_sub">{{ item.ruc }}</span>
               <span class="card_content_title mb-2">{{ item.name }}</span>
+              <!-- Switch de estado agregado -->
+              <div class="d-flex align-items-center mb-2">
+                <span class="mr-2 status-text">{{ item.isActive ? 'Activo' : 'Inactivo' }}</span>
+                <b-form-checkbox
+                  switch
+                  v-model="item.isActive"
+                  :value="1"
+                  :unchecked-value="0"
+                  :disabled="!rolesAllowed.includes(user_role)"
+                  @change="changeStatus1(item)"
+                  class="custom-switch"
+                />
+              </div>
               <div class="d-flex justify-content-between">
                 <b-button
                   size="sm"
@@ -260,6 +273,55 @@ export default {
     this.getData()
   },
   methods: {
+    async changeStatus1(item) {
+      console.log("cambio estado")
+      try {
+        this.showLoading = true;
+
+        // Guarda el estado anterior para revertir en caso de error
+        const previousStatus = item.isActive;
+
+        // Construye el objeto de actualización correctamente
+        const updateData = {
+          isActive: item.isActive ? 1 : 0, // Asegúrate de que sea 1/0 (o true/false según el backend)
+        };
+
+        // Llama al servicio de actualización
+        const resp = await EnterpriseService.updateEnterprise(item.id, updateData, this.$store);
+
+        if (resp.status) {
+          this.$swal({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'El estado ha sido actualizado correctamente',
+            customClass: { confirmButton: 'btn btn-success' },
+          });
+          // No necesitas llamar a getAllData() si solo cambias el estado
+          // item.isActive ya está actualizado por el v-model
+        } else {
+          // Revierte el cambio si falla
+          item.isActive = previousStatus;
+          this.$swal({
+            icon: 'error',
+            title: 'Error',
+            text: resp.data.message || 'No se pudo actualizar el estado',
+            customClass: { confirmButton: 'btn btn-success' },
+          });
+        }
+      } catch (error) {
+        console.error('Error al cambiar estado:', error);
+        // Revierte el cambio si hay un error
+        item.isActive = !item.isActive;
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al cambiar el estado',
+          customClass: { confirmButton: 'btn btn-success' },
+        });
+      } finally {
+        this.showLoading = false;
+      }
+    },
     cambioPagina(e) {
       this.currentPage = e
       this.getData()

@@ -338,6 +338,7 @@
         enterpriseSelect: '',
         projectOptions: [],
         arrayFilters: [],
+        arrayFilters2: [],
         currentPage: 1,
         entries: [10, 20, 50, 100],
         showEntrie: 10,
@@ -719,8 +720,10 @@
       },
       filter() {
         this.arrayFilters = []
+        this.arrayFilters2 = []
         console.log("FILTROS")
-        
+        this.arrayFilters.push({ keyContains: 'project.isActive', key: 'equals', value: 1 })
+        this.arrayFilters2.push({ keyContains: 'isActive', key: 'equals', value: 1 })
         if (this.selectedProject != null && this.selectedProject != '') {
           this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
         }
@@ -828,7 +831,9 @@
       },
       async getSelect() {
         const user = JSON.parse(localStorage.getItem('userData'))
-        const url2 = `?limit=100000&page=${this.currentPage}&order=asc`
+        const url2 =
+          `?limit=10000&filter=` +
+          JSON.stringify(this.arrayFilters2)
         const respEmpresas = await SedeService.getProyectos(url2, this.$store)
         console.log("aaaaaaa",respEmpresas.data.rows)
         console.log("HLA")

@@ -493,17 +493,16 @@ export default {
       }
     },
     async cargarProyectos() {
-      try {
-        const response = await SedeService.getProyectos('', this.$store);
+        const url3 =
+          `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]` 
+        const response = await SedeService.getProyectos(url3, this.$store);
         console.log("Respuesta cruda de proyectos:", response); 
         if (response.status) {
           this.proyectos = response.data.rows;
           this.proyectosFiltrados = [...this.proyectos];
           console.log("Proyectos cargados:", this.proyectos); 
         }
-      } catch (error) {
-        console.error("Error cargando proyectos:", error);
-      }
+      
     },
 
     handleProjectChange(name) {
@@ -687,6 +686,13 @@ export default {
     },
     filter() {
       this.arrayFilters = []
+      this.arrayFilters.push({ 
+          key: 'project_user', 
+          keyContains: 'any', 
+          value: {
+            'project.isActive': 1
+          }
+        });
       if (this.selectedProject) {
         this.arrayFilters.push({ 
           key: 'project_user', 
