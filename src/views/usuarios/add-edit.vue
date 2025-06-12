@@ -418,9 +418,9 @@ export default {
     },
     async getData(id = null) {
       this.showLoading = true
-      const urlOrder =
-        `?limit=1000000&order=asc&sort=description`
-      const respProyectos = await SedeService.getProyectos('', this.$store)
+        const url3 =
+          `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]` 
+      const respProyectos = await SedeService.getProyectos(url3, this.$store)
       console.log('respProyectos', respProyectos)
       //const respRoles = await RoleUserService.getRoles(urlOrder, this.$store)
       //const respPosition = await PositionService.getPositions(urlOrder, this.$store)
