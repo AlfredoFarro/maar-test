@@ -130,7 +130,7 @@
             </b-button>
             <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" type="button" variant="outline-secondary"
               @click=";[hide(), resetForm()]">
-              Cancel
+              Cancelar
             </b-button>
           </div>
         </b-form>

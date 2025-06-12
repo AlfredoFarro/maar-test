@@ -686,13 +686,23 @@ export default {
     },
     filter() {
       this.arrayFilters = []
-      this.arrayFilters.push({ 
-          key: 'project_user', 
-          keyContains: 'any', 
-          value: {
-            'project.isActive': 1
+      this.arrayFilters.push({
+        keyContains: 'or',
+        value: [
+          {
+            key: 'project_user',
+            keyContains: 'any',
+            value: {
+              'project.isActive': 1
+            }
+          },
+          {
+            key: 'role.id',
+            keyContains: 'equals',
+            value: 1
           }
-        });
+        ]
+      });
       if (this.selectedProject) {
         this.arrayFilters.push({ 
           key: 'project_user', 

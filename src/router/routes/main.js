@@ -397,6 +397,18 @@ export default [{
     },
   },
   {
+    path: '/archivos',
+    name: 'archivos',
+    component: () => import('@/views/archivos/index.vue'),
+    meta: {
+      pageTitle: 'Archivos',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
+  {
     path: '/perfil',
     name: 'perfil',
     component: () => import('@/views/perfil/index.vue'),

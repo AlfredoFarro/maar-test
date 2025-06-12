@@ -59,6 +59,13 @@ export default [
         title: "Registros digitales",
         route: "registros-digitales",
       },
+      {
+        id: "archivos",
+        title: "Archivos",
+        route: "archivos",
+        hide: true,
+      },
+
     ]
   },
 ];

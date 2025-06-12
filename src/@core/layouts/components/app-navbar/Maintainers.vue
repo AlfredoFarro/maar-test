@@ -115,12 +115,12 @@ export default {
         title: 'Disciplinas',
         route: 'disciplinas',
       },
-      {
+      /* {
         icon: 'FolderIcon',
         id: 'tipo-documento',
         title: 'Tipo de Documento',
         route: 'tipo-documento',
-      },
+      }, */
       
 /*       {
         icon: 'FolderIcon',

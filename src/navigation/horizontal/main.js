@@ -242,6 +242,13 @@ export default [
     route: 'registros-digitales',
   },
   {
+    header: 'Archivos',
+    icon: 'FolderIcon',
+    id: 'archivos',
+    title: 'Archivos',
+    route: 'archivos',
+  },
+  {
     header: 'Formularios',
     icon: 'FolderIcon',
     id: 'formularios',
