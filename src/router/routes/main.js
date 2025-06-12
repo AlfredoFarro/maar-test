@@ -385,6 +385,18 @@ export default [{
     },
   },
   {
+    path: '/tipo-documento',
+    name: 'tipo-documento',
+    component: () => import('@/views/tipo_documento/index.vue'),
+    meta: {
+      pageTitle: 'Tipo de documento',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
+  {
     path: '/perfil',
     name: 'perfil',
     component: () => import('@/views/perfil/index.vue'),

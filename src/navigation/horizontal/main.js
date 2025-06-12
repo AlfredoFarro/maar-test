@@ -298,6 +298,14 @@ export default [
     hide: true,
   },
   {
+    header: 'Tipo Documento',
+    icon: 'FolderIcon',
+    id: 'tipo-documento',
+    title: 'Tipo Documento',
+    route: 'tipo-documento',
+    hide: true,
+  },
+  {
     header: 'Seleccionar Proyecto',
     icon: 'FolderIcon',
     id: 'seleccionar-proyecto',
