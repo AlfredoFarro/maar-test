@@ -156,10 +156,10 @@ export default {
       if (fileData) {
         this.formData = {
           id: fileData.id,
-          fileTypeId: fileData.fileTypeId,
+          fileTypeId: fileData.filetypeId ,
           file: null, // No se precarga el archivo
           description: fileData.description,
-          userId: fileData.userId
+          userId: fileData.userId 
         }
         this.isEdit = true
       } else {

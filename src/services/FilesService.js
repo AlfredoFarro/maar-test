@@ -17,6 +17,12 @@ const FilesService = {
         var resp = await VueStoreService.delete("file/"+file_id,store)
         return resp;
     },
+    async downloadFile(file_id, store) {
+        const response = await VueStoreService.get("file/download/" + file_id, store, {
+            responseType: 'blob'
+        });
+        return response;
+    }
 }
 
 export default FilesService;

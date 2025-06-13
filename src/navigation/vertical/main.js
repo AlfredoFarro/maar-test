@@ -63,7 +63,7 @@ export default [
         id: "archivos",
         title: "Archivos",
         route: "archivos",
-        hide: true,
+        /* hide: true, */
       },
 
     ]

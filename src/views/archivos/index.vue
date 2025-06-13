@@ -130,6 +130,19 @@
                 ></div>
                 <span v-else>-</span>
               </template>
+              <template #cell(url_file)="data">
+                <div v-if="data.item.url_file">
+                  <b-button
+                    variant="link"
+                    @click="downloadFile(data.item)"
+                    v-b-tooltip.hover.top="'Descargar archivo'"
+                    class="p-0"
+                  >
+                    <feather-icon icon="DownloadIcon" size="18" class="text-primary" />
+                  </b-button>
+                </div>
+                <span v-else>-</span>
+              </template>
             </b-table>
           </div>
           <div class="mx-2 mb-2">
@@ -249,6 +262,17 @@
           { key: 'user.email', label: 'Correo', sortable: false, visible: true, thStyle: { width: '160px' } },
           { key: 'filetype.name', label: 'Tipo de Documento', sortable: false, visible: true, thStyle: { width: '160px' } },
           { key: 'description', label: 'Descripcion', sortable: false, visible: true, thStyle: { width: '160px' } },  
+          { 
+            key: 'url_file', 
+            label: 'Archivo', 
+            sortable: false, 
+            visible: true, 
+            thStyle: { width: '100px' },
+            formatter: (value) => {
+              return value ? value : '-';
+            }
+          },  
+
         ],
         fieldsModal: [
   
@@ -360,6 +384,10 @@
       window.removeEventListener("resize", this.fixedElements);
     },
     methods: {
+      async downloadFile(item) {
+        const fileId = item.id;
+        window.open(`${APIURL}/file/download/${fileId}`, '_blank');
+      },
       async changeStatus1(item) {
         console.log("cambio estado")
         try {
@@ -374,7 +402,7 @@
           };
 
           // Llama al servicio de actualización
-          const resp = await FileTypeService.updateFileType(item.id, updateData, this.$store);
+          const resp = await FileService.updateFile(item.id, updateData, this.$store);
 
           if (resp.status) {
             this.$swal({
@@ -509,7 +537,9 @@
           console.log('item', item)
           this.form.id = item.id
           this.form.name = item.name
-          this.form.color = item.color
+          this.form.description = item.description
+          this.form.filetypeId = item.filetype.id
+          this.form.userId = item.user.id
           console.log('this.form', this.form)
           this.isAdd = true
           this.$refs.groupAdd.setData(this.form)
@@ -564,7 +594,7 @@
       },
       async deleteData(id) {
         console.log('id del usuario', id)
-        const resp = await FileTypeService.deleteFileType(id, this.$store)
+        const resp = await FileService.deleteFile(id, this.$store)
         console.log('resp delete',resp)
         if (resp) {
           this.getAllData()
