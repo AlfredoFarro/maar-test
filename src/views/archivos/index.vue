@@ -104,17 +104,8 @@
               <template #cell(dateEnd)="data">
                 <span>{{ validDate(data.item.dateEnd) }}</span>
               </template>
-              <template #cell(isActive)="data">
-                <div class="d-flex align-items-center">
-                  <span class="mr-2">{{ data.item.isActive ? 'Activo' : 'Inactivo' }}</span>
-                  <b-form-checkbox
-                    switch
-                    v-model="data.item.isActive"
-                    :value="1"
-                    :unchecked-value="0"
-                    @change="changeStatus1(data.item)"
-                  />
-                </div>
+              <template #cell(user.isActive)="data">
+                <span>{{ data.item.user.isActive === 1 ? 'Activo' : 'Inactivo' }}</span>
               </template>
               <template #cell(color)="data">
                 <div 
