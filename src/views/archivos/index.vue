@@ -35,7 +35,53 @@
                   </b-form-group>
                 </div>   
               </b-col> 
-  
+              <!-- Nuevo filtro de DNI -->
+              <b-col md="4" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
+                <div class="w-100">
+                  <b-form-group label="DNI" label-for="dni" class="mr-2">
+                    <b-form-input
+                      type="text"
+                      id="dni"
+                      placeholder="DNI"
+                      v-model="dniFilter"
+                      @input="filter()"
+                      autocomplete="off"
+                    />
+                  </b-form-group>
+                </div>   
+              </b-col>
+            
+              <!-- Nuevo filtro de Descripción -->
+              <b-col md="4" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
+                <div class="w-100">
+                  <b-form-group label="Descripción" label-for="description" class="mr-2">
+                    <b-form-input
+                      type="text"
+                      id="description"
+                      placeholder="Descripción"
+                      v-model="descriptionFilter"
+                      @input="filter()"
+                      autocomplete="off"
+                    />
+                  </b-form-group>
+                </div>   
+              </b-col>
+            
+              <!-- Nuevo filtro de Tipo de Archivo (dropdown) -->
+              <b-col md="4" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
+                <div class="w-100">
+                  <b-form-group label="Tipo de Archivo" label-for="fileType" class="mr-2">
+                    <v-select
+                      v-model="fileTypeFilter"
+                      :options="fileTypeOptions"
+                      label="text"
+                      :reduce="option => option.value"
+                      placeholder="Seleccione tipo"
+                      @input="filter()"
+                    />
+                  </b-form-group>
+                </div>   
+              </b-col>
               
               <b-col md="6" lg="2" class="d-flex">              
                 <div
@@ -251,7 +297,7 @@
           { key: 'user.isActive', label: 'Estado', sortable: false, visible: true, thStyle: { width: '80px' } },
           { key: 'user.document', label: 'DNI', sortable: false, visible: true, thStyle: { width: '80px' } },
           { key: 'user.email', label: 'Correo', sortable: false, visible: true, thStyle: { width: '160px' } },
-          { key: 'filetype.name', label: 'Tipo de Documento', sortable: false, visible: true, thStyle: { width: '160px' } },
+          { key: 'filetype.name', label: 'Tipo de Archivo', sortable: false, visible: true, thStyle: { width: '160px' } },
           { key: 'description', label: 'Descripcion', sortable: false, visible: true, thStyle: { width: '160px' } },  
           { 
             key: 'url_file', 
@@ -315,6 +361,10 @@
         tableHead: null,
         ths: null,
         trs: null,
+        fileTypeFilter: null,
+        dniFilter: '',
+        descriptionFilter: '',
+        fileTypeOptions: [], // Para las opciones del dropdown de tipo de archivo
       }
     },
     components: {
@@ -343,6 +393,7 @@
     mounted() {
       this.filter()
       this.getSelect()
+      this.loadFileTypeOptions()
       //this.getEnterprise()
       this.navbar = document.querySelector(".navbar");
       this.filterContent = this.$refs.filterContent;
@@ -375,6 +426,19 @@
       window.removeEventListener("resize", this.fixedElements);
     },
     methods: {
+        async loadFileTypeOptions() {
+      try {
+        const resp = await FileTypeService.getFileType('?limit=10000', this.$store);
+        if (resp.status) {
+          this.fileTypeOptions = resp.data.rows.map(item => ({
+            value: item.id,
+            text: item.name
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading file types:', error);
+      }
+    },
       async downloadFile(item) {
         const fileId = item.id;
         window.open(`${APIURL}/file/download/${fileId}`, '_blank');
@@ -607,9 +671,19 @@
         
         
         if (this.name != null && this.name != '') {
-          this.arrayFilters.push({ keyContains: 'name', key: 'contains', value: this.name })
+          this.arrayFilters.push({ keyContains: 'user.fullname', key: 'contains', value: this.name })
         }
-        
+        if (this.dniFilter != null && this.dniFilter != '') {
+          this.arrayFilters.push({ keyContains: 'user.document', key: 'contains', value: this.dniFilter });
+        }
+
+        if (this.descriptionFilter != null && this.descriptionFilter != '') {
+          this.arrayFilters.push({ keyContains: 'description', key: 'contains', value: this.descriptionFilter });
+        }
+
+        if (this.fileTypeFilter != null && this.fileTypeFilter != '') {
+          this.arrayFilters.push({ keyContains: 'filetype.id', key: 'equals', value: this.fileTypeFilter });
+        }
         
         this.getAllData()
       },

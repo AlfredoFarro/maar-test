@@ -464,6 +464,13 @@
       });
     },
     mounted() {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - 30);
+        
+      this.dateInit = moment(startDate).format('YYYY-MM-DD');
+      this.dateEnd = moment(endDate).format('YYYY-MM-DD');
+  
       this.filter()
       this.getSelect()
   
