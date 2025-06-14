@@ -131,10 +131,12 @@ export default {
   },
   methods: {
     async fetchDropdownData() {
+      const url = `?limit=10000`;
       try {
+        
         const [fileTypes, users] = await Promise.all([
-          FileTypeService.getFileType('', this.$store),
-          UserService.getUsers('', this.$store)
+          FileTypeService.getFileType(url, this.$store),
+          UserService.getUsers(url, this.$store)
         ])
 
         this.fileTypeOptions = fileTypes?.data?.rows?.map(t => ({
