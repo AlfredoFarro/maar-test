@@ -735,8 +735,8 @@
           this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
         }
         
-        if (this.dniFilter != null && this.dniFilter != '') {
-          this.arrayFilters.push({ keyContains: 'worker_id_number', key: 'contains', value: this.dniFilter })
+        if (this.dniFilter != null && this.dniFilter != '' && this.dniFilter.length > 4) {
+          this.arrayFilters.push({ keyContains: 'user.document', key: 'contains', value: this.dniFilter })
         }
         
         if(this.dateInit != null && this.dateInit != ''){
@@ -758,7 +758,8 @@
           this.arrayFilters.push({ keyContains: 'completed', key: 'lte', value: endOfDay });
         }
         console.log("FILTROS", this.arrayFilters)
-        this.getAllData()
+        const shortDni = this.dniFilter && this.dniFilter.length <= 4;
+        this.getAllData(shortDni)
       },
       cambioPagina(e) {
         this.currentPage = e
@@ -865,8 +866,8 @@
   
         this.showLoading = false
       },
-      async getAllData() {
-        this.showLoading = true;
+      async getAllData(skipLoading = false) {
+        if (!skipLoading) this.showLoading = true;
         const url =
           `?limit=10000&filter=` +
           JSON.stringify(this.arrayFilters)
