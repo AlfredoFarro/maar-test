@@ -9,35 +9,38 @@
       opacity=".75"
       rounded="sm"
     >
-    <add-edit
-        :is-add.sync="isAdd"
-        ref="userAdd"
-      >
-    </add-edit>
-    <!-- <filters :filtros="fields" :is-add.sync="isAdd" ref="filters"> </filters> -->
+      <add-edit :is-add.sync="isAdd" ref="userAdd"> </add-edit>
+      <!-- <filters :filtros="fields" :is-add.sync="isAdd" ref="filters"> </filters> -->
       <b-card ref="filterContent" no-body class="sticky">
         <b-card-body>
           <b-row>
-            <b-col md="12" lg="7" class="d-flex flex-column flex-lg-row justify-content-start">
+            <b-col
+              md="12"
+              lg="7"
+              class="d-flex flex-column flex-lg-row justify-content-start"
+            >
               <div class="w-100 mb-1 mb-lg-0 mt-02">
                 <b-form-group label="Proyecto" label-for="project" class="mr-2">
                   <v-select
                     :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                     :options="proyectosFiltrados"
-                    label="name"  
+                    label="name"
                     input-id="project"
-                    :reduce="proyecto => proyecto.id"
+                    :reduce="(proyecto) => proyecto.id"
                     placeholder="Seleccione proyecto"
                     v-model="selectedProject"
                     @input="handleProjectChange"
                     class="select-obra"
-                    :disabled="user_role !== 'Jefe de Proyecto' && user_role !== 'administrador'"
-                    >
+                    :disabled="
+                      user_role !== 'Jefe de Proyecto' &&
+                      user_role !== 'administrador'
+                    "
+                  >
                     <template v-slot:option="option">
-                       {{ option.name }} 
+                      {{ option.name }}
                     </template>
                     <template v-slot:selected-option="option">
-                       {{ option.name }} 
+                      {{ option.name }}
                     </template>
                   </v-select>
                 </b-form-group>
@@ -56,7 +59,7 @@
                   >
                   </b-form-input>
                 </b-form-group>
-              </div>    
+              </div>
               <div class="w-100 ml-lg-2">
                 <b-form-group label="Rol" label-for="role" class="mr-2">
                   <v-select
@@ -64,7 +67,7 @@
                     :options="roleOptions"
                     label="name"
                     input-id="role"
-                    :reduce="role => role.id"
+                    :reduce="(role) => role.id"
                     placeholder="Todos los roles"
                     v-model="selectedRole"
                     @input="filter()"
@@ -72,8 +75,7 @@
                   />
                 </b-form-group>
               </div>
-            
-             
+
               <div class="w-100 ml-lg-2">
                 <b-form-group label="DNI" label-for="dni" class="mr-2">
                   <b-form-input
@@ -87,8 +89,7 @@
                   />
                 </b-form-group>
               </div>
-            
-             
+
               <div class="w-100 ml-lg-2">
                 <b-form-group label="Estado" label-for="status" class="mr-2">
                   <v-select
@@ -96,7 +97,7 @@
                     :options="statusOptions"
                     label="text"
                     input-id="status"
-                    :reduce="status => status.value"
+                    :reduce="(status) => status.value"
                     placeholder="Todos los estados"
                     v-model="isActiveFilter"
                     @input="filter()"
@@ -123,26 +124,27 @@
                 </b-form-group>
               </div>
             </b-col> -->
-            <b-col md="2" lg="1" class="d-flex">              
+            <b-col md="2" lg="1" class="d-flex">
               <div
                 class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
               >
                 <b-button
-                    class="mr-2"
-                    variant="primary"
-                    :disabled="!rolesAllowed.includes(user_role)"
-                    @click="addCrono()"
-                  >
-                  <span class="text-nowrap"> <feather-icon icon="PlusCircleIcon" /> Agregar </span>
+                  class="mr-2"
+                  variant="primary"
+                  :disabled="!rolesAllowed.includes(user_role)"
+                  @click="addCrono()"
+                >
+                  <span class="text-nowrap">
+                    <feather-icon icon="PlusCircleIcon" /> Agregar
+                  </span>
                 </b-button>
               </div>
             </b-col>
-            <b-col md="2" lg="2" class="d-flex">              
+            <b-col md="2" lg="2" class="d-flex">
               <div
                 class="d-flex align-items-center h-100 justify-content-center justify-content-lg-start justify-content-xl-center mb-1 mb-lg-0 mt-02"
               >
-             
-              <!-- <b-button
+                <!-- <b-button
                   class="mr-2"
                   variant="warning"
                   :disabled="!rolesAllowed.includes(user_role)"
@@ -150,7 +152,6 @@
                 >
                   <span class="text-nowrap"> <feather-icon icon="DownloadIcon" /> Importar </span>
                 </b-button> -->
-
               </div>
             </b-col>
           </b-row>
@@ -190,14 +191,16 @@
             id="__BVID__185"
             :items="records"
             no-border-collapse
-            ref="selectableTable"            
-            show-empty                     
+            ref="selectableTable"
+            show-empty
             @sort-changed="sortChanged"
           >
             <!-- Column: Actions -->
             <template #cell(row)="data">
               <div style="width: 0px !important">
-                <b-form-checkbox :checked="selectedRecords.arrayId.includes(data.item)" />
+                <b-form-checkbox
+                  :checked="selectedRecords.arrayId.includes(data.item)"
+                />
               </div>
             </template>
 
@@ -205,7 +208,11 @@
               <b-button
                 size="sm"
                 class=""
-                :disabled="!rolesAllowed.includes(user_role) || (data.item.role && data.item.role.description === 'administrador')"
+                :disabled="
+                  !rolesAllowed.includes(user_role) ||
+                  (data.item.role &&
+                    data.item.role.description === 'administrador')
+                "
                 @click.prevent="edit(data.item)"
                 v-b-tooltip.noninteractive.hover.left="'Editar'"
                 variant="flat-success"
@@ -225,15 +232,15 @@
             </template>
 
             <template #cell(isActive)="data">
-              <span>{{ data.item.isActive ? 'Sí' : 'No' }}</span>
+              <span>{{ data.item.isActive ? "Sí" : "No" }}</span>
             </template>
-          
+
             <template #cell(flagMsg)="data">
-              <span>{{ data.item.flagMsg ? 'Sí' : 'No' }}</span>
+              <span>{{ data.item.flagMsg ? "Sí" : "No" }}</span>
             </template>
-          
+
             <template #cell(isAccessWeb)="data">
-              <span>{{ data.item.isAccessWeb ? 'Sí' : 'No' }}</span>
+              <span>{{ data.item.isAccessWeb ? "Sí" : "No" }}</span>
             </template>
 
             <template #cell(dateInit)="data">
@@ -306,78 +313,125 @@
 
 <script>
 /* eslint-disable */
-import UserService from '@/services/UserService'
-import SedeService from '@/services/SedeService'
-import AppTimeline from '@core/components/app-timeline/AppTimeline.vue'
-import AppTimelineItem from '@core/components/app-timeline/AppTimelineItem.vue'
-import { required } from '@validations'
-import { BootstrapVue, BootstrapVueIcons, VBTooltip } from 'bootstrap-vue'
-import moment from 'moment'
-import { ValidationObserver, ValidationProvider } from 'vee-validate'
-import Vue from 'vue'
-import flatPickr from 'vue-flatpickr-component'
-import Ripple from 'vue-ripple-directive'
-import vSelect from 'vue-select'
-import filters from './filters.vue'
-import addEdit from './add-edit.vue'
+import UserService from "@/services/UserService";
+import SedeService from "@/services/SedeService";
+import AppTimeline from "@core/components/app-timeline/AppTimeline.vue";
+import AppTimelineItem from "@core/components/app-timeline/AppTimelineItem.vue";
+import { required } from "@validations";
+import { BootstrapVue, BootstrapVueIcons, VBTooltip } from "bootstrap-vue";
+import moment from "moment";
+import { ValidationObserver, ValidationProvider } from "vee-validate";
+import Vue from "vue";
+import flatPickr from "vue-flatpickr-component";
+import Ripple from "vue-ripple-directive";
+import vSelect from "vue-select";
+import filters from "./filters.vue";
+import addEdit from "./add-edit.vue";
 
-const APIURL = process.env.APIURLFILE
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+const APIURL = process.env.APIURLFILE;
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 export default {
   directives: {
-    'b-tooltip': VBTooltip,
-    Ripple
+    "b-tooltip": VBTooltip,
+    Ripple,
   },
   data() {
     return {
-      status: '',
-      statusFilter: '',
+      status: "",
+      statusFilter: "",
       required,
       apiurl: APIURL,
       showLoading: false,
       show: false,
       timeLine: [],
-      title: '',
-      comment: '',
+      title: "",
+      comment: "",
       addComent: false,
       modalOpen: false,
-      selectedProject: null,  
-      searchName: '',  
+      selectedProject: null,
+      searchName: "",
       selectedRole: null,
-      dniFilter: '',
+      dniFilter: "",
       isActiveFilter: null,
       roleOptions: [],
       statusOptions: [
-        { text: 'Activo', value: 1 },
-        { text: 'Inactivo', value: 0 }
+        { text: "Activo", value: 1 },
+        { text: "Inactivo", value: 0 },
       ],
       fields: [
-        { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '100px' } },
-        { key: 'role.code', label: 'Rol', sortable: false, visible: true, thStyle: { width: '45px' } },
-        { key: 'document', label: 'Documento', sortable: false, visible: true, thStyle: { width: '55px' } },
-        { key: 'fullname', label: 'Nombre', sortable: false, visible: true, thStyle: { width: '50px' } },
-        { key: 'email', label: 'Email', sortable: false, visible: true, thStyle: { width: '60px' } },
-        { key: 'isActive', label: 'Activo', sortable: false, visible: true, thStyle: { width: '30px' } },
-        { key: 'flagMsg', label: 'Habilitado Correos', sortable: false, visible: true, thStyle: { width: '30px' } },
-        { key: 'isAccessWeb', label: 'Accede web', sortable: false, visible: true, thStyle: { width: '30px' } },
+        {
+          key: "actions",
+          label: "Acciones",
+          visible: true,
+          thStyle: { width: "100px" },
+        },
+        {
+          key: "role.code",
+          label: "Rol",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "45px" },
+        },
+        {
+          key: "document",
+          label: "Documento",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "55px" },
+        },
+        {
+          key: "fullname",
+          label: "Nombre",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "50px" },
+        },
+        {
+          key: "email",
+          label: "Email",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "60px" },
+        },
+        {
+          key: "isActive",
+          label: "Activo",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "30px" },
+        },
+        {
+          key: "flagMsg",
+          label: "Habilitado Correos",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "30px" },
+        },
+        {
+          key: "isAccessWeb",
+          label: "Accede web",
+          sortable: false,
+          visible: true,
+          thStyle: { width: "30px" },
+        },
       ],
       form: {
-          document: '',
-          email: '',
-          password: '',
-          fullname: '',
-          flagMsg: null,
-          isActive: null,
-          isAccessWeb: null,
-          roleId: null,
-          projects:[],
-        },
-        
+        document: "",
+        email: "",
+        password: "",
+        fullname: "",
+        flagMsg: null,
+        isActive: null,
+        isAccessWeb: null,
+        roleId: null,
+        projects: [],
+      },
+
       project_id: null,
-      project_name: '',
+      project_name: "",
       records: [],
-      projectSelect: '',
+      projectSelect: "",
       proyectos: [],
       proyectosFiltrados: [],
       arrayFilters: [],
@@ -389,16 +443,16 @@ export default {
       entries1: [10, 20, 50, 100],
       showEntrie1: 10,
       totalElements1: 0,
-      name: '',
+      name: "",
       id: 0,
-      sort: 'id',
-      order: 'desc',
-      userData: JSON.parse(localStorage.getItem('userData')),
-      user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-      rolesAllowed: ['Jefe de Proyecto', 'gestor', 'administrador'],
+      sort: "id",
+      order: "desc",
+      userData: JSON.parse(localStorage.getItem("userData")),
+      user_role: JSON.parse(localStorage.getItem("userData")).role.description,
+      rolesAllowed: ["Jefe de Proyecto", "gestor", "administrador"],
       isAdd: false,
       selectedRecords: {
-        arrayId: []
+        arrayId: [],
       },
       allData: [],
       allDataSorted: [],
@@ -410,7 +464,7 @@ export default {
       tableHead: null,
       ths: null,
       trs: null,
-    }
+    };
   },
   components: {
     vSelect,
@@ -421,24 +475,24 @@ export default {
     ValidationProvider,
     ValidationObserver,
     AppTimelineItem,
-},
+  },
   computed: {
     visibleFields() {
-      return this.fields.filter((field) => field.visible)
-    }
+      return this.fields.filter((field) => field.visible);
+    },
   },
   created() {
     // Escucha un evento personalizado llamado 'executeGetData'
-    this.$bus.on('executeGetDataRestrictionxLiberar', () => {
+    this.$bus.on("executeGetDataRestrictionxLiberar", () => {
       // Llama a la función getData pasando las variables
-      console.log('ejecutando rest x liberar')
+      console.log("ejecutando rest x liberar");
       this.filter();
     });
   },
   mounted() {
-    this.cargarProyectos()
-    this.filter()
-    this.getSelect()
+    this.cargarProyectos();
+    this.filter();
+    this.getSelect();
     this.loadRoles();
     this.navbar = document.querySelector(".navbar");
     this.filterContent = this.$refs.filterContent;
@@ -446,7 +500,9 @@ export default {
     this.tableCard = this.$refs.tableCard;
     this.selectableTable = this.$refs.selectableTable.$el;
     this.tableHead = this.selectableTable.querySelector("thead");
-    this.ths = this.selectableTable.querySelector('thead').querySelectorAll('th');
+    this.ths = this.selectableTable
+      .querySelector("thead")
+      .querySelectorAll("th");
 
     this.setupScrollSync();
     new ResizeObserver(this.fixedElements).observe(this.tableCard);
@@ -454,17 +510,21 @@ export default {
   watch: {
     records(newVal, oldVal) {
       this.$nextTick(() => {
-        this.trs = this.selectableTable.querySelector('tbody').querySelectorAll('tr');
-        
-        this.fixedElements()
-      })
+        this.trs = this.selectableTable
+          .querySelector("tbody")
+          .querySelectorAll("tr");
+
+        this.fixedElements();
+      });
     },
     visibleFields(newVal, oldVal) {
       this.$nextTick(() => {
-        this.ths = this.selectableTable.querySelector('thead').querySelectorAll('th');
-        this.fixedElements()
-      })
-    }
+        this.ths = this.selectableTable
+          .querySelector("thead")
+          .querySelectorAll("th");
+        this.fixedElements();
+      });
+    },
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleWindowScroll);
@@ -473,66 +533,79 @@ export default {
   methods: {
     async loadRoles() {
       try {
-        const response = await UserService.getRoles('', this.$store);
+        const response = await UserService.getRoles("", this.$store);
         if (response.status) {
-          this.roleOptions = response.data.rows.map(role => ({
-            id: role.id, 
-            name: role.code
+          this.roleOptions = response.data.rows.map((role) => ({
+            id: role.id,
+            name: role.code,
           }));
         }
       } catch (error) {
-        console.error('Error cargando roles:', error);
+        console.error("Error cargando roles:", error);
         this.$swal({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudieron cargar los roles',
+          icon: "error",
+          title: "Error",
+          text: "No se pudieron cargar los roles",
           customClass: {
-            confirmButton: 'btn btn-success'
-          }
+            confirmButton: "btn btn-success",
+          },
         });
       }
     },
     async cargarProyectos() {
-        const url3 =
-          `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]` 
-        const response = await SedeService.getProyectos(url3, this.$store);
-        console.log("Respuesta cruda de proyectos:", response); 
-        if (response.status) {
-          this.proyectos = response.data.rows;
-          this.proyectosFiltrados = [...this.proyectos];
-          console.log("Proyectos cargados:", this.proyectos); 
-        }
-      
+      const url3 = `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]`;
+      const response = await SedeService.getProyectos(url3, this.$store);
+      console.log("Respuesta cruda de proyectos:", response);
+      if (response.status) {
+        this.proyectos = response.data.rows;
+        this.proyectosFiltrados = [...this.proyectos];
+        console.log("Proyectos cargados:", this.proyectos);
+      }
     },
 
     handleProjectChange(name) {
       this.project_name = name;
-      this.filter(); 
-      
-      this.$emit('project-changed', name);
+      this.filter();
+
+      this.$emit("project-changed", name);
     },
     formatProjects(projectUser) {
-      if (!projectUser || !Array.isArray(projectUser)) return 'Sin proyectos';
-      return projectUser.map(pu => pu.project?.name).filter(Boolean).join(', ');
+      if (!projectUser || !Array.isArray(projectUser)) return "Sin proyectos";
+      return projectUser
+        .map((pu) => pu.project?.name)
+        .filter(Boolean)
+        .join(", ");
     },
     fixedElements() {
       // Verificar si los elementos del DOM existen
       if (!this.selectableTable || !this.tableCard) {
         return;
       }
-    
-      this.ths = this.selectableTable.querySelector('thead')?.querySelectorAll('th');
-      this.trs = this.selectableTable.querySelector('tbody')?.querySelectorAll('tr');
-    
+
+      this.ths = this.selectableTable
+        .querySelector("thead")
+        ?.querySelectorAll("th");
+      this.trs = this.selectableTable
+        .querySelector("tbody")
+        ?.querySelectorAll("tr");
+
       // Si no hay filas o la tabla está vacía, salir
-      if (!this.trs || this.trs.length === 0 || this.trs[0].classList.contains('b-table-empty-row')) {
-        this.selectableTable.style.width = this.tableHead.querySelector('tr').offsetWidth + 1 + "px";
+      if (
+        !this.trs ||
+        this.trs.length === 0 ||
+        this.trs[0].classList.contains("b-table-empty-row")
+      ) {
+        this.selectableTable.style.width =
+          this.tableHead.querySelector("tr").offsetWidth + 1 + "px";
         return;
       }
-    
+
       // Resto del código para ajustar el ancho de las celdas...
-      const thsTotalWidth = [...this.ths].reduce((acc, th) => acc + th.offsetWidth, 0);
-    
+      const thsTotalWidth = [...this.ths].reduce(
+        (acc, th) => acc + th.offsetWidth,
+        0
+      );
+
       if (thsTotalWidth > this.tableCard.offsetWidth) {
         this.ths.forEach((th, index) => {
           th.style.flex = "0 0 " + th.offsetWidth + "px";
@@ -542,23 +615,25 @@ export default {
           th.style.flex = "1 1 " + th.offsetWidth + "px";
         });
       }
-    
+
       this.trs.forEach((tr, index) => {
-        const tds = tr.querySelectorAll('td');
+        const tds = tr.querySelectorAll("td");
         this.ths.forEach((th, index) => {
           tds[index].style.width = th.offsetWidth + "px";
-          tds[index].style.flex = thsTotalWidth > this.tableCard.offsetWidth 
-            ? "0 0 " + th.offsetWidth + "px" 
-            : "1 1 " + th.offsetWidth + "px";
+          tds[index].style.flex =
+            thsTotalWidth > this.tableCard.offsetWidth
+              ? "0 0 " + th.offsetWidth + "px"
+              : "1 1 " + th.offsetWidth + "px";
         });
       });
-    
+
       this.tableHead.style.width = this.tableCard.offsetWidth - 1 + "px";
-      this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
+      this.selectableTable.style.paddingTop =
+        this.tableHead.offsetHeight + "px";
     },
     getRoleName(roleId) {
-      const role = this.roleOptions.find(r => r.id === roleId);
-      return role ? role.name : 'Sin rol';
+      const role = this.roleOptions.find((r) => r.id === roleId);
+      return role ? role.name : "Sin rol";
     },
     setupScrollSync() {
       this.tableHead.addEventListener("scroll", () => {
@@ -577,274 +652,280 @@ export default {
     handleWindowScroll() {
       this.filterContent.style.top = this.navbar.offsetHeight + "px";
 
-      if (this.tableCard.offsetTop - this.navbar.offsetHeight - 7 - window.scrollY <= 0) {
+      if (
+        this.tableCard.offsetTop -
+          this.navbar.offsetHeight -
+          7 -
+          window.scrollY <=
+        0
+      ) {
         this.tableHead.classList.add("fixed");
-        this.tableHead.style.top = this.navbar.offsetHeight + this.filterContent.offsetHeight + "px";
+        this.tableHead.style.top =
+          this.navbar.offsetHeight + this.filterContent.offsetHeight + "px";
       } else {
         this.tableHead.classList.remove("fixed");
         this.tableHead.style.top = null;
       }
     },
     openModal() {
-     
       this.modalOpen = true;
-
     },
     closeModal() {
       this.modalOpen = false;
     },
 
     onRowSelectedOrder(items) {
-     
-      this.selectedRecords.arrayId = items
-     
+      this.selectedRecords.arrayId = items;
     },
-    addCrono(){
-      this.isAdd = true
-      this.$refs.userAdd.setData()
-      this.$refs.userAdd.getData(this.project_id)
+    addCrono() {
+      this.isAdd = true;
+      this.$refs.userAdd.setData();
+      this.$refs.userAdd.getData(this.project_id);
     },
     edit(item) {
-      console.log('item completo recibido:', item); 
-        
-      
+      console.log("item completo recibido:", item);
+
       this.isAdd = true;
-        
+
       this.$nextTick(() => {
-        this.$refs.userAdd.setData(item); 
+        this.$refs.userAdd.setData(item);
         this.$refs.userAdd.getData(this.project_id);
       });
-      
-      
+
       this.form.groupId = [];
     },
     selectAll(val) {
-     
       if (val) {
-     
-        this.$refs.selectableTable.selectAllRows()
+        this.$refs.selectableTable.selectAllRows();
       } else {
-        this.$refs.selectableTable.clearSelected()
+        this.$refs.selectableTable.clearSelected();
       }
       //
     },
     validDate(fecha) {
-      fecha = new Date(fecha)
+      fecha = new Date(fecha);
       if (fecha != null) {
-        const year = new Date(fecha).getFullYear()
+        const year = new Date(fecha).getFullYear();
         if (year <= 1970) {
-          return ''
+          return "";
         }
-        return moment(fecha, 'yyyy-MM-DD HH:mm').utc(fecha).format('yyyy-MM-DD')
+        return moment(fecha, "yyyy-MM-DD HH:mm")
+          .utc(fecha)
+          .format("yyyy-MM-DD");
       }
-      return ''
+      return "";
     },
-    async deleteAction(data){
+    async deleteAction(data) {
       //DELETE USER
       this.$swal({
-        title: '¿Desea eliminar este usuario?',
-        icon: 'warning',
+        title: "¿Desea eliminar este usuario?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Si, eliminalo',
+        confirmButtonText: "Si, eliminalo",
         customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1'
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
         },
-        buttonsStyling: false
+        buttonsStyling: false,
       }).then((result) => {
         if (result.value) {
-          this.currentPage = 1
+          this.currentPage = 1;
           this.$swal({
-            icon: 'success',
-            title: 'Eliminado!',
-            text: 'El usuario ha sido eliminado.',
+            icon: "success",
+            title: "Eliminado!",
+            text: "El usuario ha sido eliminado.",
             customClass: {
-              confirmButton: 'btn btn-success'
-            }
-          })
-          this.deleteData(data.id)
+              confirmButton: "btn btn-success",
+            },
+          });
+          this.deleteData(data.id);
         }
-      })
+      });
     },
     async deleteData(id) {
-      console.log('id del usuario', id)
-      const resp = await UserService.deleteUser(id, this.$store)
-      console.log('resp delete',resp)
+      console.log("id del usuario", id);
+      const resp = await UserService.deleteUser(id, this.$store);
+      console.log("resp delete", resp);
       if (resp) {
-        this.getAllData()
+        this.getAllData();
       } else {
         this.$swal({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al eliminar el usuario.',
+          icon: "error",
+          title: "Error",
+          text: "Ocurrió un error al eliminar el usuario.",
           customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      }
-      console.log('respDelete', resp)
-    },
-    filter() {
-      this.arrayFilters = []
-      this.arrayFilters.push({
-        keyContains: 'or',
-        value: [
-          {
-            key: 'project_user',
-            keyContains: 'any',
-            value: {
-              'project.isActive': 1
-            }
+            confirmButton: "btn btn-success",
           },
-          {
-            key: 'role.id',
-            keyContains: 'equals',
-            value: 1
-          }
-        ]
-      });
-      if (this.selectedProject) {
-        this.arrayFilters.push({ 
-          key: 'project_user', 
-          keyContains: 'any', 
-          value: {
-            'project.id': this.selectedProject
-          }
         });
       }
-  
+      console.log("respDelete", resp);
+    },
+    filter() {
+      this.arrayFilters = [];
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      if (userData.role.id === 2) {
+        const projectIds = (userData.project_user || [])
+          .map((p) => p.project?.id)
+          .filter(Boolean);
+
+        const orFilters = [{ key: "role.id", keyContains: "equals", value: 3 }];
+
+        projectIds.forEach((id) => {
+          orFilters.push({
+            key: "and",
+            value: [
+              { key: "role.id", keyContains: "equals", value: 2 },
+              {
+                key: "project_user",
+                keyContains: "any",
+                value: { "project.id": id },
+              },
+            ],
+          });
+        });
+
+        this.arrayFilters.push({
+          keyContains: "or",
+          value: orFilters,
+        });
+      }
+
+      if (this.selectedProject) {
+        this.arrayFilters.push({
+          key: "project_user",
+          keyContains: "any",
+          value: {
+            "project.id": this.selectedProject,
+          },
+        });
+      }
+
       if (this.searchName) {
-        this.arrayFilters.push({ 
-          keyContains: 'fullname', 
-          key: 'contains', 
-          value: this.searchName 
-        })
+        this.arrayFilters.push({
+          keyContains: "fullname",
+          key: "contains",
+          value: this.searchName,
+        });
       }
       if (this.selectedRole) {
         this.arrayFilters.push({
-          key: 'role.id',
-          keyContains: 'equals',
-          value: this.selectedRole
-        })
+          key: "role.id",
+          keyContains: "equals",
+          value: this.selectedRole,
+        });
       }
-    
-      
+
       if (this.dniFilter) {
         this.arrayFilters.push({
-          key: 'document',
-          keyContains: 'contains',
-          value: this.dniFilter
-        })
+          key: "document",
+          keyContains: "contains",
+          value: this.dniFilter,
+        });
       }
-    
-      
+
       if (this.isActiveFilter !== null) {
         this.arrayFilters.push({
-          key: 'isActive',
-          keyContains: 'equals',
-          value: this.isActiveFilter
-        })
+          key: "isActive",
+          keyContains: "equals",
+          value: this.isActiveFilter,
+        });
       }
-      this.getAllData()
+      this.getAllData();
     },
     cambioPagina(e) {
-      this.currentPage = e
+      this.currentPage = e;
       this.records = this.allDataSorted[e - 1];
 
       /* this.getData() */
     },
     changeSizePage() {
-      this.getAllData()
+      this.getAllData();
     },
     sortChanged(data) {
-      this.sort = data.sortBy
-      this.currentPage = 1
-      this.getSortedData(data.sortBy, data.sortDesc ? 'desc' : 'asc')
-      this.records = this.allDataSorted[0]
+      this.sort = data.sortBy;
+      this.currentPage = 1;
+      this.getSortedData(data.sortBy, data.sortDesc ? "desc" : "asc");
+      this.records = this.allDataSorted[0];
       /* this.sort = data.sortBy
       if (data.sortDesc) {
         this.order = 'desc'
       } else this.order = 'asc' */
     },
     closeComment() {
-      this.comment = ''
-      this.addComent = false
+      this.comment = "";
+      this.addComent = false;
     },
     showTimeLine(item) {
-    
-      this.restriction_id = item.id
-      this.$refs['modal-comment'].show()
-      this.getTimeLine(item.id)
+      this.restriction_id = item.id;
+      this.$refs["modal-comment"].show();
+      this.getTimeLine(item.id);
     },
     async getTimeLine(id) {
-      const resp = ''
-    
+      const resp = "";
+
       if (resp.status) {
-        this.timeLine = resp.data
-      
+        this.timeLine = resp.data;
       }
     },
     async addComment() {
       this.$refs.addComentarios.validate().then(async (success) => {
         if (success) {
-          this.isDisabled = true
-          let datos = {}
-          const userData = JSON.parse(localStorage.getItem('userData'))
-          datos.restriction_id = this.restriction_id
-          datos.description = this.comment
-          datos.user_id = userData.id
-       
-          const respComment = ''
+          this.isDisabled = true;
+          let datos = {};
+          const userData = JSON.parse(localStorage.getItem("userData"));
+          datos.restriction_id = this.restriction_id;
+          datos.description = this.comment;
+          datos.user_id = userData.id;
+
+          const respComment = "";
           if (respComment.status) {
             this.$swal({
-              title: 'Registrado',
-              text: 'El comentario ha sido registrado.',
-              icon: 'success',
+              title: "Registrado",
+              text: "El comentario ha sido registrado.",
+              icon: "success",
               customClass: {
-                confirmButton: 'btn btn-primary'
+                confirmButton: "btn btn-primary",
               },
-              buttonsStyling: false
-            })
-            this.addComent = false
-            this.getAllData()
-            this.$refs['modal-comment'].hide()
+              buttonsStyling: false,
+            });
+            this.addComent = false;
+            this.getAllData();
+            this.$refs["modal-comment"].hide();
           } else {
             this.$swal({
-              title: 'Error!',
-              text: ' Hubo un error al registrar el comentario',
-              icon: 'error',
+              title: "Error!",
+              text: " Hubo un error al registrar el comentario",
+              icon: "error",
               customClass: {
-                confirmButton: 'btn btn-primary'
+                confirmButton: "btn btn-primary",
               },
-              buttonsStyling: false
-            })
+              buttonsStyling: false,
+            });
           }
-          this.isDisabled = false
+          this.isDisabled = false;
         }
-      })
+      });
     },
     async getSelect() {
-      const user = JSON.parse(localStorage.getItem('userData'))
-      const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`
-      
-        this.filter()
-      
+      const user = JSON.parse(localStorage.getItem("userData"));
+      const url2 = `?limit=100000&page=${this.currentPage}&order=asc&sort=code`;
+
+      this.filter();
     },
     async getData() {
-      this.showLoading = true
+      this.showLoading = true;
       const url =
         `?limit=${this.showEntrie}&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
-        JSON.stringify(this.arrayFilters)
-     
-      const resp = ''
-     
+        JSON.stringify(this.arrayFilters);
+
+      const resp = "";
+
       if (resp.status) {
-       
-        this.records = resp.data.rows
-        this.totalElements = resp.data.responseFilter.total_rows
+        this.records = resp.data.rows;
+        this.totalElements = resp.data.responseFilter.total_rows;
       }
 
-      this.showLoading = false
+      this.showLoading = false;
     },
     async getAllData() {
       this.showLoading = true;
@@ -852,20 +933,18 @@ export default {
 
       try {
         const resp = await UserService.getUsers(url, this.$store);
-        console.log('resp TRAVELS', resp);
-      
+        console.log("resp TRAVELS", resp);
+
         if (resp.status) {
+          this.allData = [...resp.data.rows];
 
-          this.allData = [...resp.data.rows]; 
+          this.getSortedData("id", "desc");
 
-
-          this.getSortedData("id", 'desc');
-
-
-          this.records = this.allDataSorted[0] ? [...this.allDataSorted[0]] : [];
+          this.records = this.allDataSorted[0]
+            ? [...this.allDataSorted[0]]
+            : [];
 
           this.totalElements = resp.data.responseFilter.total_rows;
-
 
           this.$nextTick(() => {
             if (this.$refs.selectableTable) {
@@ -874,22 +953,21 @@ export default {
           });
         }
       } catch (error) {
-        console.error('Error en getAllData:', error);
+        console.error("Error en getAllData:", error);
       } finally {
         this.showLoading = false;
       }
     },
     getAttributeValue(obj, attribute) {
-    
-      if (attribute.includes('.')) {
-        const parts = attribute.split('.');
+      if (attribute.includes(".")) {
+        const parts = attribute.split(".");
         let value = obj;
 
         for (const part of parts) {
           if (value && value.hasOwnProperty(part)) {
             value = value[part];
           } else {
-            return null; 
+            return null;
           }
         }
 
@@ -898,33 +976,37 @@ export default {
         return obj[attribute];
       }
     },
-    importUser(){
-      this.$router.push('/usuarios-importar')
+    importUser() {
+      this.$router.push("/usuarios-importar");
     },
     getSortedData(sortBy, sortOrder) {
       let sortedData = [...this.allData];
-      if (this.searchName && this.searchName !== '') {
+      if (this.searchName && this.searchName !== "") {
         const searchTerm = this.searchName.toLowerCase();
-        sortedData = sortedData.filter(item =>
-          item.fullname && item.fullname.toLowerCase().includes(searchTerm)
+        sortedData = sortedData.filter(
+          (item) =>
+            item.fullname && item.fullname.toLowerCase().includes(searchTerm)
         );
       }
-    
-    
-      if (this.project_name && typeof this.project_name === 'string') {
+
+      if (this.project_name && typeof this.project_name === "string") {
         const searchTerm = this.project_name.toLowerCase();
-        sortedData = sortedData.filter(item =>
-          item.project_user && item.project_user.some(p => 
-            p.project && p.project.name.toLowerCase().includes(searchTerm))
+        sortedData = sortedData.filter(
+          (item) =>
+            item.project_user &&
+            item.project_user.some(
+              (p) =>
+                p.project && p.project.name.toLowerCase().includes(searchTerm)
+            )
         );
       }
       sortedData.sort((a, b) => {
         const aValue = this.getAttributeValue(a, sortBy);
         const bValue = this.getAttributeValue(b, sortBy);
 
-        if (sortOrder === 'asc') {
+        if (sortOrder === "asc") {
           return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else if (sortOrder === 'desc') {
+        } else if (sortOrder === "desc") {
           return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
         }
       });
@@ -933,203 +1015,208 @@ export default {
       for (let i = 0; i < sortedData.length; i += this.showEntrie) {
         this.allDataSorted.push(sortedData.slice(i, i + this.showEntrie));
       }
-
     },
     async getDatosExport() {
       const url =
         `?limit=100&page=${this.currentPage}&order=${this.order}&sort=${this.sort}&filter=` +
-        JSON.stringify(this.arrayFilters)
-      const resp = ''
+        JSON.stringify(this.arrayFilters);
+      const resp = "";
       if (resp.status) {
-        this.totalData = resp.data.rows
-        this.totalElementExport = resp.data.rows.length
+        this.totalData = resp.data.rows;
+        this.totalElementExport = resp.data.rows.length;
       }
     },
-    actionLiberar(item,type) {
-    
+    actionLiberar(item, type) {
       let status;
-      if(type === 1){
-        status = 'LiberadoPorPlanner';
-      
-       this.$swal({
-        title: '¿Seguro que desea liberar esta restricción?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, liberalo',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1'
-        },
-        buttonsStyling: false
-      }).then(async (result) => {
-         if (result.value) {
-          const resp = ''
-          if (resp.status) {
-            this.currentPage = 1
-            this.$swal({
-              icon: 'success',
-              title: 'Liberado!',
-              text: 'La restricción fue liberada con éxito.',
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            })
-            this.getAllData()
-          } else {
-            this.$swal({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un error al liberar la restricción seleccionada.',
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            })
+      if (type === 1) {
+        status = "LiberadoPorPlanner";
+
+        this.$swal({
+          title: "¿Seguro que desea liberar esta restricción?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Si, liberalo",
+          customClass: {
+            confirmButton: "btn btn-primary",
+            cancelButton: "btn btn-outline-danger ml-1",
+          },
+          buttonsStyling: false,
+        }).then(async (result) => {
+          if (result.value) {
+            const resp = "";
+            if (resp.status) {
+              this.currentPage = 1;
+              this.$swal({
+                icon: "success",
+                title: "Liberado!",
+                text: "La restricción fue liberada con éxito.",
+                customClass: {
+                  confirmButton: "btn btn-success",
+                },
+              });
+              this.getAllData();
+            } else {
+              this.$swal({
+                icon: "error",
+                title: "Error",
+                text: "Ocurrió un error al liberar la restricción seleccionada.",
+                customClass: {
+                  confirmButton: "btn btn-success",
+                },
+              });
+            }
           }
-        }
-      })
-      }else{
-          status = 'Oficializado';
-          /* this.openModal() */
-          this.$swal.fire({
-            title: '¿Seguro que desea rechazar esta restricción?',
-            icon: 'warning',
+        });
+      } else {
+        status = "Oficializado";
+        /* this.openModal() */
+        this.$swal
+          .fire({
+            title: "¿Seguro que desea rechazar esta restricción?",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Sí, rechazalo',
+            confirmButtonText: "Sí, rechazalo",
             html: `
               <input type="text" style="margin: 15px 0" id="inputValuexRechazar" class="swal2-input" placeholder="Ingrese la razón">
             `,
             customClass: {
-              confirmButton: 'btn btn-primary',
-              cancelButton: 'btn btn-outline-danger ml-1'
+              confirmButton: "btn btn-primary",
+              cancelButton: "btn btn-outline-danger ml-1",
             },
-            buttonsStyling: false
-          }).then(async (result) => {
+            buttonsStyling: false,
+          })
+          .then(async (result) => {
             if (result.value) {
-              const inputValue = document.getElementById('inputValuexRechazar').value; 
+              const inputValue = document.getElementById(
+                "inputValuexRechazar"
+              ).value;
 
-             
-
-              const resp = ''
-            
+              const resp = "";
 
               if (resp.status) {
-                this.currentPage = 1
+                this.currentPage = 1;
                 this.$swal({
-                  icon: 'success',
-                  title: 'Rechazado!',
-                  text: 'La restricción fue rechazada con éxito.',
+                  icon: "success",
+                  title: "Rechazado!",
+                  text: "La restricción fue rechazada con éxito.",
                   customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                })
-                this.getAllData()
+                    confirmButton: "btn btn-success",
+                  },
+                });
+                this.getAllData();
               } else {
                 this.$swal({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Ocurrió un error al rechazar la restricción seleccionada.',
+                  icon: "error",
+                  title: "Error",
+                  text: "Ocurrió un error al rechazar la restricción seleccionada.",
                   customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                })
+                    confirmButton: "btn btn-success",
+                  },
+                });
               }
             }
           });
       }
     },
     async changeStatus() {
-   
-      let filterArrays = []
-      for (let index = 0; index < this.selectedRecords.arrayId.length; index++) {
-        const element = this.selectedRecords.arrayId[index]
-        filterArrays.push(element.id)
+      let filterArrays = [];
+      for (
+        let index = 0;
+        index < this.selectedRecords.arrayId.length;
+        index++
+      ) {
+        const element = this.selectedRecords.arrayId[index];
+        filterArrays.push(element.id);
       }
-     
+
       this.$swal({
-        title: '¿Seguro que desea cambiar a esta(s) restriccion(es)?',
-        icon: 'warning',
+        title: "¿Seguro que desea cambiar a esta(s) restriccion(es)?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Si, cambialo',
+        confirmButtonText: "Si, cambialo",
         customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1'
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-danger ml-1",
         },
-        buttonsStyling: false
+        buttonsStyling: false,
       }).then(async (result) => {
         if (result.value) {
           if (filterArrays.length > 0) {
-            const resp = ''
+            const resp = "";
             if (resp.status) {
-              this.currentPage = 1
+              this.currentPage = 1;
               this.$swal({
-                icon: 'success',
-                title: 'Cambiado!',
-                text: 'Los estados fueron cambiados.',
+                icon: "success",
+                title: "Cambiado!",
+                text: "Los estados fueron cambiados.",
                 customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              })
-              this.getAllData()
+                  confirmButton: "btn btn-success",
+                },
+              });
+              this.getAllData();
             } else {
               this.$swal({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ocurrió un error al cambiar el estado de la restricción seleccionada.',
+                icon: "error",
+                title: "Error",
+                text: "Ocurrió un error al cambiar el estado de la restricción seleccionada.",
                 customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              })
+                  confirmButton: "btn btn-success",
+                },
+              });
             }
           }
         }
-      })
+      });
     },
     showFilters() {
-      this.isAdd = true
+      this.isAdd = true;
     },
     clean() {
-      this.statusFilter = ''
-      this.project_id = null
-      var arrayFilter = []
-      if (this.user_role != 'jefe de proyectos' && this.user_role != 'administrador') {
-        const proyects = []
-        const estados = []
+      this.statusFilter = "";
+      this.project_id = null;
+      var arrayFilter = [];
+      if (
+        this.user_role != "jefe de proyectos" &&
+        this.user_role != "administrador"
+      ) {
+        const proyects = [];
+        const estados = [];
         for (let index = 0; index < this.estados.length; index++) {
-          const element = this.estados[index]
-          estados.push(element.value)
+          const element = this.estados[index];
+          estados.push(element.value);
         }
         if (this.proyectos.length > 0) {
           for (let index = 0; index < this.proyectos.length; index++) {
-            const element = this.proyectos[index]
-            proyects.push(element.id)
+            const element = this.proyectos[index];
+            proyects.push(element.id);
           }
         }
         if (proyects.length > 0) {
           arrayFilter.push({
-            keyContains: 'project_id',
-            key: 'in',
-            value: JSON.stringify(proyects)
-          })
+            keyContains: "project_id",
+            key: "in",
+            value: JSON.stringify(proyects),
+          });
         }
         if (estados.length > 0) {
           arrayFilter.push({
-            keyContains: 'status',
-            key: 'in',
-            value: JSON.stringify(estados)
-          })
+            keyContains: "status",
+            key: "in",
+            value: JSON.stringify(estados),
+          });
         }
       }
 
-      this.arrayFilters = arrayFilter
-      this.getAllData()
-    }
-  }
-}
+      this.arrayFilters = arrayFilter;
+      this.getAllData();
+    },
+  },
+};
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/libs/vue-select.scss';
-@import '@core/scss/vue/libs/vue-flatpicker.scss';
+@import "@core/scss/vue/libs/vue-select.scss";
+@import "@core/scss/vue/libs/vue-flatpicker.scss";
 .pad-export {
   padding: 0.52rem 1rem !important;
 }
@@ -1148,8 +1235,8 @@ export default {
   max-height: 200px;
   overflow-y: scroll;
 }
-.mt-02{
-  margin-top: .2rem;
+.mt-02 {
+  margin-top: 0.2rem;
 }
 
 .sticky {

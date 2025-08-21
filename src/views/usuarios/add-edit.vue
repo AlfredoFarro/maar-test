@@ -100,8 +100,14 @@
             <label for="web_access">Puede acceder a la web</label>
             <div class="d-flex align-items-center">
               <span class="mr-1">No</span>
-              <b-form-checkbox id="web_access" v-model="items.isAccessWeb" name="web_access"
-                class="custom-control-primary" switch />
+              <b-form-checkbox
+                id="web_access"
+                v-model="items.isAccessWeb"
+                name="web_access"
+                class="custom-control-primary"
+                switch
+                :disabled="items.roleId === 3"
+              />
               <span class="ml-1">Sí</span>
             </div>
           </b-form-group>
@@ -176,6 +182,9 @@ export default {
     }
   },
   computed: {
+    isAccessWebLocked() {
+      return this.items.roleId === 3;
+    },
     passwordToggleIcon() {
       return this.passwordFieldType === "password" ? "EyeIcon" : "EyeOffIcon";
     },
@@ -314,6 +323,14 @@ export default {
     this.loadRoles();
   },
 
+  watch: {
+    'items.roleId'(val) {
+    if (val === 3) {
+      this.items.isAccessWeb = false; 
+    }
+  }
+  },
+
   methods: {
     async loadRoles() {
       try {
@@ -352,10 +369,11 @@ export default {
 
       this.items.projects = [];
 
-
       if (roleId !== 2) {
         this.items.projects = [];
       }
+
+      if (roleId === 3) this.items.isAccessWeb = false;
     },
     async getSelect() {
       this.items.groupId = []
@@ -473,6 +491,8 @@ export default {
           roleId: items.role?.id || null,
           projects: userProjects
         };
+
+        if (this.items.roleId === 3) this.items.isAccessWeb = false;
 
         this.isEdit = true;
         // Recargamos los roles para que incluya el admin en modo edición
