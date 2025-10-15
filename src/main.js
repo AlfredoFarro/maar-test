@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
+import VueApexCharts from 'vue-apexcharts'
 import moment from 'moment'
 import router from './router'
 import store from './store'
@@ -27,6 +28,8 @@ Vue.use(ModalPlugin)
 // Composition API
 Vue.prototype.moment = moment
 Vue.use(VueCompositionAPI)
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
 // Feather font icon - For form-wizard
 // * Shall remove it if not using font-icons of feather-icons - For form-wizard
 require('@core/assets/fonts/feather/iconfont.css') // For form-wizard
