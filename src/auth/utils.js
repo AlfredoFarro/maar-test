@@ -100,6 +100,7 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
+        "motivos-observaciones",
         /* "aprobaciones",
         "aprobaciones-actividad",
         "aprobaciones-operativo", */
@@ -148,6 +149,7 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
+        "motivos-observaciones",
         /* "aprobaciones",
         "aprobaciones-actividad",
         "aprobaciones-operativo", */

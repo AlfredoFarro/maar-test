@@ -320,4 +320,12 @@ export default [
     route: 'seleccionar-proyecto',
     hide: true,
   },
+
+  {
+    header: 'Motivos y Observaciones',
+    icon: 'FolderIcon',
+    id: 'motivos-observaciones',
+    title: 'Motivos y Observaciones',
+    route: 'motivos-observaciones',
+  },
 ]

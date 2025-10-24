@@ -528,5 +528,17 @@ export default [{
       }, ],
     },
   },
+  {
+    path: '/motivos-observaciones',
+    name: 'motivos-observaciones',
+    component: () => import('@/views/motivos-observaciones/index.vue'),
+    meta: {
+      pageTitle: 'Motivos y Observaciones',
+      breadcrumb: [{
+        text: 'Listar',
+        active: true,
+      }, ],
+    },
+  },
   
 ]

@@ -186,7 +186,7 @@
         </b-modal>
       </b-overlay>
     </div>
-  </template>
+</template>
   
   <script>
   /* eslint-disable */

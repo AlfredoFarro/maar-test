@@ -121,6 +121,12 @@ export default {
         title: 'Tipo de Documento',
         route: 'tipo-documento',
       },
+      {
+        icon: 'GridIcon',
+        id: 'motivos-observaciones',
+        title: 'Motivos y Observaciones',
+        route: 'motivos-observaciones',
+      },
       
 /*       {
         icon: 'FolderIcon',
