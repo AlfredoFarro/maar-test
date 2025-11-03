@@ -320,4 +320,20 @@ export default [
     route: 'seleccionar-proyecto',
     hide: true,
   },
+
+  //{
+  //  header: 'Motivos y Observaciones',
+  //  icon: 'FolderIcon',
+  //  id: 'motivos-observaciones',
+  //  title: 'Motivos y Observaciones',
+  //  route: 'motivos-observaciones',
+  //},
+
+  {
+    header: 'Registro de Notificaciones',
+    icon: 'FolderIcon',
+    id: 'registros-notificaciones',
+    title: 'Registro de Notificaciones',
+    route: 'registros-notificaciones',
+  },
 ]

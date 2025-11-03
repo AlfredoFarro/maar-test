@@ -38,6 +38,11 @@ const UserService = {
         var resp = await VueStoreService.get("role"+filter, store)
         return resp;
     },
+
+    async getUser(userId,store){
+        const resp = await VueStoreService.get("user/"+userId,store)
+        return resp;
+    }
 }
 
 export default UserService;

@@ -100,6 +100,8 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
+        "motivos-observaciones",
+        "registros-notificaciones",
         /* "aprobaciones",
         "aprobaciones-actividad",
         "aprobaciones-operativo", */
@@ -148,6 +150,8 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
+        "motivos-observaciones",
+        "registros-notificaciones",
         /* "aprobaciones",
         "aprobaciones-actividad",
         "aprobaciones-operativo", */
@@ -237,6 +241,7 @@ export const getUserAcessPermissions = (role) => {
         "registros-actividad-aprobar",
         "registros-operativo",
         "registros-operativo-aprobar",
+        "registros-notificaciones",
         "aprobaciones",
         "aprobaciones-actividad",
         "aprobaciones-operativo",

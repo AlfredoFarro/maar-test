@@ -40,7 +40,7 @@
                 </b-form-group>
               </div>
             </b-col>
-            <b-col md="7" lg="4" class="d-flex flex-column flex-lg-row justify-content-start">
+            <b-col md="2" lg="2" class="d-flex flex-column flex-lg-row justify-content-start">
               <div class="w-100">
                 <b-form-group label="DNI" label-for="dni" class="mr-2">
                   <b-form-input
@@ -53,6 +53,22 @@
                 
               </b-form-group>
               </div>   
+            </b-col>
+            <b-col md="5" lg="3" class="d-flex flex-column flex-lg-row justify-content-start">
+              <div class="w-100">
+                <b-form-group label="Trabajador" label-for="worker" class="mr-2">
+                  <b-form-input
+                    v-model="nameFilter"
+                    placeholder="Ingrese nombre del trabajador"
+                    @input="filter()"
+                    class="select-obra"
+                    autocomplete="off"
+                  />
+                  <small v-if="nameFilter && nameFilter.length < 6" class="text-muted">
+                    Empieza a filtrar desde 6 caracteres
+                  </small>
+                </b-form-group>
+              </div>
             </b-col> 
             <b-col lg="3" class="col-xxl">
               <b-form-group label="Fecha Rango Inicio" label-for="dateInit" class="mr-2">
@@ -296,6 +312,7 @@
     },
     data() {
       return {
+        nameFilter: '',
         status: '',
         statusFilter: '',
         required,
@@ -308,7 +325,7 @@
           { key: 'number', label: 'N°', sortable: false, visible: true, thStyle: { width: '50px' } },
           { key: 'project', label: 'Proyecto', sortable: false, visible: true, thStyle: { width: '200px' } },
           { key: 'user', label: 'Trabajador', sortable: false, visible: true, thStyle: { width: '200px' } },
-          { key: 'date', label: 'Fecha y Hora', sortable: false, visible: true, thStyle: { width: '150px' } },
+          { key: 'date', label: 'Fecha y Hora', sortable: true, visible: true, thStyle: { width: '150px' } },
           { key: 'actions', label: 'Acciones', visible: true, thStyle: { width: '120px' } }
         ],
         form: {
@@ -348,7 +365,7 @@
         showEntrie1: 10,
         totalElements1: 0,
         id: 0,
-        sort: 'id',
+        sort: 'completed',
         order: 'desc',
         userData: JSON.parse(localStorage.getItem('userData')),
         user_role: JSON.parse(localStorage.getItem('userData')).role.description,
@@ -734,9 +751,24 @@
         if (this.selectedProject != null && this.selectedProject != '') {
           this.arrayFilters.push({ keyContains: 'project.id', key: 'equals', value: this.selectedProject })
         }
-        
+
+        const isShortDni   = this.dniFilter && this.dniFilter.length <= 4
+        const isShortName  = this.nameFilter && this.nameFilter.trim().length <= 4
+
+        if (isShortDni || isShortName) {
+          return
+        }
+
         if (this.dniFilter != null && this.dniFilter != '' && this.dniFilter.length > 4) {
           this.arrayFilters.push({ keyContains: 'user.document', key: 'contains', value: this.dniFilter })
+        }
+
+        if (this.nameFilter && this.nameFilter.trim().length >= 4) {
+          this.arrayFilters.push({
+            keyContains: 'worker_fullname',
+            key: 'contains',
+            value: this.nameFilter.trim()
+          })
         }
         
         if(this.dateInit != null && this.dateInit != ''){
@@ -758,8 +790,7 @@
           this.arrayFilters.push({ keyContains: 'completed', key: 'lte', value: endOfDay });
         }
         console.log("FILTROS", this.arrayFilters)
-        const shortDni = this.dniFilter && this.dniFilter.length <= 4;
-        this.getAllData(shortDni)
+        this.getAllData()
       },
       cambioPagina(e) {
         this.currentPage = e
@@ -771,14 +802,11 @@
         this.getAllData()
       },
       sortChanged(data) {
-        this.sort = data.sortBy
-        this.currentPage = 1
-        this.getSortedData(data.sortBy, data.sortDesc ? 'desc' : 'asc')
-        this.records = this.allDataSorted[0]
-        /* this.sort = data.sortBy
-        if (data.sortDesc) {
-          this.order = 'desc'
-        } else this.order = 'asc' */
+        const sortKey = (data.sortBy === 'date') ? 'completed' : data.sortBy;
+        this.sort = sortKey;
+        this.currentPage = 1;
+        this.getSortedData(sortKey, data.sortDesc ? 'desc' : 'asc');
+        this.records = this.allDataSorted[0];
       },
       closeComment() {
         this.comment = ''
@@ -881,7 +909,7 @@
           this.totalElements = resp.data.responseFilter.total_rows
          if(this.allData.length > 0){
   
-           this.getSortedData("id", 'asc')
+           this.getSortedData("completed", 'desc')
            
            this.records = this.allDataSorted[0]
           }
@@ -922,14 +950,30 @@
           const searchTerm = this.description.toLowerCase();
           sortedData = sortedData.filter(item => item.description.toLowerCase().includes(searchTerm));      
         }
+
+        const toComparable = (val) => {
+          if (val == null) return null;
+          // Si estamos ordenando por fecha/hora
+          if (sortBy === 'completed' || /date|fecha|time|hora/i.test(sortBy)) {
+            const t = new Date(val).getTime();
+            return isNaN(t) ? 0 : t; // 0 si no parsea
+          }
+          return (typeof val === 'string') ? val.toLowerCase() : val;
+        };
+
+
         sortedData.sort((a, b) => {
-          const aValue = this.getAttributeValue(a, sortBy);
-          const bValue = this.getAttributeValue(b, sortBy);
-  
+          const aValue = toComparable(this.getAttributeValue(a, sortBy));
+          const bValue = toComparable(this.getAttributeValue(b, sortBy));
+
+          if (aValue === bValue) return 0;
+          if (aValue == null) return 1;   // nulls al final
+          if (bValue == null) return -1;
+
           if (sortOrder === 'asc') {
-            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-          } else if (sortOrder === 'desc') {
-            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+            return aValue < bValue ? -1 : 1;
+          } else { // 'desc'
+            return aValue > bValue ? -1 : 1;
           }
         });
   

@@ -62,7 +62,7 @@ export default {
   },
   async mounted() {
     if (this.userData != undefined) {
-      const respUserRole = await UserService.getUser(this.userData.id, this.$store)
+      //const respUserRole = await UserService.getUser(this.userData.id, this.$store)
       const role = this.userData.role.description
 
       console.log("ROLES", role)
