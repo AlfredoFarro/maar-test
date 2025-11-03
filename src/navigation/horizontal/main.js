@@ -321,11 +321,19 @@ export default [
     hide: true,
   },
 
+  //{
+  //  header: 'Motivos y Observaciones',
+  //  icon: 'FolderIcon',
+  //  id: 'motivos-observaciones',
+  //  title: 'Motivos y Observaciones',
+  //  route: 'motivos-observaciones',
+  //},
+
   {
-    header: 'Motivos y Observaciones',
+    header: 'Registro de Notificaciones',
     icon: 'FolderIcon',
-    id: 'motivos-observaciones',
-    title: 'Motivos y Observaciones',
-    route: 'motivos-observaciones',
+    id: 'registros-notificaciones',
+    title: 'Registro de Notificaciones',
+    route: 'registros-notificaciones',
   },
 ]

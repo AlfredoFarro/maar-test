@@ -528,17 +528,29 @@ export default [{
       }, ],
     },
   },
+  //{
+  //  path: '/motivos-observaciones',
+  //  name: 'motivos-observaciones',
+  //  component: () => import('@/views/motivos-observaciones/index.vue'),
+  //  meta: {
+  //    pageTitle: 'Motivos y Observaciones',
+  //    breadcrumb: [{
+  //      text: 'Listar',
+  //      active: true,
+  //    }, ],
+  //  },
+  //},
+  
   {
-    path: '/motivos-observaciones',
-    name: 'motivos-observaciones',
-    component: () => import('@/views/motivos-observaciones/index.vue'),
+    path: '/registros-notificaciones',
+    name: 'registros-notificaciones',
+    component: () => import('@/views/notifications/index.vue'),
     meta: {
-      pageTitle: 'Motivos y Observaciones',
+      pageTitle: 'Notificaciones',
       breadcrumb: [{
         text: 'Listar',
         active: true,
       }, ],
     },
   },
-  
 ]

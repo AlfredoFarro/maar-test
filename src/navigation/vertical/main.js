@@ -68,4 +68,15 @@ export default [
 
     ]
   },
+  {
+    title: "Notificaciones",
+    icon: "StopCircleIcon",
+    children: [
+      {
+        id: "cronograma",
+        title: "Registros",
+        route: "registros-notificaciones",
+      },
+    ]
+  },
 ];

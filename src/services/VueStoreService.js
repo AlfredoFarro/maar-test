@@ -85,6 +85,15 @@ const VueVueStoreService = {
         const resp = await store.dispatch("back/file",request)
         return resp;
     },
+    async getFile2(url, store) {
+      const token = JSON.parse(localStorage.getItem('userData'))?.token || '';
+      const resp = await fetch(`${process.env.APIURL}${url}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!resp.ok) throw new Error('No se pudo descargar');
+      const blob = await resp.blob();
+      return blob;
+    },
     async getWithData(url,data,store){
       var request = {
           headers:this.getHeaders(),
@@ -123,6 +132,31 @@ const VueVueStoreService = {
         const resp = await store.dispatch("back/EXECUTE",request)
         return resp;
     }, 
+    async postFile(path, formData, store) {
+  const token =
+    JSON.parse(localStorage.getItem('userData'))?.token ||
+    store?.state?.auth?.token ||
+    '';
+
+  const url = `${process.env.APIURL}${path}`;
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  // IMPORTANTE: no seteamos Content-Type; el navegador agrega el boundary
+
+  const resp = await fetch(url, { method: 'POST', headers, body: formData });
+
+  const ct = resp.headers.get('content-type') || '';
+  const isJson = ct.includes('application/json');
+  const payload = isJson ? await resp.json() : await resp.blob();
+
+  if (!resp.ok) {
+    const msg = (isJson && payload?.message) || 'No se pudo importar el Excel';
+    throw new Error(msg);
+  }
+
+  // Para que tu componente funcione con ambos casos (axios-like o json):
+  return isJson ? payload : { status: true, data: payload };
+},
     async post(url,data,store){
         var request = {
             headers:this.getHeaders(),
