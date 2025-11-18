@@ -250,7 +250,7 @@
         </b-modal>
       </b-overlay>
     </div>
-  </template>
+</template>
   
   <script>
   /* eslint-disable */
@@ -346,7 +346,9 @@
         order: 'desc',
         userData: JSON.parse(localStorage.getItem('userData')),
         user_role: JSON.parse(localStorage.getItem('userData')).role.description,
-        rolesAllowed: ['administrador', 'gestor'],
+        isDoctor: false,
+        myId: null,
+        rolesAllowed: ['doctor', 'Doctor'],
         isAdd: false,
         selectedRecords: {
           arrayId: []
@@ -391,6 +393,12 @@
       });
     },
     mounted() {
+      const u = JSON.parse(localStorage.getItem('userData')) || {};
+      const roleCode = (u.role?.code || '').toString().toLowerCase();
+      const roleId   = Number(u.role?.id || 0);
+
+      this.isDoctor = roleId === 4 || roleCode === 'Doctor' || roleCode === 'doctor';
+      this.myId = Number(u?.id || 0);
       this.filter()
       this.getSelect()
       this.loadFileTypeOptions()
@@ -683,6 +691,10 @@
 
         if (this.fileTypeFilter != null && this.fileTypeFilter != '') {
           this.arrayFilters.push({ keyContains: 'filetype.id', key: 'equals', value: this.fileTypeFilter });
+        }
+
+        if (!this.isDoctor && this.myId) {
+          this.arrayFilters.push({ keyContains: 'user.id', key: 'equals', value: this.myId });
         }
         
         this.getAllData()

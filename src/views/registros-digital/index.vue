@@ -64,8 +64,8 @@
                     class="select-obra"
                     autocomplete="off"
                   />
-                  <small v-if="nameFilter && nameFilter.length < 6" class="text-muted">
-                    Empieza a filtrar desde 6 caracteres
+                  <small v-if="nameFilter && nameFilter.length < 3" class="text-muted">
+                    Empieza a filtrar desde 4 caracteres
                   </small>
                 </b-form-group>
               </div>
@@ -281,7 +281,7 @@
         </carousel>
       </b-modal>
     </div>
-  </template>
+</template>
   
   <script>
   /* eslint-disable */
@@ -753,7 +753,7 @@
         }
 
         const isShortDni   = this.dniFilter && this.dniFilter.length <= 4
-        const isShortName  = this.nameFilter && this.nameFilter.trim().length <= 4
+        const isShortName  = this.nameFilter && this.nameFilter.trim().length <= 3
 
         if (isShortDni || isShortName) {
           return
@@ -763,7 +763,7 @@
           this.arrayFilters.push({ keyContains: 'user.document', key: 'contains', value: this.dniFilter })
         }
 
-        if (this.nameFilter && this.nameFilter.trim().length >= 4) {
+        if (this.nameFilter && this.nameFilter.trim().length >= 3) {
           this.arrayFilters.push({
             keyContains: 'worker_fullname',
             key: 'contains',
