@@ -177,6 +177,7 @@ export const getUserAcessPermissions = (role) => {
     case "Colaborador":
       permissions = [
         "disciplinas",
+        "archivos",
         "observaciones",
         "registros-digitales",
         "dashboard",
