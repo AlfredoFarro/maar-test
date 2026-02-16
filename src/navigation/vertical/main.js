@@ -26,20 +26,20 @@ export default [
       },
     ]
   },
-  {
-    title: "Reportes",
-    icon: "StopCircleIcon",
-    children: [
-      {
-        id: "cronograma",
-        title: "Consolidado",
-      },
-      {
-        id: "cronograma",
-        title: "Tendencias",
-      },
-    ]
-  },
+  //{
+  //  title: "Reportes",
+  //  icon: "StopCircleIcon",
+  //  children: [
+  //    {
+  //      id: "cronograma",
+  //      title: "Consolidado",
+  //    },
+  //    {
+  //      id: "cronograma",
+  //      title: "Tendencias",
+  //    },
+  //  ]
+  //},
   {
     title: "Registros",
     icon: "StopCircleIcon",

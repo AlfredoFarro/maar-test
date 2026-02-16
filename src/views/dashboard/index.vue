@@ -230,6 +230,34 @@
       <h4 class="text-gray-700">Registros x Proyecto</h4>
       <canvas id="projectsChart"></canvas>
     </div>
+
+    <hr class="my-3" />
+
+    <div class="card p-4">
+      <div
+        class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-2"
+      >
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-0">Registros mensuales</h4>
+          <h4 class="text-gray-700 mb-0">Total por mes</h4>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <span class="mr-1">Año</span>
+          <b-form-select
+            v-model="monthlyYear"
+            :options="monthlyYearOptions"
+            class="w-auto"
+            @change="onMonthlyYearChange"
+          />
+        </div>
+      </div>
+
+      <div class="monthly-chart-wrap">
+        <canvas id="monthlyRecordsChart"></canvas>
+      </div>
+    </div>
+
     <!-- Mapa Leaflet -->
     <div class="card p-4 mt-4">
       <h4 class="font-semibold text-gray-900">Ubicaciones</h4>
@@ -421,7 +449,7 @@ export default {
         { label: "Inactivo", value: "inactivo" },
         { label: "En progreso", value: "en_progreso" },
       ],
-      weeklySeries: [{ name: "Reportes", data: [] }], 
+      weeklySeries: [{ name: "Reportes", data: [] }],
       projectOptions: [],
       name: "",
       selectedProject: null,
@@ -511,7 +539,7 @@ export default {
         },
         plotOptions: {
           bar: {
-            columnWidth: "36%", 
+            columnWidth: "36%",
             borderRadius: 12,
             borderRadiusApplication: "end",
             distributed: true,
@@ -520,7 +548,7 @@ export default {
         },
         grid: {
           show: false,
-          padding: { left: -6, right: -6, top: -8, bottom: -8 }, 
+          padding: { left: -6, right: -6, top: -8, bottom: -8 },
         },
         dataLabels: { enabled: false },
         legend: { show: false },
@@ -612,9 +640,9 @@ export default {
       riskSummary: { seguro: 0, inseguro: 0 },
 
       //Gráfico Top 5
-      selectedCategories: [], 
-      categoryOptions: [], 
-      riskFilter: null, 
+      selectedCategories: [],
+      categoryOptions: [],
+      riskFilter: null,
       riskOptions: [
         { label: "Seguro", value: "Seguro" },
         { label: "Inseguro", value: "Inseguro" },
@@ -637,6 +665,35 @@ export default {
       },
 
       riskFilterKey: "type",
+
+      //Grafico mensual
+      monthlyChartInstance: null,
+      monthlyYear: new Date().getFullYear(),
+      monthlyYearOptions: [],
+      monthlyChartConfigData: {
+        labels: [
+          "Ene",
+          "Feb",
+          "Mar",
+          "Abr",
+          "May",
+          "Jun",
+          "Jul",
+          "Ago",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dic",
+        ],
+        datasets: [
+          {
+            label: "Registros",
+            data: new Array(12).fill(0),
+            backgroundColor: "#c0bfff",
+            borderRadius: 5,
+          },
+        ],
+      },
     };
   },
 
@@ -660,6 +717,7 @@ export default {
     this.loadCategoriasData();
     this.renderProjectsChart();
     this.renderRiskChart();
+    this.initMonthlyYearOptions();
     this.initMap();
   },
   computed: {
@@ -714,7 +772,7 @@ export default {
           const url2 = `?limit=10000&filter=[{%22keyContains%22:%22isActive%22,%22key%22:%22equals%22,%22value%22:1}]`;
           const respEmpresas = await SedeService.getProyectos(
             url2,
-            this.$store
+            this.$store,
           );
           if (respEmpresas.status) {
             this.projectOptions = respEmpresas.data.rows;
@@ -723,7 +781,7 @@ export default {
         } else {
           const resp = await UserService.getAssignedProjects(
             this.user.id,
-            this.$store
+            this.$store,
           );
           console.log("Assigned Projects Response:", resp);
           if (resp?.status) {
@@ -760,14 +818,13 @@ export default {
     async bootstrapCategoryOptions() {
       try {
         const url = `?limit=10000&filter=${encodeURIComponent(
-          JSON.stringify(this.buildFilters())
+          JSON.stringify(this.buildFilters()),
         )}`;
         const res = await DashboardService.getCategoriasChartData(
           url,
-          this.$store
+          this.$store,
         );
         const cats = res?.status ? res.data || [] : [];
-        // espero: [{ nombre, ... }]
         this.categoryOptions = cats
           .map((c) => ({ label: c.nombre, value: c.nombre }))
           .filter((c) => c.value);
@@ -775,6 +832,193 @@ export default {
         console.error("bootstrapCategoryOptions error", e);
         this.categoryOptions = [];
       }
+    },
+
+    initMonthlyYearOptions() {
+      const current = new Date().getFullYear();
+      const years = [];
+      for (let y = current; y >= current - 10; y--) {
+        years.push({ value: y, text: String(y) });
+      }
+      this.monthlyYearOptions = years;
+
+      if (!this.monthlyYear) this.monthlyYear = current;
+    },
+
+    onMonthlyYearChange() {
+      if (!this.isAdmin) return;
+      this.loadMonthlyRecordsChartData();
+    },
+
+    buildFiltersForMonthly() {
+      const filters = [];
+
+      const year = Number(this.monthlyYear) || new Date().getFullYear();
+
+      const yearStart = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0));
+      const yearEnd = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+
+      filters.push({
+        keyContains: "created_at",
+        key: "gte",
+        value: yearStart,
+      });
+
+      filters.push({
+        keyContains: "created_at",
+        key: "lte",
+        value: yearEnd,
+      });
+
+      if (this.selectedProject) {
+        filters.push({
+          keyContains: "project.id",
+          key: "equals",
+          value: this.selectedProject,
+        });
+      } else if (!this.isAdmin) {
+        if (this.assignedProjectIds.length === 0) {
+          filters.push({ keyContains: "project.id", key: "in", value: [-1] });
+        } else {
+          filters.push({
+            keyContains: "project.id",
+            key: "in",
+            value: this.assignedProjectIds,
+          });
+        }
+      }
+
+      if (this.selectedCategories && this.selectedCategories.length) {
+        filters.push({
+          keyContains: "category.name",
+          key: "in",
+          value: this.selectedCategories,
+        });
+      }
+
+      if (this.riskFilter) {
+        filters.push({
+          keyContains: this.riskFilterKey,
+          key: "equals",
+          value: this.riskFilter,
+        });
+      }
+
+      return filters;
+    },
+
+    async loadMonthlyRecordsChartData() {
+      if (!this.isAdmin) return;
+
+      const filters = this.buildFiltersForMonthly();
+      const url = `?limit=10000&filter=${encodeURIComponent(
+        JSON.stringify(filters),
+      )}`;
+
+      try {
+        const res =
+          await DashboardService.getRegistrosMensualesPorAnioChartData(
+            url,
+            this.$store,
+          );
+
+        this.monthlyChartConfigData =
+          res?.status && res.data?.chartData
+            ? res.data.chartData
+            : {
+                labels: [
+                  "Ene",
+                  "Feb",
+                  "Mar",
+                  "Abr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Ago",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dic",
+                ],
+                datasets: [
+                  {
+                    label: "Registros",
+                    data: new Array(12).fill(0),
+                    backgroundColor: "#c0bfff",
+                    borderRadius: 5,
+                  },
+                ],
+              };
+
+        this.$nextTick(() => this.renderMonthlyRecordsChart());
+      } catch (e) {
+        this.monthlyChartConfigData = {
+          labels: [
+            "Ene",
+            "Feb",
+            "Mar",
+            "Abr",
+            "May",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dic",
+          ],
+          datasets: [
+            {
+              label: "Registros",
+              data: new Array(12).fill(0),
+              backgroundColor: "#c0bfff",
+              borderRadius: 5,
+            },
+          ],
+        };
+        this.$nextTick(() => this.renderMonthlyRecordsChart());
+      }
+    },
+
+    renderMonthlyRecordsChart() {
+      const ctx = document.getElementById("monthlyRecordsChart");
+      if (!ctx) return;
+
+      if (this.monthlyChartInstance) {
+        this.monthlyChartInstance.destroy();
+      }
+
+      this.monthlyChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: this.monthlyChartConfigData,
+        options: {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: (tooltipItem) => `Registros: ${tooltipItem.raw}`,
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: { display: false, drawBorder: false }, 
+    },
+    y: {
+      beginAtZero: true,
+      ticks: {
+        stepSize: 5,      
+        maxTicksLimit: 6,   
+      },
+      grid: {
+        drawBorder: false,
+      },
+    },
+  },
+},
+      });
     },
 
     buildFilters() {
@@ -837,14 +1081,14 @@ export default {
     async loadTopHallazgosChart() {
       const filters = this.buildFilters();
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
 
       let items = [];
       try {
         const res = await DashboardService.getTipoHallazgosData(
           url,
-          this.$store
+          this.$store,
         );
         items = res?.status ? res.data?.hallazgos || [] : [];
       } catch (e) {
@@ -861,7 +1105,7 @@ export default {
 
       const labelColor = (
         getComputedStyle(document.documentElement).getPropertyValue(
-          "--bs-secondary-color"
+          "--bs-secondary-color",
         ) || "#6e6b7b"
       ).trim();
 
@@ -876,7 +1120,7 @@ export default {
             horizontal: true,
             borderRadius: 6,
             barHeight: "65%",
-            distributed: true, 
+            distributed: true,
           },
         },
         xaxis: {
@@ -884,7 +1128,7 @@ export default {
           categories: labels,
           labels: { style: { colors: labelColor } },
         },
-        colors: barColors, 
+        colors: barColors,
       };
 
       this.topHallazgosSeries = [{ name: "Registros", data }];
@@ -923,7 +1167,7 @@ export default {
       let y = startDate.getFullYear(),
         m = startDate.getMonth();
       const endKey = this.monthKey(
-        new Date(endDate.getFullYear(), endDate.getMonth(), 1)
+        new Date(endDate.getFullYear(), endDate.getMonth(), 1),
       );
       while (true) {
         const k = `${y}-${String(m + 1).padStart(2, "0")}`;
@@ -942,7 +1186,7 @@ export default {
     async loadHistoricAreaChart() {
       const filters = this.buildFilters ? this.buildFilters() : [];
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
 
       let rows = [];
@@ -969,12 +1213,12 @@ export default {
         rows[0].created_at ||
           rows[0].completed ||
           rows[0].createdAt ||
-          rows[0].date
+          rows[0].date,
       );
       let maxDate = new Date(minDate);
       for (const r of rows) {
         const d = new Date(
-          r.created_at || r.completed || r.createdAt || r.date
+          r.created_at || r.completed || r.createdAt || r.date,
         );
         if (d < minDate) minDate = d;
         if (d > maxDate) maxDate = d;
@@ -988,7 +1232,7 @@ export default {
       // 4) Contar por mes
       for (const r of rows) {
         const d = new Date(
-          r.created_at || r.completed || r.createdAt || r.date
+          r.created_at || r.completed || r.createdAt || r.date,
         );
         const k = this.monthKey(new Date(d.getFullYear(), d.getMonth(), 1));
         if (counts[k] != null) counts[k]++;
@@ -1063,7 +1307,7 @@ export default {
       filters.push({ keyContains: "created_at", key: "lte", value: end });
 
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
 
       let rows = [];
@@ -1098,7 +1342,7 @@ export default {
         css.getPropertyValue("--bs-body-color") || "#4b465c"
       ).trim();
       const labelColors = labels.map((_, i) =>
-        i === 6 ? labelStrong : labelSecondary
+        i === 6 ? labelStrong : labelSecondary,
       );
 
       this.weeklyChartOptions = {
@@ -1123,6 +1367,7 @@ export default {
     filter() {
       this.loadWeeklyChart();
       this.loadProjectChartData();
+      this.loadMonthlyRecordsChartData();
       this.loadHallazgosData();
       this.loadRiskChartData();
       this.loadCategoriasData();
@@ -1135,12 +1380,12 @@ export default {
       const filters = this.buildFilters();
 
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
       try {
         const res = await DashboardService.getRegistrosPorProyectoChartData(
           url,
-          this.$store
+          this.$store,
         );
         this.projectChartConfigData =
           res?.status && res.data
@@ -1174,12 +1419,12 @@ export default {
     async loadHallazgosData() {
       const filters = this.buildFilters();
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
       try {
         const res = await DashboardService.getTipoHallazgosData(
           url,
-          this.$store
+          this.$store,
         );
         this.hallazgos = res?.status && res.data ? res.data.hallazgos : [];
       } catch (e) {
@@ -1202,22 +1447,22 @@ export default {
     async loadRiskChartData() {
       const filters = this.buildFilters();
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
 
       try {
         const res = await DashboardService.getNivelDeRiesgoChartData(
           url,
-          this.$store
+          this.$store,
         );
         if (res?.status && res.data) {
           this.riskChartConfigData = res.data;
 
           const labels = (res.data.labels || []).map((l) =>
-            String(l).toLowerCase()
+            String(l).toLowerCase(),
           );
           const values = (res.data.datasets?.[0]?.data || []).map(
-            (v) => Number(v) || 0
+            (v) => Number(v) || 0,
           );
 
           const seguroAliases = ["seguro", "bajo", "low", "safe"];
@@ -1255,7 +1500,7 @@ export default {
 
             const [segCount, insCount] = this._countsFromPerc(
               [seguro, inseguro],
-              totalFiltrado
+              totalFiltrado,
             );
             seguro = segCount;
             inseguro = insCount;
@@ -1276,12 +1521,12 @@ export default {
     async loadCategoriasData() {
       const filters = this.buildFilters();
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
       try {
         const res = await DashboardService.getCategoriasChartData(
           url,
-          this.$store
+          this.$store,
         );
         this.categorias = res?.status && res.data ? res.data : [];
       } catch (e) {
@@ -1292,12 +1537,12 @@ export default {
     async loadProjectLocations() {
       const filters = this.buildFilters();
       const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters)
+        JSON.stringify(filters),
       )}`;
       try {
         const res = await DashboardService.getProjectLocations(
           url,
-          this.$store
+          this.$store,
         );
         if (res?.status && res.data) {
           this.addMarkersToMap(res.data);
@@ -1327,7 +1572,7 @@ export default {
         if (location.latitude && location.longitude) {
           const marker = L.marker([location.latitude, location.longitude]);
           marker.bindPopup(
-            `<strong>${location.latitude},${location.longitude}</strong>`
+            `<strong>${location.latitude},${location.longitude}</strong>`,
           );
           markers.addLayer(marker);
         }
@@ -1749,5 +1994,16 @@ span {
 }
 .min-w-360 {
   min-width: 360px;
+}
+
+.monthly-chart-wrap {
+  height: 50vh;
+  width: 100%;
+  position: relative;
+}
+
+.monthly-chart-wrap canvas {
+  height: 100% !important;
+  width: 100% !important;
 }
 </style>
