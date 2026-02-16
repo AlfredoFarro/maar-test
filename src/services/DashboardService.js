@@ -15,12 +15,17 @@ const DashboardService = {
     const resp = await VueStoreService.get('dashboard/nivelderiesgo'+filter, store2);
     return resp;
   },
-  async getCategoriasChartData(filter,store2) { // Nuevo método para Categorías
+  async getCategoriasChartData(filter,store2) { 
     const resp = await VueStoreService.get('dashboard/categoriaschart'+filter, store2);
     return resp;
   },
-  async getProjectLocations(filter,store2) { // Nuevo método para Categorías
+  async getProjectLocations(filter,store2) { 
     const resp = await VueStoreService.get('dashboard/recordlocations'+filter, store2);
+    return resp;
+  },
+
+  async getRegistrosMensualesPorAnioChartData(filter, store2) {
+    const resp = await VueStoreService.get('dashboard/registrosmensuales' + filter, store2);
     return resp;
   },
 };
