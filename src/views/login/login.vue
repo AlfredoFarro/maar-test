@@ -141,6 +141,7 @@ export default {
     }
   },
   methods: {
+    
     login() {
       this.$refs.loginForm.validate().then(async (success) => {
         if (success) {
@@ -169,15 +170,24 @@ export default {
             this.$ability.update(userData.ability)         
             const projectId = localStorage.getItem('project_id');
             const userId =localStorage.getItem('userData') ?  JSON.parse(localStorage.getItem('userData')).id:null
-
+            const assignedIds = (userData.project_user || [])
+              .map(pu => pu?.project?.id)
+              .filter(Boolean)
+            
+            localStorage.setItem('assignedProjectIds', JSON.stringify(assignedIds))
             if(userData.role.description == "supervisor" || userData.role.description == "planner" || userData.role.description == "gestor" || userData.role.description == "monitor"){
               localStorage.setItem('project_id', userData.project.id)
               localStorage.setItem('project_name', userData.project.description)
               console.log("LOG A CRONOGRAMA")
               this.$router.push({ name: 'cronograma'})
-            }else if(userData.role.description == "administrador"|| userData.role.description == "Jefe de Proyecto"|| userData.role.description == "Colaborador"){
+            }else if(userData.role.description == "administrador"|| userData.role.description == "Colaborador"){
               console.log("LOG A PROYECTOS")
               this.$router.push({ name: 'empresas'})
+            }else if (userData.role.description == "Jefe de Proyecto") {
+              if (!localStorage.getItem("project_id") && assignedIds.length === 1) {
+                localStorage.setItem("project_id", assignedIds[0])
+              }
+              this.$router.push({ name: "dashboard" })
             }else if(userData.role.description == "piloto"){
               console.log("LOG A PERFIL")
               this.$router.push({ name: 'perfil'})

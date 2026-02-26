@@ -334,6 +334,7 @@ export default {
       showEntrie: 10,
       sort: "id",
       order: "desc",
+      project_id: JSON.parse(localStorage.getItem("project_id")),
       user_role: JSON.parse(localStorage.getItem("userData")).role.description,
       rolesAllowed: ["administrador", "gestor"],
       navbar: null,
@@ -356,6 +357,10 @@ export default {
   computed: {
     visibleFields() {
       return this.fields.filter((f) => f.visible !== false);
+    },
+    isProjectManager() {
+      const role = (this.user_role || "").toLowerCase();
+      return role === "jefe de proyecto" || role === "jefe de proyectos";
     },
   },
   watch: {
@@ -542,6 +547,13 @@ export default {
 
     filter() {
       this.arrayFilters = [];
+      if (this.isProjectManager) {
+        this.arrayFilters.push({
+          keyContains: "project.id",
+          key: "equals",
+          value: this.project_id || -1,
+        });
+      }
       if (this.actionFilter) {
         this.arrayFilters.push({
           keyContains: "accionDisciplinaria",
@@ -735,6 +747,9 @@ export default {
           if (this._onHeadScroll)
             this.tableHead.removeEventListener("scroll", this._onHeadScroll);
         }
+        if (this.selectableTable) {
+          this.selectableTable.style.paddingTop = null;
+        }
         if (this.tableContainer && this._onBodyScroll) {
           this.tableContainer.removeEventListener("scroll", this._onBodyScroll);
         }
@@ -781,10 +796,16 @@ export default {
           });
         });
       } else {
-        this.selectableTable.style.width =
-          this.tableHead.querySelector("tr").offsetWidth + 1 + "px";
+       const w = (this.tableCard?.offsetWidth || 0) - 1;
+       if (w > 0) this.selectableTable.style.width = w + "px";
+     
+       this.ths.forEach((th) => {
+         th.style.flex = "1 1 auto";
+         th.style.width = null;
+       });
       }
       this.tableHead.style.width = this.tableCard.offsetWidth - 1 + "px";
+      this.selectableTable.style.paddingTop = this.tableHead.offsetHeight + "px";
     },
 
     async downloadPdf(item) {

@@ -166,7 +166,7 @@
             :items="records"
             no-border-collapse
             ref="selectableTable"
-            show-empty
+            :show-empty="bootstrapped && !showLoading"
             @sort-changed="sortChanged"
           >
             <!-- Columnas de la tabla -->
@@ -365,6 +365,7 @@ export default {
       selectedWorker: null,
       workerOptions: [],
       workerSearchTimer: null,
+      bootstrapped: false,
       fields: [
         {
           key: "number",
@@ -427,6 +428,11 @@ export default {
       records: [],
       enterpriseSelect: "",
       projectOptions: [],
+      assignedProjectIds: [],
+      assignedProjectsLoaded: false,
+      _ro: null,
+      _onHeadScroll: null,
+      _onBodyScroll: null,
       arrayFilters: [],
       arrayFilters2: [],
       currentPage: 1,
@@ -554,6 +560,10 @@ export default {
     visibleFields() {
       return this.fields.filter((field) => field.visible);
     },
+    isProjectManager() {
+      const role = (this.user_role || "").toLowerCase();
+      return role === "jefe de proyecto" || role === "jefe de proyectos";
+    },
     canExportPdf() {
       const hasWorker = !!this.selectedWorker;
       const hasDni = this.dniFilter && this.dniFilter.trim().length > 4;
@@ -566,6 +576,9 @@ export default {
       this.filter();
     });
   },
+  activated() {
+    this.getSelect();
+  },
   mounted() {
     const endDate = new Date();
     const startDate = new Date();
@@ -574,7 +587,8 @@ export default {
     this.dateInit = moment(startDate).format("YYYY-MM-DD");
     this.dateEnd = moment(endDate).format("YYYY-MM-DD");
 
-    this.filter();
+    this.showLoading = true;             
+    this.assignedProjectsLoaded = false;
     this.getSelect();
 
     this.navbar = document.querySelector(".navbar");
@@ -855,6 +869,23 @@ export default {
         key: "equals",
         value: 1,
       });
+      if (this.isProjectManager) {
+        if (!this.assignedProjectsLoaded) return;
+
+        if (!this.assignedProjectIds.length) {
+          this.records = [];
+          this.allData = [];
+          this.allDataSorted = [];
+          this.totalElements = 0;
+          return;
+        }
+
+        this.arrayFilters.push({
+          keyContains: "project.id",
+          key: "in",
+          value: this.assignedProjectIds,
+        });
+      }
       if (this.selectedProject != null && this.selectedProject != "") {
         this.arrayFilters.push({
           keyContains: "project.id",
@@ -989,14 +1020,45 @@ export default {
     },
     async getSelect() {
       const user = JSON.parse(localStorage.getItem("userData"));
+
+      if (this.isProjectManager) {
+        this.assignedProjectsLoaded = false;
+        try {
+          const resp = await UserService.getAssignedProjects(
+            user.id,
+            this.$store,
+          );
+
+          if (resp?.status) {
+            const rows = Array.isArray(resp.data?.projects)
+              ? resp.data.projects
+              : [];
+
+            this.projectOptions = rows
+              .map((p) => ({
+                id: p.id ?? p.project?.id,
+                name: p.name ?? p.project?.name,
+              }))
+              .filter((p) => p.id && p.name);
+
+            this.assignedProjectIds = this.projectOptions.map((p) => p.id);
+          } else {
+            this.projectOptions = [];
+            this.assignedProjectIds = [];
+          }
+        } finally {
+          this.assignedProjectsLoaded = true;
+          this.filter();
+        }
+        return;
+      }
+
       const url2 = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters2);
       const respEmpresas = await SedeService.getProyectos(url2, this.$store);
-      console.log("aaaaaaa", respEmpresas.data.rows);
-      console.log("HLA");
-      if (respEmpresas.status) {
-        this.projectOptions = respEmpresas.data.rows;
-        this.filter();
-      }
+      if (respEmpresas.status) this.projectOptions = respEmpresas.data.rows;
+
+      this.assignedProjectsLoaded = true;
+      this.filter();
     },
     async getData() {
       this.showLoading = true;
@@ -1014,24 +1076,31 @@ export default {
       this.showLoading = false;
     },
     async getAllData(skipLoading = false) {
-      if (!skipLoading) this.showLoading = true;
-      const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);
-      console.log("HOLA");
-      const resp = await RegisterService.getRecord(url, this.$store);
+  if (!skipLoading) this.showLoading = true;
 
-      console.log("resp record", resp);
-      if (resp.status) {
-        this.allData = resp.data.rows;
-        this.records = this.allData;
-        this.totalElements = resp.data.responseFilter.total_rows;
-        if (this.allData.length > 0) {
-          this.getSortedData("completed", "desc");
+  try {
+    const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);
+    const resp = await RegisterService.getRecord(url, this.$store);
 
-          this.records = this.allDataSorted[0];
-        }
+    if (resp.status) {
+      this.allData = resp.data.rows;
+      this.records = this.allData;
+      this.totalElements = resp.data.responseFilter.total_rows;
+
+      if (this.allData.length > 0) {
+        this.getSortedData("completed", "desc");
+        this.records = this.allDataSorted[0];
       }
-      this.showLoading = false;
-    },
+    } else {
+      this.allData = [];
+      this.records = [];
+      this.totalElements = 0;
+    }
+  } finally {
+    this.bootstrapped = true; 
+    this.showLoading = false;
+  }
+},
     async downloadExcel() {
       this.showLoading = true;
       const url = `?limit=10000&filter=` + JSON.stringify(this.arrayFilters);

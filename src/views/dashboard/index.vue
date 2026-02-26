@@ -846,7 +846,6 @@ export default {
     },
 
     onMonthlyYearChange() {
-      if (!this.isAdmin) return;
       this.loadMonthlyRecordsChartData();
     },
 
@@ -908,76 +907,20 @@ export default {
     },
 
     async loadMonthlyRecordsChartData() {
-      if (!this.isAdmin) return;
-
       const filters = this.buildFiltersForMonthly();
-      const url = `?limit=10000&filter=${encodeURIComponent(
-        JSON.stringify(filters),
-      )}`;
-
-      try {
-        const res =
-          await DashboardService.getRegistrosMensualesPorAnioChartData(
-            url,
-            this.$store,
-          );
-
-        this.monthlyChartConfigData =
-          res?.status && res.data?.chartData
-            ? res.data.chartData
-            : {
-                labels: [
-                  "Ene",
-                  "Feb",
-                  "Mar",
-                  "Abr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Ago",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dic",
-                ],
-                datasets: [
-                  {
-                    label: "Registros",
-                    data: new Array(12).fill(0),
-                    backgroundColor: "#c0bfff",
-                    borderRadius: 5,
-                  },
-                ],
-              };
-
-        this.$nextTick(() => this.renderMonthlyRecordsChart());
-      } catch (e) {
-        this.monthlyChartConfigData = {
-          labels: [
-            "Ene",
-            "Feb",
-            "Mar",
-            "Abr",
-            "May",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dic",
-          ],
-          datasets: [
-            {
-              label: "Registros",
-              data: new Array(12).fill(0),
-              backgroundColor: "#c0bfff",
-              borderRadius: 5,
-            },
-          ],
-        };
-        this.$nextTick(() => this.renderMonthlyRecordsChart());
-      }
+      const url = `?limit=10000&filter=${encodeURIComponent(JSON.stringify(filters))}`;
+    
+      const res = await DashboardService.getRegistrosMensualesPorAnioChartData(url, this.$store);
+    
+      this.monthlyChartConfigData =
+        res?.status && res.data?.chartData
+          ? res.data.chartData
+          : {
+              labels: ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
+              datasets: [{ label: "Registros", data: new Array(12).fill(0), backgroundColor: "#c0bfff", borderRadius: 5 }],
+            };
+    
+      this.$nextTick(() => this.renderMonthlyRecordsChart());
     },
 
     renderMonthlyRecordsChart() {

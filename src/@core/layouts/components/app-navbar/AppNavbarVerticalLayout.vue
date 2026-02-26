@@ -33,7 +33,7 @@
 
     <b-navbar-nav class="nav align-items-center ml-auto d-flex justify-content-center">
       <!-- <locale /> -->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <b-button
         v-if="this.$route.name!='seleccionar-log-type' && project_id !== '' && project_id !== null"
         variant="warning"
@@ -43,13 +43,13 @@
         <p class="p-0 m-0">
             {{label}}
           </p>
-          <!-- <feather-icon
+          <feather-icon
             class="d-block d-lg-none"
             icon="RotateCwIcon"
             size="15"
-            /> -->
+            /> 
           </b-button>
-        </li>
+        </li>-->
         
         <li class="nav-item" v-show="manteiners">
           <b-button            

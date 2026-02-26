@@ -156,8 +156,9 @@ export default {
   },
   mounted() {
     if(this.userData != undefined){
+      const normalizedRole = (this.user_role || '').toLowerCase().trim()
 
-      if (this.user_role && this.user_role === 'piloto') {
+      if (normalizedRole === 'piloto') {
         console.log('aqui 145');
         this.children = [
         {
@@ -167,6 +168,11 @@ export default {
           route: 'perfil',
         },
         ];
+        return
+      }
+
+      if (normalizedRole === 'jefe de proyecto') {
+        this.children = this.children.filter(item => !['empresas', 'proyectos'].includes(item.id))
       }
 
     }
